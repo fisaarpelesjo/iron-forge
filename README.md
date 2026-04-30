@@ -1,4 +1,4 @@
-# 🏋️ Log de Treino e Progressão
+# Log de Treino e Progressão
 
 Planilha estruturada para registro, acompanhamento e análise da progressão de treino e nutrição. Organizada em múltiplas abas com separação clara entre dados brutos, dicionários de referência e análise nutricional.
 
@@ -6,7 +6,51 @@ Planilha estruturada para registro, acompanhamento e análise da progressão de 
 
 ---
 
-## 📁 Estrutura do Arquivo
+## Arquivo
+
+```
+log-de-treino-e-progressao.ods   # LibreOffice Calc (arquivo principal)
+GerarTreino.bas                  # Backup do código do macro Basic
+```
+
+Abrir no **LibreOffice Calc**. Ao abrir, habilitar macros quando solicitado.
+
+---
+
+## Macro: Gerar Treino
+
+A aba `TREINOS` tem um botão **"Gerar Treino"** que automatiza o registro de cada sessão.
+
+**Como usar:**
+1. Clica no botão "Gerar Treino" na aba `TREINOS`
+2. Digita `A` ou `B` e pressiona OK
+3. As linhas do treino são geradas com data de hoje, exercícios, séries e reps
+4. Preenche `Carga_kg` e `RPE_final` após o treino
+
+**O que o macro preenche automaticamente:**
+- `Data` — data de hoje
+- `Semana` — semana ISO (`YYYY-Www`)
+- `Treino` — A ou B
+- `Exercício`, `Séries`, `Reps` — vindos da aba `EXERCICIOS`
+- `Volume` — fórmula `Séries × Reps × Carga_kg`
+- `Decisão` — fórmula baseada no RPE
+- `Carga_anterior` — busca automática da última carga registrada
+- `Próxima_carga` — sugestão baseada na Decisão
+
+**O que você preenche manualmente:**
+- `Carga_kg` — carga utilizada em kg
+- `RPE_final` — esforço percebido (6–10)
+- `Observações` — notas livres
+
+**Cores automáticas** (aparecem ao preencher RPE):
+- Verde — AUMENTAR (RPE ≤ 8)
+- Vermelho — REDUZIR (RPE = 10)
+- Azul — MANTER (RPE = 9)
+- Cinza/negrito em A:B — separador de sessões (quando muda o dia)
+
+---
+
+## Estrutura das Abas
 
 | Aba          | Descrição                                                                 |
 | ------------ | ------------------------------------------------------------------------- |
@@ -17,27 +61,27 @@ Planilha estruturada para registro, acompanhamento e análise da progressão de 
 
 ---
 
-## 📋 Schema das Abas
+## Schema das Abas
 
 ### `TREINOS`
 
 Cada linha representa **um exercício executado em uma sessão**.
 
-| Coluna           | Tipo    | Descrição                                                  |
-| ---------------- | ------- | ---------------------------------------------------------- |
-| `Data`           | Date    | Data do treino                                             |
-| `Semana`         | String  | Semana ISO do treino (ex: `2026-W15`)                      |
-| `Treino`         | String  | Identificador do treino (`A` ou `B`)                       |
-| `Exercício`      | String  | Nome do exercício                                          |
-| `Séries`         | Integer | Número de séries realizadas                                |
-| `Reps`           | Integer | Repetições realizadas por série                            |
-| `Carga_kg`       | Float   | Carga utilizada em kg                                      |
-| `RPE_final`      | Integer | Percepção de esforço na última série (escala 6–10)         |
-| `Volume`         | Float   | Volume total do exercício (`Séries × Reps × Carga_kg`)     |
-| `Decisão`        | String  | Recomendação de progressão (`AUMENTAR`, `MANTER`, `REDUZIR`) |
-| `Carga_anterior` | Float   | Carga utilizada na sessão anterior do mesmo exercício      |
-| `Próxima_carga`  | Float   | Carga recomendada para a próxima sessão                    |
-| `Observações`    | String  | Notas livres sobre a execução                              |
+| Coluna           | Tipo    | Preenchimento | Descrição                                                  |
+| ---------------- | ------- | ------------- | ---------------------------------------------------------- |
+| `Data`           | Date    | Macro         | Data do treino                                             |
+| `Semana`         | String  | Macro         | Semana ISO do treino (ex: `2026-W15`)                      |
+| `Treino`         | String  | Macro         | Identificador do treino (`A` ou `B`)                       |
+| `Exercício`      | String  | Macro         | Nome do exercício                                          |
+| `Séries`         | Integer | Macro         | Número de séries planejadas                                |
+| `Reps`           | Integer | Macro         | Repetições planejadas por série                            |
+| `Carga_kg`       | Float   | Manual        | Carga utilizada em kg                                      |
+| `RPE_final`      | Integer | Manual        | Percepção de esforço na última série (escala 6–10)         |
+| `Volume`         | Float   | Fórmula       | Volume total (`Séries × Reps × Carga_kg`)                  |
+| `Decisão`        | String  | Fórmula       | Recomendação de progressão (`AUMENTAR`, `MANTER`, `REDUZIR`) |
+| `Carga_anterior` | Float   | Fórmula       | Carga utilizada na sessão anterior do mesmo exercício      |
+| `Próxima_carga`  | Float   | Fórmula       | Carga recomendada para a próxima sessão                    |
+| `Observações`    | String  | Manual        | Notas livres sobre a execução                              |
 
 **Lógica de `Decisão`:**
 
@@ -49,7 +93,7 @@ Cada linha representa **um exercício executado em uma sessão**.
 
 ### `EXERCICIOS`
 
-Catálogo dos exercícios do programa, agrupados por treino.
+Catálogo dos exercícios do programa, agrupados por treino. Sem cabeçalho — linhas 1–8 são Treino A, linhas 9–15 são Treino B.
 
 | Coluna      | Descrição                         |
 | ----------- | --------------------------------- |
@@ -83,22 +127,7 @@ Aba com três seções dispostas verticalmente:
 | Zinco      | 13 mg     |
 | Vitamina D | 1000 UI   |
 
-**2. Totais do dia** — soma consolidada dos macros e micros do dia atual:
-
-| Coluna               | Descrição                                            |
-| -------------------- | ---------------------------------------------------- |
-| `Densidade_calórica` | Calorias por grama (`Calorias_total / Peso_total_g`) |
-| `Peso_total_g`       | Peso total de alimentos consumidos (g)               |
-| `Proteina_total`     | Proteína total do dia (g)                            |
-| `Carbo_total`        | Carboidrato total do dia (g)                         |
-| `Gordura_total`      | Gordura total do dia (g)                             |
-| `Calorias_total`     | Calorias totais do dia (kcal)                        |
-| `Fibra_total`        | Fibra total do dia (g)                               |
-| `Omega3_total`       | Ômega-3 total do dia (g)                             |
-| `Potassio_total`     | Potássio total do dia (mg)                           |
-| `Magnesio_total`     | Magnésio total do dia (mg)                           |
-| `Zinco_total`        | Zinco total do dia (mg)                              |
-| `VitaminaD_total`    | Vitamina D total do dia (UI)                         |
+**2. Totais do dia** — soma consolidada dos macros e micros do dia atual.
 
 **3. Log de refeições** — cada linha representa **um alimento em uma refeição**:
 
@@ -120,13 +149,13 @@ Aba com três seções dispostas verticalmente:
 | `Zinco_mg`     | Float  | Zinco total da porção (mg)                         |
 | `VitaminaD_UI` | Float  | Vitamina D total da porção (UI)                    |
 
-> Os valores de macros e micros são calculados automaticamente a partir do `ALIMENTOS` (quantidade × valor por unidade).
+> Macros e micros calculados automaticamente a partir de `ALIMENTOS` (quantidade × valor por unidade).
 
 ---
 
 ### `ALIMENTOS`
 
-Tabela de referência nutricional dos alimentos cadastrados no programa.
+Tabela de referência nutricional dos alimentos cadastrados.
 
 | Coluna           | Descrição                                       |
 | ---------------- | ----------------------------------------------- |
@@ -143,32 +172,3 @@ Tabela de referência nutricional dos alimentos cadastrados no programa.
 | `Magnesio_mg`    | Magnésio por unidade/100g (mg)                  |
 | `Zinco_mg`       | Zinco por unidade/100g (mg)                     |
 | `VitaminaD_UI`   | Vitamina D por unidade/100g (UI)                |
-
----
-
-## 🔄 Como Usar
-
-1. **Registrar treinos** — Preencher `TREINOS` a cada sessão com os dados de cada exercício
-2. **Consultar o programa** — Usar `EXERCICIOS` para conferir os exercícios, séries e reps planejados por treino
-3. **Registrar alimentação** — Preencher o log de refeições em `DIETA` com os alimentos consumidos
-4. **Acompanhar macros e micros** — Consultar os totais consolidados em `DIETA` e comparar às metas diárias
-5. **Adicionar alimentos** — Cadastrar novos itens em `ALIMENTOS` para que os cálculos nutricionais funcionem corretamente
-
----
-
-## 📌 Observações
-
-- O campo `Volume` em `TREINOS` é calculado como `Séries × Reps × Carga_kg`
-- O campo `Semana` em `TREINOS` segue o formato ISO `YYYY-Www` (ex: `2026-W15`)
-- A `Decisão` de progressão é baseada no `RPE_final`: ≤ 8 → AUMENTAR, 9 → MANTER, 10 → REDUZIR
-- Os macros e micros em `DIETA` são calculados com base em `ALIMENTOS` (quantidade × valor por unidade)
-- A seção de totais em `DIETA` consolida automaticamente todos os alimentos registrados no dia
-
----
-
-## 🗂️ Formato dos Arquivos
-
-```
-log-de-treino-e-progressao.xlsx   # Microsoft Excel
-log-de-treino-e-progressao.ods    # LibreOffice / Google Sheets
-```
