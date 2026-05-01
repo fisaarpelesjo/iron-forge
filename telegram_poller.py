@@ -200,49 +200,52 @@ def main():
     offset = 0
     print("IronForge bot polling... (Ctrl+C to stop)")
 
-    while True:
-        updates = get_updates(offset)
-        for update in updates:
-            offset = update["update_id"] + 1
-            msg = update.get("message", {})
-            chat_id = str(msg.get("chat", {}).get("id", ""))
-            text = msg.get("text", "")
+    try:
+        while True:
+            updates = get_updates(offset)
+            for update in updates:
+                offset = update["update_id"] + 1
+                msg = update.get("message", {})
+                chat_id = str(msg.get("chat", {}).get("id", ""))
+                text = msg.get("text", "")
 
-            if chat_id != CHAT_ID or not text:
-                continue
+                if chat_id != CHAT_ID or not text:
+                    continue
 
-            lower = text.strip().lower()
+                lower = text.strip().lower()
 
-            if lower in ("/help", "help"):
-                send(
-                    "<b>IronForge — Comandos</b>\n\n"
-                    "/gerar A|B|C — gera treino e registra no ODS\n"
-                    "/status — exercicio atual e progresso\n"
-                    "/undo — desfaz último registro\n"
-                    "/help — esta mensagem\n\n"
-                    "<b>Registrar peso:</b>\n"
-                    "<code>80</code> — só carga\n"
-                    "<code>80 8</code> — carga + RPE"
-                )
-                continue
+                if lower in ("/help", "help"):
+                    send(
+                        "<b>IronForge — Comandos</b>\n\n"
+                        "/gerar A|B|C — gera treino e registra no ODS\n"
+                        "/status — exercicio atual e progresso\n"
+                        "/undo — desfaz último registro\n"
+                        "/help — esta mensagem\n\n"
+                        "<b>Registrar peso:</b>\n"
+                        "<code>80</code> — só carga\n"
+                        "<code>80 8</code> — carga + RPE"
+                    )
+                    continue
 
-            # /gerar command — no session needed
-            if lower.startswith("/gerar"):
-                parts = text.strip().split()
-                treino_arg = parts[1] if len(parts) > 1 else ""
-                handle_gerar(treino_arg)
-                continue
+                # /gerar command — no session needed
+                if lower.startswith("/gerar"):
+                    parts = text.strip().split()
+                    treino_arg = parts[1] if len(parts) > 1 else ""
+                    handle_gerar(treino_arg)
+                    continue
 
-            session = load_session()
-            pending = load_pending()
+                session = load_session()
+                pending = load_pending()
 
-            if session is None:
-                send("Nenhuma sessão ativa. Use /gerar A, /gerar B ou /gerar C.")
-                continue
+                if session is None:
+                    send("Nenhuma sessão ativa. Use /gerar A, /gerar B ou /gerar C.")
+                    continue
 
-            handle(text, session, pending)
+                handle(text, session, pending)
 
-        time.sleep(3)
+            time.sleep(3)
+    except KeyboardInterrupt:
+        print("\nBot encerrado.")
 
 
 if __name__ == "__main__":
