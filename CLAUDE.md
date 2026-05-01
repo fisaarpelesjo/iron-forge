@@ -19,9 +19,9 @@ with zipfile.ZipFile("log-de-treino-e-progressao.ods") as z:
 O macro `GerarTreino` está embutido no ODS em `Basic/Standard/Module1`. O backup do código está em `GerarTreino.bas`.
 
 **O que o macro faz:**
-- Pergunta ao usuário "A" ou "B"
+- Pergunta ao usuário "A", "B" ou "C"
 - Detecta a última linha usada em TREINOS
-- Insere uma linha por exercício (8 para Treino A, 7 para Treino B)
+- Insere uma linha por exercício (8 para Treino A, 7 para Treino B, 3 para Treino C)
 - Preenche: Data, Semana (fórmula), Treino, Exercício (lido de EXERCICIOS), Séries, Reps
 - Insere fórmulas para: Volume, Decisão, Carga_anterior, Próxima_carga
 - Recria o formato condicional de cores para toda a faixa D2:M{lastRow} e A2:B{lastRow}
@@ -40,8 +40,13 @@ O macro `GerarTreino` está embutido no ODS em `Basic/Standard/Module1`. O backu
 
 ## Estrutura da Aba EXERCICIOS
 
-Sem cabeçalho. Linhas 1–8 = Treino A, linhas 9–15 = Treino B.
+Sem cabeçalho. Linhas 1–8 = Treino A, linhas 9–15 = Treino B, linhas 16–18 = Treino C.
 Colunas: A=Exercicio, B=Series, C=Reps (todas 1-indexed no spreadsheet, 0-indexed na API Basic).
+
+Índices 0-indexed usados pelo macro:
+- Treino A: 0–7
+- Treino B: 8–14
+- Treino C: 15–17
 
 ## Regenerar o ODS a partir do XLSX
 

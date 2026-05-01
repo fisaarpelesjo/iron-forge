@@ -14,12 +14,14 @@ Sub GerarTreino()
     Dim nFormat As Long
     Dim oFormats As Object
     Dim oLocale As New com.sun.star.lang.Locale
+    oLocale.Language = "pt"
+    oLocale.Country = "BR"
 
     oDoc = ThisComponent
     oTreinos = oDoc.Sheets.getByName("TREINOS")
     oExercicios = oDoc.Sheets.getByName("EXERCICIOS")
 
-    treino = InputBox("Qual treino deseja registrar?" & Chr(10) & "Digite A ou B:", "Gerar Treino", "A")
+    treino = InputBox("Qual treino deseja registrar?" & Chr(10) & "Digite A, B ou C:", "Gerar Treino", "A")
     If treino = "" Then Exit Sub
     treino = UCase(Trim(treino))
 
@@ -29,8 +31,11 @@ Sub GerarTreino()
     ElseIf treino = "B" Then
         startEx = 8
         endEx = 14
+    ElseIf treino = "C" Then
+        startEx = 15
+        endEx = 17
     Else
-        MsgBox "Treino invalido. Digite A ou B.", 16, "Erro"
+        MsgBox "Treino invalido. Digite A, B ou C.", 16, "Erro"
         Exit Sub
     End If
 
@@ -79,15 +84,10 @@ Sub GerarTreino()
             "=IF(J" & r & "=""AUMENTAR"";G" & r & "+2.5;IF(J" & r & "=""REDUZIR"";G" & r & "-2.5;G" & r & "))")
     Next i
 
-    ' Extende o formato condicional ate a ultima linha nova (D2:M{newRow+1})
-    ' Isso faz as cores aparecerem automaticamente quando o RPE for preenchido
     Dim oCFRange As Object
     oCFRange = oTreinos.getCellRangeByPosition(3, 1, 12, newRow)
-
-    ' Limpa cores diretas para nao conflitarem com o formato condicional
     oCFRange.CellBackColor = -1
 
-    ' Recria o formato condicional com as 3 regras de cor
     Dim oNewCF As Object
     oNewCF = oCFRange.ConditionalFormat
     oNewCF.clear()
@@ -112,7 +112,6 @@ Sub GerarTreino()
 
     oCFRange.ConditionalFormat = oNewCF
 
-    ' Extende formato condicional de A:B (cinza+negrito quando muda o dia)
     Dim oABRange As Object
     oABRange = oTreinos.getCellRangeByPosition(0, 1, 1, newRow)
     oABRange.CellBackColor = -1
