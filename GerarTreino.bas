@@ -193,20 +193,31 @@ ErrorHandler:
 End Function
 
 Sub EnviarTelegram(ByVal sBotToken As String, ByVal sChatId As String, ByVal sMsg As String)
-    Dim sTempFile As String
-    sTempFile = Environ("TEMP") & "\ironforge_msg.txt"
+    Dim sTempDir As String
+    sTempDir = Environ("TEMP")
+
+    Dim sMsgFile As String
+    sMsgFile = sTempDir & "\ironforge_msg.txt"
+
+    Dim sBatFile As String
+    sBatFile = sTempDir & "\ironforge_send.bat"
 
     Dim iFile As Integer
     iFile = FreeFile()
-    Open sTempFile For Output As #iFile
+    Open sMsgFile For Output As #iFile
     Print #iFile, sMsg
     Close #iFile
 
     Dim sUrl As String
     sUrl = "https://api.telegram.org/bot" & sBotToken & "/sendMessage"
 
-    Dim sCmd As String
-    sCmd = "/c curl -s -X POST """ & sUrl & """ --data-urlencode ""text@" & sTempFile & """ -d ""chat_id=" & sChatId & """ && del """ & sTempFile & """"
+    iFile = FreeFile()
+    Open sBatFile For Output As #iFile
+    Print #iFile, "@echo off"
+    Print #iFile, "curl -s -X POST """ & sUrl & """ -F ""chat_id=" & sChatId & """ -F ""text=<" & sMsgFile & """"
+    Print #iFile, "del """ & sMsgFile & """"
+    Print #iFile, "del """ & sBatFile & """"
+    Close #iFile
 
-    Shell "cmd.exe", 0, sCmd, False
+    Shell "cmd.exe", 0, "/c """ & sBatFile & """", False
 End Sub
