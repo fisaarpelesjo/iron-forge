@@ -157,7 +157,13 @@ Function LerTokenTelegram() As String
     Dim sEnvPath As String
 
     sDocURL = ThisComponent.getURL()
-    sDir = Left(sDocURL, InStrRev(sDocURL, "/"))
+    Dim nPos As Integer
+    Dim nLast As Integer
+    nLast = 0
+    For nPos = 1 To Len(sDocURL)
+        If Mid(sDocURL, nPos, 1) = "/" Then nLast = nPos
+    Next nPos
+    sDir = Left(sDocURL, nLast)
     sEnvPath = ConvertFromURL(sDir & ".env")
 
     Dim iFile As Integer
