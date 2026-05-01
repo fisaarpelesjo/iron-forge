@@ -134,13 +134,24 @@ Sub GerarTreino()
     sBotToken = LerTokenTelegram()
     If sBotToken <> "" Then
         Dim sMsg As String
-        sMsg = "Treino " & treino & " - " & Format(Now(), "DD/MM/YYYY") & Chr(10) & Chr(10)
+        sMsg = "<pre>Treino " & treino & " - " & Format(Now(), "DD/MM/YYYY") & Chr(10)
+        sMsg = sMsg & PadR("Exercicio", 22) & " S   R   Kg" & Chr(10)
+        sMsg = sMsg & String(35, "-") & Chr(10)
         Dim j As Integer
         For j = startEx To endEx
-            sMsg = sMsg & "- " & oExercicios.getCellByPosition(0, j).getString() & _
-                ": " & CInt(oExercicios.getCellByPosition(1, j).getValue()) & "x" & _
-                CInt(oExercicios.getCellByPosition(2, j).getValue()) & Chr(10)
+            Dim sEx As String
+            Dim nS As Integer
+            Dim nR As Integer
+            Dim dKg As Double
+            Dim sKg As String
+            sEx = oExercicios.getCellByPosition(0, j).getString()
+            nS = CInt(oExercicios.getCellByPosition(1, j).getValue())
+            nR = CInt(oExercicios.getCellByPosition(2, j).getValue())
+            dKg = oTreinos.getCellByPosition(10, lastRow + 1 + (j - startEx)).getValue()
+            If dKg = 0 Then sKg = "-" Else sKg = CStr(dKg)
+            sMsg = sMsg & PadR(sEx, 22) & PadL(CStr(nS), 2) & PadL(CStr(nR), 4) & "  " & sKg & Chr(10)
         Next j
+        sMsg = sMsg & "</pre>"
         EnviarTelegram sBotToken, "6575275306", sMsg
     End If
 
@@ -223,7 +234,7 @@ Sub EnviarTelegram(ByVal sBotToken As String, ByVal sChatId As String, ByVal sMs
     Print #iFile, "s = Replace(s, Chr(34), " & q & "\" & q & " & Chr(34))"
     Print #iFile, "s = Replace(s, Chr(13), " & q & q & ")"
     Print #iFile, "s = Replace(s, Chr(10), " & q & "\n" & q & ")"
-    Print #iFile, "j = " & q & "{" & q & " & Chr(34) & " & q & "chat_id" & q & " & Chr(34) & " & q & ":" & q & " & " & sChatId & " & " & q & "," & q & " & Chr(34) & " & q & "text" & q & " & Chr(34) & " & q & ":" & q & " & Chr(34) & s & Chr(34) & " & q & "}" & q
+    Print #iFile, "j = " & q & "{" & q & " & Chr(34) & " & q & "chat_id" & q & " & Chr(34) & " & q & ":" & q & " & " & sChatId & " & " & q & "," & q & " & Chr(34) & " & q & "text" & q & " & Chr(34) & " & q & ":" & q & " & Chr(34) & s & Chr(34) & " & q & "," & q & " & Chr(34) & " & q & "parse_mode" & q & " & Chr(34) & " & q & ":" & q & " & Chr(34) & " & q & "HTML" & q & " & Chr(34) & " & q & "}" & q
     Print #iFile, "Set h = CreateObject(" & q & "MSXML2.ServerXMLHTTP.6.0" & q & ")"
     Print #iFile, "h.Open " & q & "POST" & q & ", " & q & sUrl & q & ", False"
     Print #iFile, "h.setRequestHeader " & q & "Content-Type" & q & ", " & q & "application/json" & q
@@ -234,3 +245,11 @@ Sub EnviarTelegram(ByVal sBotToken As String, ByVal sChatId As String, ByVal sMs
 
     Shell "wscript.exe", 0, q & sVbsFile & q, False
 End Sub
+
+Function PadR(s As String, n As Integer) As String
+    If Len(s) >= n Then PadR = Left(s, n) Else PadR = s & Space(n - Len(s))
+End Function
+
+Function PadL(s As String, n As Integer) As String
+    If Len(s) >= n Then PadL = Right(s, n) Else PadL = Space(n - Len(s)) & s
+End Function
