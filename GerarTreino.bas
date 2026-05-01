@@ -162,7 +162,7 @@ Function LerTokenTelegram() As String
 
     Dim iFile As Integer
     Dim sLine As String
-    Dim colonPos As Integer
+    Dim eqPos As Integer
     iFile = FreeFile()
 
     On Error GoTo ErrorHandler
@@ -170,11 +170,11 @@ Function LerTokenTelegram() As String
     Do While Not EOF(iFile)
         Line Input #iFile, sLine
         sLine = Trim(sLine)
-        colonPos = InStr(sLine, ":")
-        If colonPos > 0 And InStr(sLine, " ") = 0 And Left(sLine, 4) <> "http" Then
-            If IsNumeric(Left(sLine, colonPos - 1)) And Len(sLine) > 20 Then
+        eqPos = InStr(sLine, "=")
+        If eqPos > 0 Then
+            If UCase(Left(sLine, eqPos - 1)) = "TELEGRAM_TOKEN" Then
                 Close #iFile
-                LerTokenTelegram = sLine
+                LerTokenTelegram = Mid(sLine, eqPos + 1)
                 Exit Function
             End If
         End If
