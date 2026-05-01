@@ -130,8 +130,77 @@ Sub GerarTreino()
            " exercicios adicionados a partir da linha " & (lastRow + 2) & ".", _
            64, "Treino Gerado"
 
+    ' Send Telegram notification
+    Dim sBotToken As String
+    sBotToken = LerTokenTelegram()
+    If sBotToken <> "" Then
+        Dim sMsg As String
+        sMsg = "Treino " & treino & " — " & Format(Now(), "DD/MM/YYYY") & Chr(10) & Chr(10)
+        Dim j As Integer
+        For j = startEx To endEx
+            sMsg = sMsg & "- " & oExercicios.getCellByPosition(0, j).getString() & _
+                ": " & CInt(oExercicios.getCellByPosition(1, j).getValue()) & "x" & _
+                CInt(oExercicios.getCellByPosition(2, j).getValue()) & Chr(10)
+        Next j
+        EnviarTelegram sBotToken, "6575275306", sMsg
+    End If
+
     Dim oRange As Object
     oRange = oTreinos.getCellByPosition(0, lastRow + 1)
     oDoc.getCurrentController().setActiveSheet(oTreinos)
     oDoc.getCurrentController().select(oRange)
+End Sub
+
+Function LerTokenTelegram() As String
+    Dim sDocURL As String
+    Dim sDir As String
+    Dim sEnvPath As String
+
+    sDocURL = ThisComponent.getURL()
+    sDir = Left(sDocURL, InStrRev(sDocURL, "/"))
+    sEnvPath = ConvertFromURL(sDir & ".env")
+
+    Dim iFile As Integer
+    Dim sLine As String
+    Dim colonPos As Integer
+    iFile = FreeFile()
+
+    On Error GoTo ErrorHandler
+    Open sEnvPath For Input As #iFile
+    Do While Not EOF(iFile)
+        Line Input #iFile, sLine
+        sLine = Trim(sLine)
+        colonPos = InStr(sLine, ":")
+        If colonPos > 0 And InStr(sLine, " ") = 0 And Left(sLine, 4) <> "http" Then
+            If IsNumeric(Left(sLine, colonPos - 1)) And Len(sLine) > 20 Then
+                Close #iFile
+                LerTokenTelegram = sLine
+                Exit Function
+            End If
+        End If
+    Loop
+    Close #iFile
+    LerTokenTelegram = ""
+    Exit Function
+ErrorHandler:
+    LerTokenTelegram = ""
+End Function
+
+Sub EnviarTelegram(ByVal sBotToken As String, ByVal sChatId As String, ByVal sMsg As String)
+    Dim sTempFile As String
+    sTempFile = Environ("TEMP") & "\ironforge_msg.txt"
+
+    Dim iFile As Integer
+    iFile = FreeFile()
+    Open sTempFile For Output As #iFile
+    Print #iFile, sMsg
+    Close #iFile
+
+    Dim sPS As String
+    sPS = "$msg = (Get-Content '" & sTempFile & "' -Raw -Encoding UTF8).Trim();" & _
+          "Invoke-RestMethod -Uri 'https://api.telegram.org/bot" & sBotToken & "/sendMessage'" & _
+          " -Method Post -Body @{chat_id='" & sChatId & "';text=$msg} | Out-Null;" & _
+          "Remove-Item '" & sTempFile & "'"
+
+    Shell "powershell.exe", 0, "-WindowStyle Hidden -NonInteractive -Command " & Chr(34) & sPS & Chr(34), False
 End Sub
