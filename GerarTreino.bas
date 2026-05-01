@@ -130,12 +130,11 @@ Sub GerarTreino()
            " exercicios adicionados a partir da linha " & (lastRow + 2) & ".", _
            64, "Treino Gerado"
 
-    ' Send Telegram notification
     Dim sBotToken As String
     sBotToken = LerTokenTelegram()
     If sBotToken <> "" Then
         Dim sMsg As String
-        sMsg = "Treino " & treino & " — " & Format(Now(), "DD/MM/YYYY") & Chr(10) & Chr(10)
+        sMsg = "Treino " & treino & " - " & Format(Now(), "DD/MM/YYYY") & Chr(10) & Chr(10)
         Dim j As Integer
         For j = startEx To endEx
             sMsg = sMsg & "- " & oExercicios.getCellByPosition(0, j).getString() & _
@@ -199,8 +198,8 @@ Sub EnviarTelegram(ByVal sBotToken As String, ByVal sChatId As String, ByVal sMs
     Dim sMsgFile As String
     sMsgFile = sTempDir & "\ironforge_msg.txt"
 
-    Dim sBatFile As String
-    sBatFile = sTempDir & "\ironforge_send.bat"
+    Dim sVbsFile As String
+    sVbsFile = sTempDir & "\ironforge_send.vbs"
 
     Dim iFile As Integer
     iFile = FreeFile()
@@ -211,13 +210,27 @@ Sub EnviarTelegram(ByVal sBotToken As String, ByVal sChatId As String, ByVal sMs
     Dim sUrl As String
     sUrl = "https://api.telegram.org/bot" & sBotToken & "/sendMessage"
 
+    Dim q As String
+    q = Chr(34)
+
     iFile = FreeFile()
-    Open sBatFile For Output As #iFile
-    Print #iFile, "@echo off"
-    Print #iFile, "curl -s -X POST """ & sUrl & """ -F ""chat_id=" & sChatId & """ -F ""text=<" & sMsgFile & """"
-    Print #iFile, "del """ & sMsgFile & """"
-    Print #iFile, "del """ & sBatFile & """"
+    Open sVbsFile For Output As #iFile
+    Print #iFile, "Dim fso, f, s, h, j"
+    Print #iFile, "Set fso = CreateObject(" & q & "Scripting.FileSystemObject" & q & ")"
+    Print #iFile, "Set f = fso.OpenTextFile(" & q & sMsgFile & q & ", 1, False, 0)"
+    Print #iFile, "s = f.ReadAll : f.Close"
+    Print #iFile, "s = Replace(s, " & q & "\" & q & ", " & q & "\\" & q & ")"
+    Print #iFile, "s = Replace(s, Chr(34), " & q & "\" & q & " & Chr(34))"
+    Print #iFile, "s = Replace(s, Chr(13), " & q & q & ")"
+    Print #iFile, "s = Replace(s, Chr(10), " & q & "\n" & q & ")"
+    Print #iFile, "j = " & q & "{" & q & " & Chr(34) & " & q & "chat_id" & q & " & Chr(34) & " & q & ":" & q & " & " & sChatId & " & " & q & "," & q & " & Chr(34) & " & q & "text" & q & " & Chr(34) & " & q & ":" & q & " & Chr(34) & s & Chr(34) & " & q & "}" & q
+    Print #iFile, "Set h = CreateObject(" & q & "MSXML2.ServerXMLHTTP.6.0" & q & ")"
+    Print #iFile, "h.Open " & q & "POST" & q & ", " & q & sUrl & q & ", False"
+    Print #iFile, "h.setRequestHeader " & q & "Content-Type" & q & ", " & q & "application/json" & q
+    Print #iFile, "h.Send j"
+    Print #iFile, "fso.DeleteFile " & q & sMsgFile & q
+    Print #iFile, "fso.DeleteFile WScript.ScriptFullName"
     Close #iFile
 
-    Shell "cmd.exe", 0, "/c """ & sBatFile & """", False
+    Shell "wscript.exe", 0, q & sVbsFile & q, False
 End Sub
