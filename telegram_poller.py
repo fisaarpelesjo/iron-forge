@@ -3,6 +3,8 @@ import json
 import time
 from pathlib import Path
 
+import ods_ops
+
 BASE_DIR = Path(__file__).parent
 SESSION_FILE = BASE_DIR / "session.json"
 PENDING_FILE = BASE_DIR / "pending_log.csv"
@@ -79,6 +81,43 @@ def get_updates(offset=0):
         return []
 
 
+def _format_gerar_msg(treino, exercises):
+    prev = ods_ops.read_previous_weights()
+    lines = [f"<pre>Treino {treino}\n"]
+    lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
+    lines.append("-" * 36 + "\n")
+    for ex in exercises:
+        kg = prev.get(ex["name"], 0)
+        kg_str = "-" if kg == 0 else str(int(kg) if kg == int(kg) else kg)
+        lines.append(f"{ex['name'][:22]:<22} {ex['sets']:>2} {ex['reps']:>3}  {kg_str:>6}\n")
+    lines.append("</pre>")
+    return "".join(lines)
+
+
+def handle_gerar(treino_type):
+    treino_type = treino_type.upper()
+    if treino_type not in ("A", "B", "C"):
+        send("Treino invalido. Use /gerar A, /gerar B ou /gerar C.")
+        return
+
+    if ods_ops.is_ods_locked():
+        send("ODS aberto no LibreOffice — feche primeiro.")
+        return
+
+    try:
+        exercises = ods_ops.gerar_treino(treino_type)
+    except Exception as e:
+        send(f"Erro ao gerar treino: {e}")
+        return
+
+    ods_ops.write_session(treino_type, exercises)
+    ods_ops.clear_pending()
+
+    msg = _format_gerar_msg(treino_type, exercises)
+    send(msg)
+    send(f"Treino {treino_type} gerado! Mande <code>carga rpe</code> para cada exercicio.")
+
+
 def handle(text, session, pending):
     text = text.strip()
     exercises = session["exercises"]
@@ -88,7 +127,7 @@ def handle(text, session, pending):
 
     if text.lower() in ("/status", "status"):
         if filled >= total:
-            send(f"Treino {treino} completo! {total}/{total} ✓\nAbra o LibreOffice e clique <b>Sincronizar</b>.")
+            send(f"Treino {treino} completo! {total}/{total} ✓")
         else:
             ex = exercises[filled]
             done = "\n".join(f"✓ {exercises[i]['name']}" for i in range(filled))
@@ -125,8 +164,17 @@ def handle(text, session, pending):
     entry = {"row": ex["row"], "carga": carga}
     if rpe is not None:
         entry["rpe"] = rpe
+
+    # Always track in pending (used for filled count / undo)
     pending.append(entry)
     save_pending(pending)
+
+    # Also write directly to ODS if not locked (best-effort; pending is fallback)
+    if not ods_ops.is_ods_locked():
+        try:
+            ods_ops.update_row_weights(ex["row"], carga, rpe)
+        except Exception:
+            pass
 
     rpe_str = f" RPE {rpe}" if rpe is not None else ""
     new_filled = len(pending)
@@ -134,7 +182,7 @@ def handle(text, session, pending):
     if new_filled >= total:
         send(
             f"<b>{ex['name']}</b> ✓ {carga}kg{rpe_str} ({new_filled}/{total})\n\n"
-            f"Treino completo! Abra o LibreOffice e clique <b>Sincronizar</b>."
+            f"Treino completo!"
         )
     else:
         nxt = exercises[new_filled]
@@ -163,11 +211,19 @@ def main():
             if chat_id != CHAT_ID or not text:
                 continue
 
+            # /gerar command — no session needed
+            lower = text.strip().lower()
+            if lower.startswith("/gerar"):
+                parts = text.strip().split()
+                treino_arg = parts[1] if len(parts) > 1 else ""
+                handle_gerar(treino_arg)
+                continue
+
             session = load_session()
             pending = load_pending()
 
             if session is None:
-                send("Nenhuma sessão ativa. Gere o treino primeiro no LibreOffice.")
+                send("Nenhuma sessão ativa. Use /gerar A, /gerar B ou /gerar C.")
                 continue
 
             handle(text, session, pending)
