@@ -35,8 +35,9 @@ TREINO_RANGES = {
 - Separador de argumentos: ponto e vírgula (locale pt-BR)
 
 **Estilos de célula confirmados (content.xml):**
-- `ce2` = data, `ce9` = semana (fórmula), `ce71` = tipo treino, `ce16` = nome exercício
-- `ce20` = células com fórmula, `ce22` = carga/RPE, `ce65` = trailing (repeat 16371)
+- `ce22` = data (style:data-style-name="N120", date format), `ce9` = semana (fórmula), `ce71` = tipo treino, `ce16` = nome exercício
+- `ce20` = células com fórmula, `ce25` = carga/RPE (número), `ce65` = trailing (repeat 16371)
+- ATENÇÃO: `ce2` não existe no ODS → LibreOffice usa datetime padrão (bug). Usar `ce22` para datas.
 
 ### `telegram_poller.py`
 Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.

@@ -138,7 +138,7 @@ def _make_row_xml(r, date_iso, date_disp, treino, ex_name, sets, reps):
     lt = "&lt;"
     return (
         f'<table:table-row table:style-name="ro1">'
-        f'<table:table-cell table:style-name="ce2" table:content-validation-name="val1"'
+        f'<table:table-cell table:style-name="ce22" table:content-validation-name="val1"'
         f' office:value-type="date" office:date-value="{date_iso}" calcext:value-type="date">'
         f'<text:p>{date_disp}</text:p></table:table-cell>'
         f'<table:table-cell table:style-name="ce9"'
@@ -175,7 +175,7 @@ def _make_row_xml(r, date_iso, date_disp, treino, ex_name, sets, reps):
     )
 
 
-def _make_value_cell(value, style="ce22"):
+def _make_value_cell(value, style="ce25"):
     v = float(value)
     disp = str(int(v)) if v == int(v) else str(v).replace(".", ",")
     return (
@@ -183,6 +183,28 @@ def _make_value_cell(value, style="ce22"):
         f' office:value-type="float" office:value="{v}"'
         f' calcext:value-type="float"><text:p>{disp}</text:p></table:table-cell>'
     )
+
+
+def _update_conditional_format(content, last_row):
+    """Replace TREINOS conditional-formats block with clean range up to last_row."""
+    q = "&quot;"
+    lt = "&lt;"
+    new_cf = (
+        f'<calcext:conditional-formats>'
+        f'<calcext:conditional-format calcext:target-range-address="TREINOS.D2:TREINOS.M{last_row}">'
+        f'<calcext:condition calcext:apply-style-name="ConditionalStyle_2" calcext:value="formula-is([.$J2]={q}AUMENTAR{q})" calcext:base-cell-address="TREINOS.D2"/>'
+        f'<calcext:condition calcext:apply-style-name="ConditionalStyle_3" calcext:value="formula-is([.$J2]={q}REDUZIR{q})" calcext:base-cell-address="TREINOS.D2"/>'
+        f'<calcext:condition calcext:apply-style-name="ConditionalStyle_4" calcext:value="formula-is([.$J2]={q}MANTER{q})" calcext:base-cell-address="TREINOS.D2"/>'
+        f'</calcext:conditional-format>'
+        f'<calcext:conditional-format calcext:target-range-address="TREINOS.A2:TREINOS.B{last_row}">'
+        f'<calcext:condition calcext:apply-style-name="ConditionalStyle_1" calcext:value="formula-is([.$A2]{lt}{lt}$a0)" calcext:base-cell-address="TREINOS.A2"/>'
+        f'</calcext:conditional-format>'
+        f'</calcext:conditional-formats>'
+    )
+    m = re.search(r'<calcext:conditional-formats>.*?</calcext:conditional-formats>', content, re.DOTALL)
+    if m and 'TREINOS' in m.group(0):
+        content = content[:m.start()] + new_cf + content[m.end():]
+    return content
 
 
 def gerar_treino(treino_type):
@@ -230,6 +252,8 @@ def gerar_treino(treino_type):
         })
 
     new_content = content[:insert_pos] + new_xml + content[insert_pos:]
+    new_last_row = n_data + 1 + len(exercises)  # header=1 + all data rows
+    new_content = _update_conditional_format(new_content, new_last_row)
     _write_content(new_content)
     return session_exercises
 
