@@ -81,9 +81,9 @@ def get_updates(offset=0):
         return []
 
 
-def _format_gerar_msg(treino, exercises):
+def _format_gerar_msg(exercises):
     prev = ods_ops.read_previous_weights()
-    lines = [f"<pre>Treino {treino}\n"]
+    lines = ["<pre>Treino\n"]
     lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
     lines.append("-" * 36 + "\n")
     for ex in exercises:
@@ -94,44 +94,38 @@ def _format_gerar_msg(treino, exercises):
     return "".join(lines)
 
 
-def handle_gerar(treino_type):
-    treino_type = treino_type.upper()
-    if treino_type not in ("A", "B", "C"):
-        send("Treino invalido. Use /gerar A, /gerar B ou /gerar C.")
-        return
-
+def handle_gerar():
     if ods_ops.is_ods_locked():
         send("ODS aberto no LibreOffice — feche primeiro.")
         return
 
     try:
-        exercises = ods_ops.gerar_treino(treino_type)
+        exercises = ods_ops.gerar_treino()
     except Exception as e:
         send(f"Erro ao gerar treino: {e}")
         return
 
-    ods_ops.write_session(treino_type, exercises)
+    ods_ops.write_session(exercises)
     ods_ops.clear_pending()
 
-    msg = _format_gerar_msg(treino_type, exercises)
+    msg = _format_gerar_msg(exercises)
     send(msg)
-    send(f"Treino {treino_type} gerado! Mande <code>carga rpe</code> para cada exercicio.")
+    send("Treino gerado! Mande <code>carga rpe</code> para cada exercicio.")
 
 
 def handle(text, session, pending):
     text = text.strip()
     exercises = session["exercises"]
-    treino = session["treino"]
     filled = len(pending)
     total = len(exercises)
 
     if text.lower() in ("/status", "status"):
         if filled >= total:
-            send(f"Treino {treino} completo! {total}/{total} ✓")
+            send(f"Treino completo! {total}/{total} ✓")
         else:
             ex = exercises[filled]
             done = "\n".join(f"✓ {exercises[i]['name']}" for i in range(filled))
-            msg = f"Treino {treino} — {filled}/{total}\n"
+            msg = f"Treino — {filled}/{total}\n"
             if done:
                 msg += done + "\n"
             msg += f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']})"
@@ -149,7 +143,7 @@ def handle(text, session, pending):
         return
 
     if filled >= total:
-        send(f"Treino {treino} já completo! Use /status.")
+        send("Treino já completo! Use /status.")
         return
 
     parts = text.replace(",", ".").split()
@@ -217,7 +211,7 @@ def main():
                 if lower in ("/help", "help"):
                     send(
                         "<b>IronForge — Comandos</b>\n\n"
-                        "/gerar A|B|C — gera treino e registra no ODS\n"
+                        "/gerar — gera treino e registra no ODS\n"
                         "/status — exercicio atual e progresso\n"
                         "/undo — desfaz último registro\n"
                         "/help — esta mensagem\n\n"
@@ -229,16 +223,14 @@ def main():
 
                 # /gerar command — no session needed
                 if lower.startswith("/gerar"):
-                    parts = text.strip().split()
-                    treino_arg = parts[1] if len(parts) > 1 else ""
-                    handle_gerar(treino_arg)
+                    handle_gerar()
                     continue
 
                 session = load_session()
                 pending = load_pending()
 
                 if session is None:
-                    send("Nenhuma sessão ativa. Use /gerar A, /gerar B ou /gerar C.")
+                    send("Nenhuma sessão ativa. Use /gerar.")
                     continue
 
                 handle(text, session, pending)

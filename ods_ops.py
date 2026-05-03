@@ -11,11 +11,7 @@ ODS_PATH = Path(__file__).parent / "log-de-treino-e-progressao.ods"
 SESSION_FILE = Path(__file__).parent / "session.json"
 PENDING_FILE = Path(__file__).parent / "pending_log.csv"
 
-TREINO_RANGES = {
-    "A": range(0, 8),
-    "B": range(8, 15),
-    "C": range(15, 18),
-}
+TREINO_EXERCISES = range(0, 12)
 
 
 def is_ods_locked():
@@ -207,20 +203,16 @@ def _update_conditional_format(content, last_row):
     return content
 
 
-def gerar_treino(treino_type):
+def gerar_treino():
     """
-    Add training rows to ODS for the given type (A/B/C).
+    Add training rows to ODS.
     Returns list of {row, name, sets, reps} dicts (row = 0-indexed for getCellByPosition).
     """
-    treino_type = treino_type.upper()
-    if treino_type not in TREINO_RANGES:
-        raise ValueError(f"Invalid treino type: {treino_type}")
-
     if is_ods_locked():
         raise RuntimeError("ODS is open in LibreOffice — close it first.")
 
     all_ex = read_exercises()
-    exercises = [all_ex[i] for i in TREINO_RANGES[treino_type] if i < len(all_ex)]
+    exercises = [all_ex[i] for i in TREINO_EXERCISES if i < len(all_ex)]
 
     content = _read_content()
     n_data = _count_data_rows(content)
@@ -243,7 +235,7 @@ def gerar_treino(treino_type):
     session_exercises = []
     for idx, ex in enumerate(exercises):
         r = n_data + 2 + idx  # 1-based spreadsheet row
-        new_xml += _make_row_xml(r, date_iso, date_disp, treino_type, ex["name"], ex["sets"], ex["reps"])
+        new_xml += _make_row_xml(r, date_iso, date_disp, "TREINO", ex["name"], ex["sets"], ex["reps"])
         session_exercises.append({
             "row": r - 1,  # 0-indexed for getCellByPosition
             "name": ex["name"],
@@ -301,10 +293,9 @@ def update_row_weights(row_0idx, carga, rpe=None):
     return True
 
 
-def write_session(treino_type, exercises):
+def write_session(exercises):
     data = {
         "date": date.today().strftime("%Y-%m-%d"),
-        "treino": treino_type.upper(),
         "exercises": exercises,
     }
     with open(SESSION_FILE, "w", encoding="utf-8") as f:

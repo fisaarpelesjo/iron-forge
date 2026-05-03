@@ -18,11 +18,7 @@ Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções prin
 
 **Índices de exercícios (0-indexed):**
 ```python
-TREINO_RANGES = {
-    "A": range(0, 8),
-    "B": range(8, 15),
-    "C": range(15, 18),
-}
+TREINO_EXERCISES = range(0, 12)
 ```
 
 **Numeração de linhas:**
@@ -43,7 +39,7 @@ TREINO_RANGES = {
 Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 
 **Comandos:**
-- `/gerar A|B|C` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
+- `/gerar A` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
 - `80` ou `80 8` — registra carga (e RPE) do próximo exercício pendente
 - `/status` — mostra progresso da sessão atual
 - `/undo` — desfaz último registro
@@ -103,7 +99,7 @@ O macro `GerarTreino` está embutido no ODS em `Basic/Standard/Module1`. Backup 
 
 ## Estrutura da Aba EXERCICIOS
 
-Sem cabeçalho. Linhas 1–8 = Treino A, linhas 9–15 = Treino B, linhas 16–18 = Treino C.
+Sem cabeçalho. Linhas 1–12 = treino único.
 Colunas: A=Exercicio, B=Series, C=Reps (1-indexed no spreadsheet, 0-indexed na API Basic/Python).
 
 ## Regenerar o ODS a partir do XLSX
