@@ -11,7 +11,7 @@ ODS_PATH = Path(__file__).parent / "log-de-treino-e-progressao.ods"
 SESSION_FILE = Path(__file__).parent / "session.json"
 PENDING_FILE = Path(__file__).parent / "pending_log.csv"
 
-TREINO_EXERCISES = range(0, 12)
+TREINO_EXERCISES = range(0, 13)
 
 
 def is_ods_locked():
