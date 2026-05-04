@@ -18,7 +18,7 @@ Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções prin
 
 **Índices de exercícios (0-indexed):**
 ```python
-TREINO_EXERCISES = range(0, 13)
+TREINO_EXERCISES = range(0, 14)
 ```
 
 **Numeração de linhas:**
@@ -99,7 +99,7 @@ O macro `GerarTreino` está embutido no ODS em `Basic/Standard/Module1`. Backup 
 
 ## Estrutura da Aba EXERCICIOS
 
-Sem cabeçalho. Linhas 1–13 = treino único.
+Sem cabeçalho. Linhas 1–14 = treino único.
 Colunas: A=Exercicio, B=Series, C=Reps (1-indexed no spreadsheet, 0-indexed na API Basic/Python).
 
 ## Regenerar o ODS a partir do XLSX

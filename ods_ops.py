@@ -11,12 +11,13 @@ ODS_PATH = Path(__file__).parent / "log-de-treino-e-progressao.ods"
 SESSION_FILE = Path(__file__).parent / "session.json"
 PENDING_FILE = Path(__file__).parent / "pending_log.csv"
 
-TREINO_EXERCISES = range(0, 13)
+TREINO_EXERCISES = range(0, 14)
 
 MUSCLE_MAP = {
     "Agachamento (barra)":                      ["Quadriceps", "Gluteos"],
     "Stiff com barra":                          ["Isquiotibiais", "Gluteos"],
     "Supino reto (barra)":                      ["Peitoral"],
+    "Supino inclinado (barra)":                 ["Peitoral"],
     "Remada curvada (barra)":                   ["Dorsais"],
     "Pullover (barra)":                         ["Dorsais"],
     "Desenvolvimento (barra em pe)":            ["Deltóide anterior"],
