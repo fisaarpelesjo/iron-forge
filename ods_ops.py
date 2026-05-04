@@ -13,6 +13,22 @@ PENDING_FILE = Path(__file__).parent / "pending_log.csv"
 
 TREINO_EXERCISES = range(0, 13)
 
+MUSCLE_MAP = {
+    "Agachamento (barra)":                      ["Quadriceps", "Gluteos"],
+    "Stiff com barra":                          ["Isquiotibiais", "Gluteos"],
+    "Supino reto (barra)":                      ["Peitoral"],
+    "Remada curvada (barra)":                   ["Dorsais"],
+    "Pullover (barra)":                         ["Dorsais"],
+    "Desenvolvimento (barra em pe)":            ["Deltóide anterior"],
+    "Elevacao lateral":                         ["Deltóide lateral"],
+    "Crucifixo invertido":                      ["Deltóide posterior"],
+    "Rosca direta":                             ["Biceps"],
+    "Triceps testa":                            ["Triceps"],
+    "Wrist curl (barra)":                       ["Antebraco"],
+    "Reverse wrist curl (barra)":               ["Antebraco"],
+    "Plate pinch (subir e descer controlado)":  ["Antebraco"],
+}
+
 
 def is_ods_locked():
     lock = ODS_PATH.parent / f".~lock.{ODS_PATH.name}#"

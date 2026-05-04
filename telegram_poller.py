@@ -213,6 +213,7 @@ def main():
                         "<b>IronForge — Comandos</b>\n\n"
                         "/gerar — gera treino e registra no ODS\n"
                         "/aquecimento — lista de aquecimento\n"
+                        "/volume — series por grupo muscular\n"
                         "/status — exercicio atual e progresso\n"
                         "/undo — desfaz último registro\n"
                         "/help — esta mensagem\n\n"
@@ -220,6 +221,20 @@ def main():
                         "<code>80</code> — só carga\n"
                         "<code>80 8</code> — carga + RPE"
                     )
+                    continue
+
+                if lower in ("/volume", "volume"):
+                    exercises = ods_ops.read_exercises()
+                    muscle_sets = {}
+                    for ex in exercises:
+                        muscles = ods_ops.MUSCLE_MAP.get(ex["name"], ["Outro"])
+                        for m in muscles:
+                            muscle_sets[m] = muscle_sets.get(m, 0) + ex["sets"]
+                    lines = ["<b>Volume por músculo</b>\n", "<i>séries/sessão → séries/semana (~3.5x)</i>\n"]
+                    for muscle, sets in sorted(muscle_sets.items()):
+                        weekly = round(sets * 3.5, 1)
+                        lines.append(f"{muscle}: <b>{sets}</b> → ~{weekly:.0f}/sem")
+                    send("\n".join(lines))
                     continue
 
                 if lower in ("/aquecimento", "aquecimento"):
