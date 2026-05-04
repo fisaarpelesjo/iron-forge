@@ -212,12 +212,31 @@ def main():
                     send(
                         "<b>IronForge — Comandos</b>\n\n"
                         "/gerar — gera treino e registra no ODS\n"
+                        "/aquecimento — lista de aquecimento\n"
                         "/status — exercicio atual e progresso\n"
                         "/undo — desfaz último registro\n"
                         "/help — esta mensagem\n\n"
                         "<b>Registrar peso:</b>\n"
                         "<code>80</code> — só carga\n"
                         "<code>80 8</code> — carga + RPE"
+                    )
+                    continue
+
+                if lower in ("/aquecimento", "aquecimento"):
+                    send(
+                        "<b>Aquecimento</b>\n\n"
+                        "1. Pular corda ou polichinelo — 3 min\n"
+                        "2. Agachamento livre — 2x10\n"
+                        "3. Hip hinge (stiff) — 2x10\n"
+                        "4. Círculos de braço — 15 frente + 15 trás\n"
+                        "5. Flexão de braço leve — 1x10\n"
+                        "6. Remada leve (barra vazia ou elástico) — 1x12\n"
+                        "7. Agachamento barra vazia — 1x10\n"
+                        "8. Agachamento ~50% carga — 1x5\n"
+                        "9. Agachamento ~70% carga — 1x3\n"
+                        "10. Supino barra vazia — 1x10\n"
+                        "11. Supino ~60% carga — 1x5\n"
+                        "12. Desenvolvimento leve — 1x8"
                     )
                     continue
 
