@@ -98,7 +98,7 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 | Aba          | Descrição                                                                  |
 | ------------ | -------------------------------------------------------------------------- |
 | `TREINOS`    | Registro de cada exercício com progressão automática                       |
-| `EXERCICIOS` | Catálogo de exercícios por treino (A/B/C) com séries e reps planejadas     |
+| `EXERCICIOS` | Catálogo de exercícios (ordem fixa) com séries e reps planejadas           |
 | `DIETA`      | Metas diárias, totais consolidados e log de refeições com macros e micros  |
 | `ALIMENTOS`  | Tabela de referência nutricional dos alimentos cadastrados                 |
 
@@ -106,6 +106,17 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 
 Sem cabeçalho. Colunas: `Exercicio | Series | Reps`
 
-- Treino **A** — linhas 1–8 (Agachamento, Remada, Supino, Pull-over, Elev. lateral, Crucifixo inv., Rosca, Tríceps)
-- Treino **B** — linhas 9–15 (Agachamento leve, Stiff, Desenvolvimento, Remada, Crucifixo inv., Supino, Elev. lateral leve)
-- Treino **C** — linhas 16–18
+Ordem atual (linhas 1–13):
+- Agachamento (barra) — 3x5
+- Supino reto (barra) — 3x5
+- Remada curvada (barra) — 3x8
+- Desenvolvimento (barra em pé) — 3x5
+- Stiff com barra — 3x8
+- Pullover (barra) — 3x10
+- Elevação lateral — 3x10
+- Crucifixo invertido — 3x10
+- Encolhimento com barra — 2x10
+- Rosca direta — 3x8
+- Tríceps testa — 3x8
+- Wrist curl (barra) — 2x15
+- Reverse wrist curl (barra) — 2x15

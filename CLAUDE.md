@@ -18,7 +18,7 @@ Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções prin
 
 **Índices de exercícios (0-indexed):**
 ```python
-TREINO_EXERCISES = range(0, 14)
+TREINO_EXERCISES = range(0, 13)
 ```
 
 **Numeração de linhas:**
@@ -73,8 +73,23 @@ with zipfile.ZipFile("log-de-treino-e-progressao.ods") as z:
 
 ## Estrutura da Aba EXERCICIOS
 
-Sem cabeçalho. Linhas 1–14 = treino único.
+Sem cabeçalho. Linhas 1–13 = treino único.
 Colunas: A=Exercicio, B=Series, C=Reps (1-indexed no spreadsheet, 0-indexed na API Basic/Python).
+
+Ordem atual (linhas 1–13):
+1. Agachamento (barra) — 3x5
+2. Supino reto (barra) — 3x5
+3. Remada curvada (barra) — 3x8
+4. Desenvolvimento (barra em pé) — 3x5
+5. Stiff com barra — 3x8
+6. Pullover (barra) — 3x10
+7. Elevação lateral — 3x10
+8. Crucifixo invertido — 3x10
+9. Encolhimento com barra — 2x10
+10. Rosca direta — 3x8
+11. Tríceps testa — 3x8
+12. Wrist curl (barra) — 2x15
+13. Reverse wrist curl (barra) — 2x15
 
 ## Dependências Python
 

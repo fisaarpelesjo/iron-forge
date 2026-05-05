@@ -19,7 +19,7 @@ Funções-chave:
 - `is_ods_locked()` — detecta lock do LibreOffice (`.~lock.*#`)
 
 Regras importantes:
-- Índices de exercícios: `TREINO_EXERCISES = range(0, 14)`
+- Índices de exercícios: `TREINO_EXERCISES = range(0, 13)`
 - Numeração de linhas:
   - `r = n_data + 2 + idx` (1-based no spreadsheet)
   - `row_0idx = r - 1` (0-based para API)
@@ -61,10 +61,25 @@ Toda geração e sincronização de treino deve acontecer via comandos do bot Te
 
 ## Aba EXERCICIOS
 
-Sem cabeçalho. Linhas 1–14, colunas:
+Sem cabeçalho. Linhas 1–13, colunas:
 - A = Exercício
 - B = Séries
 - C = Reps
+
+Ordem atual (linhas 1–13):
+1. Agachamento (barra) — 3x5
+2. Supino reto (barra) — 3x5
+3. Remada curvada (barra) — 3x8
+4. Desenvolvimento (barra em pé) — 3x5
+5. Stiff com barra — 3x8
+6. Pullover (barra) — 3x10
+7. Elevação lateral — 3x10
+8. Crucifixo invertido — 3x10
+9. Encolhimento com barra — 2x10
+10. Rosca direta — 3x8
+11. Tríceps testa — 3x8
+12. Wrist curl (barra) — 2x15
+13. Reverse wrist curl (barra) — 2x15
 
 ## Dependências e execução
 
