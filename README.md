@@ -1,6 +1,7 @@
 # Log de Treino e Progressão
 
-Planilha LibreOffice Calc para registro e progressão de treino, com bot Telegram para anotar pesos e RPE direto da academia — sem tocar no PC.
+Registro de treino com bot Telegram + planilha ODS para histórico e fórmulas de progressão.  
+Catálogo de exercícios versionado em SQLite (`data/ironforge.db`).
 
 ![Toguro](toguro.gif)
 
@@ -10,7 +11,8 @@ Planilha LibreOffice Calc para registro e progressão de treino, com bot Telegra
 
 ```
 Celular (Telegram)
-  /gerar A          →  bot insere linhas no ODS, envia tabela com exercícios e pesos anteriores
+  /gerar            →  bot insere linhas no ODS, envia tabela com exercícios e pesos anteriores
+  /exercicios       →  lista os exercícios atuais do banco
   80 8              →  bot registra carga 80kg RPE 8 no exercício atual
   /sync             →  aplica no ODS os registros pendentes (quando houver)
   /status           →  mostra progresso da sessão
@@ -46,10 +48,9 @@ python telegram_poller.py
 
 | Comando       | Descrição                                             |
 | ------------- | ----------------------------------------------------- |
-| `/gerar A`    | Gera treino A no ODS e envia tabela com pesos sugeridos |
-| `/gerar B`    | Gera treino B                                         |
-| `/gerar C`    | Gera treino C                                         |
-| `/exercicios` | Lista os exercícios atuais sem gerar treino            |
+| `/gerar`      | Gera treino no ODS e envia tabela com pesos sugeridos |
+| `/exercicios` | Lista os exercícios atuais sem gerar treino           |
+| `/lista`      | Alias de `/exercicios`                               |
 | `/sync`       | Aplica no ODS os registros salvos em `pending_log.csv` |
 | `80`          | Registra 80kg no próximo exercício pendente           |
 | `80 8`        | Registra 80kg + RPE 8                                 |
@@ -78,7 +79,7 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 | ---------------- | -------- | ------------------------------------------------------ |
 | `Data`           | Bot      | Data do treino                                         |
 | `Semana`         | Fórmula  | Semana ISO (`2026-W18`)                                |
-| `Treino`         | Bot      | A, B ou C                                              |
+| `Treino`         | Bot      | Texto fixo `TREINO`                                    |
 | `Exercício`      | Bot      | Nome lido do catálogo no SQLite                        |
 | `Séries`         | Bot      | Séries planejadas                                      |
 | `Reps`           | Bot      | Reps planejadas                                        |
@@ -96,13 +97,13 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 
 ---
 
-## Estrutura das Abas
+## Abas no ODS
 
 | Aba          | Descrição                                                                  |
 | ------------ | -------------------------------------------------------------------------- |
-| `TREINOS`    | Registro de cada exercício com progressão automática                       |
+| `TREINOS`    | Registro de cada exercício com progressão automática                        |
 | `DIETA`      | Metas diárias, totais consolidados e log de refeições com macros e micros  |
-| `ALIMENTOS`  | Tabela de referência nutricional dos alimentos cadastrados                 |
+| `ALIMENTOS`  | Tabela de referência nutricional dos alimentos cadastrados                  |
 
 ### Lista de exercícios (SQLite)
 
