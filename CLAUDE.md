@@ -9,11 +9,11 @@ Log de treino em LibreOffice Calc (ODS) com bot Telegram para registro de pesos 
 ### `ods_ops.py`
 Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções principais:
 
-- `gerar_treino(treino_type)` — insere linhas na aba TREINOS, retorna lista de `{row, name, sets, reps}`
+- `gerar_treino()` — insere linhas na aba TREINOS, retorna lista de `{row, name, sets, reps}`
 - `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H de uma linha existente
 - `read_exercises()` — lê exercícios do SQLite (`data/ironforge.db`)
 - `read_previous_weights()` — retorna `{nome_exercicio: última_carga}` do histórico TREINOS
-- `write_session(treino_type, exercises)` / `clear_pending()` — gerencia `session.json` / `pending_log.csv`
+- `write_session(exercises)` / `clear_pending()` — gerencia `session.json` / `pending_log.csv`
 - `is_ods_locked()` — verifica se ODS está aberto no LibreOffice (arquivo `.~lock.*#`)
 
 ### `db_ops.py`
@@ -46,23 +46,27 @@ TREINO_EXERCISES = range(0, 13)
 Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 
 **Comandos:**
-- `/gerar A` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
+- `/gerar` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
 - `/exercicios` — lista os exercícios atuais sem gerar treino
+- `/lista` — alias de `/exercicios`
 - `/sync` — aplica no ODS os registros pendentes de `pending_log.csv`
+- `/aquecimento` — lista aquecimento recomendado
+- `/volume` — calcula séries por grupo muscular por sessão e estimativa semanal
 - `80` ou `80 8` — registra carga (e RPE) do próximo exercício pendente
 - `/status` — mostra progresso da sessão atual
 - `/undo` — desfaz último registro
 - `/help` — lista comandos
 
 **Fluxo de dados:**
-1. `/gerar A` → `ods_ops.gerar_treino()` → grava `session.json`, apaga `pending_log.csv`
+1. `/gerar` → `ods_ops.gerar_treino()` → grava `session.json`, apaga `pending_log.csv`
 2. `80 8` → sempre salva em `pending_log.csv` + tenta gravar direto no ODS (se não estiver bloqueado)
 3. Se ODS estiver aberto, fechar o arquivo e executar `/sync` no Telegram para aplicar o `pending_log.csv`
 
-**Arquivos de estado (no .gitignore):**
+**Arquivos de estado locais:**
 - `session.json` — sessão ativa: treino, data, lista de exercícios com row index
 - `pending_log.csv` — pesos pendentes: `row,carga,rpe` por linha
 - `data/ironforge.db` — banco SQLite local (versionado, lista de exercícios e futuras tabelas)
+- `data/*.db-shm` / `data/*.db-wal` — arquivos auxiliares SQLite não versionados
 - `.env` — `TELEGRAM_TOKEN=...`
 
 **Executar:**
@@ -102,8 +106,7 @@ Ordem atual (linhas 1–13):
 ## Dependências Python
 
 - `requests` — chamadas Telegram API
-- `openpyxl` — leitura do xlsx
-- Biblioteca padrão: `zipfile`, `re`, `shutil`, `json`, `datetime`, `pathlib`
+- Biblioteca padrão: `sqlite3`, `zipfile`, `re`, `shutil`, `json`, `datetime`, `pathlib`, `time`
 
 ## Padrão de commit
 

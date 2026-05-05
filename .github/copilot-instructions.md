@@ -11,7 +11,7 @@ Arquivo principal: `log-de-treino-e-progressao.ods`.
 Manipula o ODS diretamente via XML (`zipfile` + regex).
 
 Funções-chave:
-- `gerar_treino(treino_type)` — insere linhas na aba TREINOS e retorna `{row, name, sets, reps}`
+- `gerar_treino()` — insere linhas na aba TREINOS e retorna `{row, name, sets, reps}`
 - `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H
 - `read_exercises()` — lê do SQLite (`data/ironforge.db`)
 - `read_previous_weights()` — busca última carga por exercício
@@ -36,25 +36,38 @@ Regras importantes:
 Bot Telegram para controlar o treino sem abrir o PC.
 
 Comandos:
-- `/gerar A`
+- `/gerar`
 - `/exercicios`
+- `/lista`
 - `/sync`
+- `/aquecimento`
+- `/volume`
 - `80` ou `80 8`
 - `/status`
 - `/undo`
 - `/help`
 
 Fluxo:
-1. `/gerar A` gera treino no ODS e reinicia pendências.
+1. `/gerar` gera treino no ODS e reinicia pendências.
 2. Entrada de carga salva sempre em `pending_log.csv` e tenta gravar no ODS.
 3. Se ODS estiver aberto, fechar o arquivo e usar `/sync` no Telegram para sincronizar.
+
+### `db_ops.py`
+Módulo SQLite para a lista de exercícios.
+
+- Banco local versionado: `data/ironforge.db`
+- Tabela principal: `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`)
+- Sem dependência da aba `EXERCICIOS` no ODS
 
 ## Estado local (não versionar)
 
 - `session.json`
 - `pending_log.csv`
-- `data/ironforge.db`
 - `.env` (`TELEGRAM_TOKEN=...`)
+- `data/*.db-shm`
+- `data/*.db-wal`
+
+O banco `data/ironforge.db` é versionado e contém o catálogo de exercícios.
 
 ## Fluxo sem macro
 
@@ -82,7 +95,8 @@ Ordem atual (linhas 1–13):
 
 ## Dependências e execução
 
-- Dependências Python: `requests`, `openpyxl`
+- Dependências Python: `requests`
+- Biblioteca padrão usada no projeto: `sqlite3`, `zipfile`, `re`, `shutil`, `json`, `datetime`, `pathlib`, `time`
 - Executar bot: `python telegram_poller.py`
 - LibreOffice: `C:\Program Files\LibreOffice\program\soffice.exe`
 
