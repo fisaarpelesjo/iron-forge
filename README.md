@@ -12,6 +12,7 @@ Planilha LibreOffice Calc para registro e progressão de treino, com bot Telegra
 Celular (Telegram)
   /gerar A          →  bot insere linhas no ODS, envia tabela com exercícios e pesos anteriores
   80 8              →  bot registra carga 80kg RPE 8 no exercício atual
+  /sync             →  aplica no ODS os registros pendentes (quando houver)
   /status           →  mostra progresso da sessão
   /undo             →  desfaz último registro
 ```
@@ -24,7 +25,6 @@ O PC fica ligado com `python telegram_poller.py` rodando. O ODS é atualizado di
 
 ```
 log-de-treino-e-progressao.ods   # LibreOffice Calc (arquivo principal)
-GerarTreino.bas                  # Backup do macro Basic embutido no ODS
 ods_ops.py                       # Manipulação direta do ODS via Python
 telegram_poller.py               # Bot Telegram (polling)
 .env                             # TELEGRAM_TOKEN=... (não versionado)
@@ -47,6 +47,7 @@ python telegram_poller.py
 | `/gerar A`    | Gera treino A no ODS e envia tabela com pesos sugeridos |
 | `/gerar B`    | Gera treino B                                         |
 | `/gerar C`    | Gera treino C                                         |
+| `/sync`       | Aplica no ODS os registros salvos em `pending_log.csv` |
 | `80`          | Registra 80kg no próximo exercício pendente           |
 | `80 8`        | Registra 80kg + RPE 8                                 |
 | `/status`     | Mostra exercício atual e quantos foram concluídos     |
@@ -55,33 +56,29 @@ python telegram_poller.py
 
 ### Fallback (ODS aberto no LibreOffice)
 
-Se o ODS estiver aberto quando você mandar o peso, o bot salva em `pending_log.csv`. Ao fechar o LibreOffice, clique em **Sincronizar** para aplicar os dados pendentes.
+Se o ODS estiver aberto quando você mandar o peso, o bot salva em `pending_log.csv`.  
+Depois de fechar o LibreOffice, use `/sync` no Telegram para aplicar os dados pendentes no ODS.
 
 ---
 
-## Macro LibreOffice (alternativa ao bot)
+## Fluxo atual (somente bot Telegram)
 
-A aba `TREINOS` tem botões **"Gerar Treino"** e **"Sincronizar"** que fazem o mesmo fluxo via interface gráfica.
+O fluxo por macro do LibreOffice foi removido deste repositório.
 
-**Gerar Treino:**
-1. Clica no botão e digita `A`, `B` ou `C`
-2. O macro insere as linhas, envia a tabela para o Telegram e gera o `session.json`
-
-**Sincronizar:**
-- Lê `pending_log.csv` e preenche `Carga_kg` e `RPE_final` nas linhas correspondentes
+Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendências) deve ser feita via comandos do bot Telegram.
 
 ---
 
-## O que o macro/bot preenche automaticamente
+## O que o bot preenche automaticamente
 
 | Coluna           | Origem   | Descrição                                              |
 | ---------------- | -------- | ------------------------------------------------------ |
-| `Data`           | Macro    | Data do treino                                         |
+| `Data`           | Bot      | Data do treino                                         |
 | `Semana`         | Fórmula  | Semana ISO (`2026-W18`)                                |
-| `Treino`         | Macro    | A, B ou C                                             |
-| `Exercício`      | Macro    | Nome lido de EXERCICIOS                                |
-| `Séries`         | Macro    | Séries planejadas                                      |
-| `Reps`           | Macro    | Reps planejadas                                        |
+| `Treino`         | Bot      | A, B ou C                                              |
+| `Exercício`      | Bot      | Nome lido de EXERCICIOS                                |
+| `Séries`         | Bot      | Séries planejadas                                      |
+| `Reps`           | Bot      | Reps planejadas                                        |
 | `Carga_kg`       | Bot/Manual | Carga utilizada em kg                                |
 | `RPE_final`      | Bot/Manual | Percepção de esforço (6–10)                          |
 | `Volume`         | Fórmula  | Séries × Reps × Carga_kg                              |

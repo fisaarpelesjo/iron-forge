@@ -40,6 +40,7 @@ Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 
 **Comandos:**
 - `/gerar A` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
+- `/sync` — aplica no ODS os registros pendentes de `pending_log.csv`
 - `80` ou `80 8` — registra carga (e RPE) do próximo exercício pendente
 - `/status` — mostra progresso da sessão atual
 - `/undo` — desfaz último registro
@@ -48,7 +49,7 @@ Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 **Fluxo de dados:**
 1. `/gerar A` → `ods_ops.gerar_treino()` → grava `session.json`, apaga `pending_log.csv`
 2. `80 8` → sempre salva em `pending_log.csv` + tenta gravar direto no ODS (se não estiver bloqueado)
-3. Se ODS estiver aberto, usar botão **Sincronizar** no LibreOffice para aplicar o `pending_log.csv`
+3. Se ODS estiver aberto, fechar o arquivo e executar `/sync` no Telegram para aplicar o `pending_log.csv`
 
 **Arquivos de estado (no .gitignore):**
 - `session.json` — sessão ativa: treino, data, lista de exercícios com row index
@@ -70,46 +71,10 @@ with zipfile.ZipFile("log-de-treino-e-progressao.ods") as z:
     content = z.read("content.xml").decode("utf-8")
 ```
 
-## Macro LibreOffice Basic
-
-O macro `GerarTreino` está embutido no ODS em `Basic/Standard/Module1`. Backup em `GerarTreino.bas`.
-
-**O que o macro faz:**
-- Pergunta ao usuário "A", "B" ou "C"
-- Detecta a última linha usada em TREINOS
-- Insere uma linha por exercício (8 para A, 7 para B, 3 para C)
-- Preenche: Data, Semana (fórmula), Treino, Exercício, Séries, Reps
-- Insere fórmulas para: Volume, Decisão, Carga_anterior, Próxima_carga
-- Recria formato condicional para faixa D2:M{lastRow} e A2:B{lastRow}
-- Grava `session.json` e apaga `pending_log.csv`
-- Envia tabela Telegram com exercícios e pesos sugeridos
-
-**Detalhes técnicos do macro:**
-- `setFormula()` usa ponto e vírgula como separador (locale pt-BR)
-- `GetDocDir()` — helper que extrai diretório do ODS via loop manual (LibreOffice Basic não tem `InStrRev`)
-- `LerTokenTelegram()` — lê `TELEGRAM_TOKEN=valor` do `.env`
-- `EnviarTelegram()` — usa VBScript via `wscript.exe` com `MSXML2.ServerXMLHTTP.6.0`
-- `SincronizarTreino()` — lê `pending_log.csv` e preenche colunas G/H
-
-**Estilos de cor (styles.xml do ODS):**
-- `ConditionalStyle_1` — cinza `#cccccc` + negrito (separador de sessão em A:B)
-- `ConditionalStyle_2` — verde `#d9ead3` (AUMENTAR)
-- `ConditionalStyle_3` — vermelho `#f4cccc` (REDUZIR)
-- `ConditionalStyle_4` — azul `#cfe2f3` (MANTER)
-
 ## Estrutura da Aba EXERCICIOS
 
 Sem cabeçalho. Linhas 1–14 = treino único.
 Colunas: A=Exercicio, B=Series, C=Reps (1-indexed no spreadsheet, 0-indexed na API Basic/Python).
-
-## Regenerar o ODS a partir do XLSX
-
-```bash
-python add_macro_treino.py
-```
-Converte xlsx → ods via LibreOffice headless, injeta o macro Basic e o botão.
-
-LibreOffice em: `C:\Program Files\LibreOffice\program\soffice.exe`
 
 ## Dependências Python
 

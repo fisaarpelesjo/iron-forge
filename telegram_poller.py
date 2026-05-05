@@ -69,6 +69,30 @@ def save_pending(entries):
             f.write(f"{e['row']},{e['carga']},{rpe_str}\n")
 
 
+def sync_pending_to_ods(pending):
+    """
+    Try to apply all pending entries to ODS.
+    Returns (synced, failed, locked, error_message).
+    """
+    if not pending:
+        return 0, 0, False, None
+    if ods_ops.is_ods_locked():
+        return 0, len(pending), True, None
+
+    synced = 0
+    failed = 0
+    try:
+        for entry in pending:
+            ok = ods_ops.update_row_weights(entry["row"], entry["carga"], entry.get("rpe"))
+            if ok:
+                synced += 1
+            else:
+                failed += 1
+    except Exception as e:
+        return synced, len(pending) - synced, False, str(e)
+    return synced, failed, False, None
+
+
 def get_updates(offset=0):
     try:
         r = requests.get(
@@ -142,6 +166,24 @@ def handle(text, session, pending):
         send(f"↩ Desfeito: <b>{ex_name}</b>")
         return
 
+    if text.lower() in ("/sync", "sync", "/sincronizar", "sincronizar"):
+        synced, failed, locked, err = sync_pending_to_ods(pending)
+        total = len(pending)
+        if err:
+            send(f"Erro ao sincronizar ODS: {err}")
+            return
+        if total == 0:
+            send("Sem registros para sincronizar.")
+            return
+        if locked:
+            send("ODS aberto no LibreOffice — feche o arquivo e rode <code>/sync</code> novamente.")
+            return
+        if failed:
+            send(f"Sincronização parcial: {synced}/{total} linhas aplicadas.")
+            return
+        send(f"Sincronização concluída: {synced}/{total} linhas aplicadas.")
+        return
+
     if filled >= total:
         send("Treino já completo! Use /status.")
         return
@@ -163,12 +205,10 @@ def handle(text, session, pending):
     pending.append(entry)
     save_pending(pending)
 
-    # Also write directly to ODS if not locked (best-effort; pending is fallback)
-    if not ods_ops.is_ods_locked():
-        try:
-            ods_ops.update_row_weights(ex["row"], carga, rpe)
-        except Exception:
-            pass
+    # Keep ODS in sync when possible; if locked, user can run /sync later.
+    _, _, _, err = sync_pending_to_ods(pending)
+    if err:
+        send(f"Registro salvo, mas houve erro ao gravar no ODS: {err}")
 
     rpe_str = f" RPE {rpe}" if rpe is not None else ""
     new_filled = len(pending)
@@ -212,6 +252,7 @@ def main():
                     send(
                         "<b>IronForge — Comandos</b>\n\n"
                         "/gerar — gera treino e registra no ODS\n"
+                        "/sync — aplica no ODS os registros pendentes\n"
                         "/aquecimento — lista de aquecimento\n"
                         "/volume — series por grupo muscular\n"
                         "/status — exercicio atual e progresso\n"

@@ -37,6 +37,7 @@ Bot Telegram para controlar o treino sem abrir o PC.
 
 Comandos:
 - `/gerar A`
+- `/sync`
 - `80` ou `80 8`
 - `/status`
 - `/undo`
@@ -45,7 +46,7 @@ Comandos:
 Fluxo:
 1. `/gerar A` gera treino no ODS e reinicia pendências.
 2. Entrada de carga salva sempre em `pending_log.csv` e tenta gravar no ODS.
-3. Se ODS estiver aberto, sincronizar pelo botão **Sincronizar** no LibreOffice.
+3. Se ODS estiver aberto, fechar o arquivo e usar `/sync` no Telegram para sincronizar.
 
 ## Estado local (não versionar)
 
@@ -53,21 +54,10 @@ Fluxo:
 - `pending_log.csv`
 - `.env` (`TELEGRAM_TOKEN=...`)
 
-## Macro LibreOffice Basic
+## Fluxo sem macro
 
-Macro principal: `GerarTreino` (backup em `GerarTreino.bas`).
-
-Comportamento:
-- Solicita treino A/B/C
-- Insere linhas na aba TREINOS
-- Preenche colunas e fórmulas (Volume, Decisão, Carga_anterior, Próxima_carga)
-- Reaplica formatação condicional
-- Atualiza `session.json`, limpa `pending_log.csv`
-- Envia resumo no Telegram
-
-Detalhes:
-- `setFormula()` usa `;` (pt-BR)
-- `SincronizarTreino()` aplica `pending_log.csv` nas colunas G/H
+O fluxo de macro no LibreOffice foi descontinuado neste repositório.
+Toda geração e sincronização de treino deve acontecer via comandos do bot Telegram (`/gerar` e `/sync`).
 
 ## Aba EXERCICIOS
 
@@ -80,7 +70,6 @@ Sem cabeçalho. Linhas 1–14, colunas:
 
 - Dependências Python: `requests`, `openpyxl`
 - Executar bot: `python telegram_poller.py`
-- Regenerar ODS a partir de XLSX: `python add_macro_treino.py`
 - LibreOffice: `C:\Program Files\LibreOffice\program\soffice.exe`
 
 ## Diretrizes para alterações
