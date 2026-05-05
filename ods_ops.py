@@ -7,6 +7,8 @@ import zipfile
 from datetime import date
 from pathlib import Path
 
+import db_ops
+
 ODS_PATH = Path(__file__).parent / "log-de-treino-e-progressao.ods"
 SESSION_FILE = Path(__file__).parent / "session.json"
 PENDING_FILE = Path(__file__).parent / "pending_log.csv"
@@ -75,8 +77,8 @@ def _cell_end(xml, start):
     return end_tag + len("</table:table-cell>")
 
 
-def read_exercises():
-    """Return list of {name, sets, reps} for all exercises in EXERCICIOS sheet."""
+def _read_exercises_from_ods():
+    """Return list of {name, sets, reps} from EXERCICIOS sheet in ODS."""
     content = _read_content()
     start, end = _find_table(content, "EXERCICIOS")
     chunk = content[start:end]
@@ -94,6 +96,12 @@ def read_exercises():
             except ValueError:
                 pass
     return result
+
+
+def read_exercises():
+    """Return list of {name, sets, reps} using SQLite as source of truth."""
+    seed_from_ods = _read_exercises_from_ods()
+    return db_ops.get_or_seed_exercises(seed_from_ods)
 
 
 def read_previous_weights():

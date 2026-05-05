@@ -25,7 +25,9 @@ O PC fica ligado com `python telegram_poller.py` rodando. O ODS é atualizado di
 
 ```
 log-de-treino-e-progressao.ods   # LibreOffice Calc (arquivo principal)
+ironforge.db                     # Banco SQLite (lista de exercícios)
 ods_ops.py                       # Manipulação direta do ODS via Python
+db_ops.py                        # Operações do SQLite
 telegram_poller.py               # Bot Telegram (polling)
 .env                             # TELEGRAM_TOKEN=... (não versionado)
 ```
@@ -98,13 +100,14 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 | Aba          | Descrição                                                                  |
 | ------------ | -------------------------------------------------------------------------- |
 | `TREINOS`    | Registro de cada exercício com progressão automática                       |
-| `EXERCICIOS` | Catálogo de exercícios (ordem fixa) com séries e reps planejadas           |
+| `EXERCICIOS` | Aba legada no ODS (referência inicial da lista de exercícios)              |
 | `DIETA`      | Metas diárias, totais consolidados e log de refeições com macros e micros  |
 | `ALIMENTOS`  | Tabela de referência nutricional dos alimentos cadastrados                 |
 
-### Estrutura de `EXERCICIOS`
+### Lista de exercícios (SQLite)
 
-Sem cabeçalho. Colunas: `Exercicio | Series | Reps`
+A lista de exercícios agora usa o banco `ironforge.db` como fonte principal.
+No primeiro uso, se o banco estiver vazio, ele é preenchido a partir da aba `EXERCICIOS` do ODS.
 
 Ordem atual (linhas 1–13):
 - Agachamento (barra) — 3x5

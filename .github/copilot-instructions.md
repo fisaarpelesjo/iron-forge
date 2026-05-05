@@ -13,7 +13,7 @@ Manipula o ODS diretamente via XML (`zipfile` + regex).
 Funções-chave:
 - `gerar_treino(treino_type)` — insere linhas na aba TREINOS e retorna `{row, name, sets, reps}`
 - `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H
-- `read_exercises()` — lê aba EXERCICIOS
+- `read_exercises()` — lê do SQLite (`ironforge.db`) e faz seed do ODS se necessário
 - `read_previous_weights()` — busca última carga por exercício
 - `write_session()` / `clear_pending()` — gerencia `session.json` e `pending_log.csv`
 - `is_ods_locked()` — detecta lock do LibreOffice (`.~lock.*#`)
@@ -52,6 +52,7 @@ Fluxo:
 
 - `session.json`
 - `pending_log.csv`
+- `ironforge.db`
 - `.env` (`TELEGRAM_TOKEN=...`)
 
 ## Fluxo sem macro
