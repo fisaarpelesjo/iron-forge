@@ -3,7 +3,8 @@
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "ironforge.db"
+DATA_DIR = Path(__file__).parent / "data"
+DB_PATH = DATA_DIR / "ironforge.db"
 
 DEFAULT_EXERCISES = [
     {"name": "Agachamento (barra)", "sets": 3, "reps": 5},
@@ -23,6 +24,7 @@ DEFAULT_EXERCISES = [
 
 
 def _connect():
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn

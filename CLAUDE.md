@@ -11,7 +11,7 @@ Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções prin
 
 - `gerar_treino(treino_type)` — insere linhas na aba TREINOS, retorna lista de `{row, name, sets, reps}`
 - `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H de uma linha existente
-- `read_exercises()` — lê exercícios do SQLite (`ironforge.db`) e, se vazio, faz seed da aba EXERCICIOS
+- `read_exercises()` — lê exercícios do SQLite (`data/ironforge.db`)
 - `read_previous_weights()` — retorna `{nome_exercicio: última_carga}` do histórico TREINOS
 - `write_session(treino_type, exercises)` / `clear_pending()` — gerencia `session.json` / `pending_log.csv`
 - `is_ods_locked()` — verifica se ODS está aberto no LibreOffice (arquivo `.~lock.*#`)
@@ -19,9 +19,9 @@ Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções prin
 ### `db_ops.py`
 Módulo SQLite para a lista de exercícios.
 
-- Banco local: `ironforge.db`
+- Banco local: `data/ironforge.db`
 - Tabela principal: `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`)
-- Seed inicial a partir da aba `EXERCICIOS` do ODS quando o banco estiver vazio
+- Sem dependência da aba `EXERCICIOS` no ODS
 
 **Índices de exercícios (0-indexed):**
 ```python
@@ -34,7 +34,7 @@ TREINO_EXERCISES = range(0, 13)
 
 **Sintaxe de fórmulas ODS (content.xml):**
 - Prefixo `of:` obrigatório: `table:formula="of:=IF(...)"`
-- Referências: `[.A1]`, `[.$D$2]`, `[$EXERCICIOS.A:.A]`
+- Referências: `[.A1]`, `[.$D$2]`
 - Separador de argumentos: ponto e vírgula (locale pt-BR)
 
 **Estilos de célula confirmados (content.xml):**
@@ -47,6 +47,7 @@ Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 
 **Comandos:**
 - `/gerar A` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
+- `/exercicios` — lista os exercícios atuais sem gerar treino
 - `/sync` — aplica no ODS os registros pendentes de `pending_log.csv`
 - `80` ou `80 8` — registra carga (e RPE) do próximo exercício pendente
 - `/status` — mostra progresso da sessão atual
@@ -61,7 +62,7 @@ Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 **Arquivos de estado (no .gitignore):**
 - `session.json` — sessão ativa: treino, data, lista de exercícios com row index
 - `pending_log.csv` — pesos pendentes: `row,carga,rpe` por linha
-- `ironforge.db` — banco SQLite local (lista de exercícios)
+- `data/ironforge.db` — banco SQLite local (versionado, lista de exercícios e futuras tabelas)
 - `.env` — `TELEGRAM_TOKEN=...`
 
 **Executar:**
@@ -79,10 +80,9 @@ with zipfile.ZipFile("log-de-treino-e-progressao.ods") as z:
     content = z.read("content.xml").decode("utf-8")
 ```
 
-## Estrutura da Aba EXERCICIOS
+## Lista de exercícios (SQLite)
 
-Sem cabeçalho. Linhas 1–13 = treino único.
-Colunas: A=Exercicio, B=Series, C=Reps (1-indexed no spreadsheet, 0-indexed na API Basic/Python).
+Fonte única: tabela `exercises` no banco `data/ironforge.db`.
 
 Ordem atual (linhas 1–13):
 1. Agachamento (barra) — 3x5

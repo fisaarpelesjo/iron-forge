@@ -7,5 +7,5 @@
 .env
 session.json
 pending_log.csv
-ironforge.db-shm
-ironforge.db-wal
+data/*.db-shm
+data/*.db-wal

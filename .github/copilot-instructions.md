@@ -13,7 +13,7 @@ Manipula o ODS diretamente via XML (`zipfile` + regex).
 Funções-chave:
 - `gerar_treino(treino_type)` — insere linhas na aba TREINOS e retorna `{row, name, sets, reps}`
 - `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H
-- `read_exercises()` — lê do SQLite (`ironforge.db`) e faz seed do ODS se necessário
+- `read_exercises()` — lê do SQLite (`data/ironforge.db`)
 - `read_previous_weights()` — busca última carga por exercício
 - `write_session()` / `clear_pending()` — gerencia `session.json` e `pending_log.csv`
 - `is_ods_locked()` — detecta lock do LibreOffice (`.~lock.*#`)
@@ -25,7 +25,7 @@ Regras importantes:
   - `row_0idx = r - 1` (0-based para API)
 - Fórmulas ODS em `content.xml`:
   - Prefixo obrigatório `of:`
-  - Referências como `[.A1]`, `[.$D$2]`, `[$EXERCICIOS.A:.A]`
+  - Referências como `[.A1]`, `[.$D$2]`
   - Separador de argumentos: `;` (locale pt-BR)
 - Estilos confirmados:
   - `ce22` (data), `ce9` (semana), `ce71` (tipo treino), `ce16` (exercício)
@@ -37,6 +37,7 @@ Bot Telegram para controlar o treino sem abrir o PC.
 
 Comandos:
 - `/gerar A`
+- `/exercicios`
 - `/sync`
 - `80` ou `80 8`
 - `/status`
@@ -52,7 +53,7 @@ Fluxo:
 
 - `session.json`
 - `pending_log.csv`
-- `ironforge.db`
+- `data/ironforge.db`
 - `.env` (`TELEGRAM_TOKEN=...`)
 
 ## Fluxo sem macro
@@ -60,12 +61,9 @@ Fluxo:
 O fluxo de macro no LibreOffice foi descontinuado neste repositório.
 Toda geração e sincronização de treino deve acontecer via comandos do bot Telegram (`/gerar` e `/sync`).
 
-## Aba EXERCICIOS
+## Lista de exercícios (SQLite)
 
-Sem cabeçalho. Linhas 1–13, colunas:
-- A = Exercício
-- B = Séries
-- C = Reps
+Fonte única: tabela `exercises` no banco `data/ironforge.db`.
 
 Ordem atual (linhas 1–13):
 1. Agachamento (barra) — 3x5

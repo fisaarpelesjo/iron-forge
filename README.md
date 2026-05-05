@@ -25,7 +25,7 @@ O PC fica ligado com `python telegram_poller.py` rodando. O ODS é atualizado di
 
 ```
 log-de-treino-e-progressao.ods   # LibreOffice Calc (arquivo principal)
-ironforge.db                     # Banco SQLite (lista de exercícios)
+data/ironforge.db                # Banco SQLite versionado (catálogo e tabelas do app)
 ods_ops.py                       # Manipulação direta do ODS via Python
 db_ops.py                        # Operações do SQLite
 telegram_poller.py               # Bot Telegram (polling)
@@ -49,6 +49,7 @@ python telegram_poller.py
 | `/gerar A`    | Gera treino A no ODS e envia tabela com pesos sugeridos |
 | `/gerar B`    | Gera treino B                                         |
 | `/gerar C`    | Gera treino C                                         |
+| `/exercicios` | Lista os exercícios atuais sem gerar treino            |
 | `/sync`       | Aplica no ODS os registros salvos em `pending_log.csv` |
 | `80`          | Registra 80kg no próximo exercício pendente           |
 | `80 8`        | Registra 80kg + RPE 8                                 |
@@ -78,7 +79,7 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 | `Data`           | Bot      | Data do treino                                         |
 | `Semana`         | Fórmula  | Semana ISO (`2026-W18`)                                |
 | `Treino`         | Bot      | A, B ou C                                              |
-| `Exercício`      | Bot      | Nome lido de EXERCICIOS                                |
+| `Exercício`      | Bot      | Nome lido do catálogo no SQLite                        |
 | `Séries`         | Bot      | Séries planejadas                                      |
 | `Reps`           | Bot      | Reps planejadas                                        |
 | `Carga_kg`       | Bot/Manual | Carga utilizada em kg                                |
@@ -100,14 +101,12 @@ Toda a operação de treino (gerar, registrar carga/RPE e sincronizar pendência
 | Aba          | Descrição                                                                  |
 | ------------ | -------------------------------------------------------------------------- |
 | `TREINOS`    | Registro de cada exercício com progressão automática                       |
-| `EXERCICIOS` | Aba legada no ODS (referência inicial da lista de exercícios)              |
 | `DIETA`      | Metas diárias, totais consolidados e log de refeições com macros e micros  |
 | `ALIMENTOS`  | Tabela de referência nutricional dos alimentos cadastrados                 |
 
 ### Lista de exercícios (SQLite)
 
-A lista de exercícios agora usa o banco `ironforge.db` como fonte principal.
-No primeiro uso, se o banco estiver vazio, ele é preenchido a partir da aba `EXERCICIOS` do ODS.
+A lista de exercícios agora usa o banco `data/ironforge.db` como fonte principal.
 
 Ordem atual (linhas 1–13):
 - Agachamento (barra) — 3x5

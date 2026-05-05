@@ -1,4 +1,4 @@
-"""ODS read/write operations for TREINOS and EXERCICIOS sheets."""
+"""ODS read/write operations for TREINOS sheet."""
 
 import json
 import re
@@ -77,31 +77,9 @@ def _cell_end(xml, start):
     return end_tag + len("</table:table-cell>")
 
 
-def _read_exercises_from_ods():
-    """Return list of {name, sets, reps} from EXERCICIOS sheet in ODS."""
-    content = _read_content()
-    start, end = _find_table(content, "EXERCICIOS")
-    chunk = content[start:end]
-    result = []
-    for m in re.finditer(r"<table:table-row", chunk):
-        row_end = chunk.find("</table:table-row>", m.start()) + len("</table:table-row>")
-        texts = re.findall(r"<text:p>([^<]*)</text:p>", chunk[m.start():row_end])
-        if len(texts) >= 3 and texts[0].strip():
-            try:
-                result.append({
-                    "name": texts[0].strip(),
-                    "sets": int(texts[1].strip()),
-                    "reps": int(texts[2].strip()),
-                })
-            except ValueError:
-                pass
-    return result
-
-
 def read_exercises():
     """Return list of {name, sets, reps} using SQLite as source of truth."""
-    seed_from_ods = _read_exercises_from_ods()
-    return db_ops.get_or_seed_exercises(seed_from_ods)
+    return db_ops.get_or_seed_exercises()
 
 
 def read_previous_weights():
@@ -171,14 +149,8 @@ def _make_row_xml(r, date_iso, date_disp, treino, ex_name, sets, reps):
         f' office:value-type="string" calcext:value-type="string"><text:p>{treino}</text:p></table:table-cell>'
         f'<table:table-cell table:style-name="ce16" table:content-validation-name="val3"'
         f' office:value-type="string" calcext:value-type="string"><text:p>{ex_name}</text:p></table:table-cell>'
-        f'<table:table-cell table:style-name="ce20"'
-        f' table:number-matrix-columns-spanned="1" table:number-matrix-rows-spanned="1"'
-        f' table:formula="of:=IF([.D{r}]={q}{q};{q}{q};IFERROR(INDEX([$EXERCICIOS.B:.B];MATCH(TRIM([.D{r}]);TRIM([$EXERCICIOS.A:.A]);0));{q}{q}))"'
-        f' office:value-type="float" office:value="{sets}"><text:p>{sets}</text:p></table:table-cell>'
-        f'<table:table-cell table:style-name="ce20"'
-        f' table:number-matrix-columns-spanned="1" table:number-matrix-rows-spanned="1"'
-        f' table:formula="of:=IF([.D{r}]={q}{q};{q}{q};IFERROR(INDEX([$EXERCICIOS.C:.C];MATCH(TRIM([.D{r}]);TRIM([$EXERCICIOS.A:.A]);0));{q}{q}))"'
-        f' office:value-type="float" office:value="{reps}"><text:p>{reps}</text:p></table:table-cell>'
+        f'<table:table-cell table:style-name="ce20" office:value-type="float" office:value="{sets}"><text:p>{sets}</text:p></table:table-cell>'
+        f'<table:table-cell table:style-name="ce20" office:value-type="float" office:value="{reps}"><text:p>{reps}</text:p></table:table-cell>'
         f'<table:table-cell table:style-name="ce22"/>'
         f'<table:table-cell table:style-name="ce22"/>'
         f'<table:table-cell table:style-name="ce20"'

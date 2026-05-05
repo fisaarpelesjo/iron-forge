@@ -118,6 +118,16 @@ def _format_gerar_msg(exercises):
     return "".join(lines)
 
 
+def _format_exercises_msg(exercises):
+    lines = ["<pre>Lista de exercicios\n"]
+    lines.append(f"{'#':>2} {'Exercicio':<22} {'S':>2} {'R':>3}\n")
+    lines.append("-" * 34 + "\n")
+    for idx, ex in enumerate(exercises, start=1):
+        lines.append(f"{idx:>2} {ex['name'][:22]:<22} {ex['sets']:>2} {ex['reps']:>3}\n")
+    lines.append("</pre>")
+    return "".join(lines)
+
+
 def handle_gerar():
     if ods_ops.is_ods_locked():
         send("ODS aberto no LibreOffice — feche primeiro.")
@@ -252,6 +262,7 @@ def main():
                     send(
                         "<b>IronForge — Comandos</b>\n\n"
                         "/gerar — gera treino e registra no ODS\n"
+                        "/exercicios — lista os exercicios atuais\n"
                         "/sync — aplica no ODS os registros pendentes\n"
                         "/aquecimento — lista de aquecimento\n"
                         "/volume — series por grupo muscular\n"
@@ -262,6 +273,11 @@ def main():
                         "<code>80</code> — só carga\n"
                         "<code>80 8</code> — carga + RPE"
                     )
+                    continue
+
+                if lower in ("/exercicios", "exercicios", "/lista", "lista"):
+                    exercises = ods_ops.read_exercises()
+                    send(_format_exercises_msg(exercises))
                     continue
 
                 if lower in ("/volume", "volume"):
