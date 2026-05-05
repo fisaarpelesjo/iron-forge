@@ -116,3 +116,14 @@ LibreOffice em: `C:\Program Files\LibreOffice\program\soffice.exe`
 - `requests` — chamadas Telegram API
 - `openpyxl` — leitura do xlsx
 - Biblioteca padrão: `zipfile`, `re`, `shutil`, `json`, `datetime`, `pathlib`
+
+## Padrão de commit
+
+Adote Conventional Commits no cabeçalho, com tipo e título objetivo:
+
+`feat: adiciona comando de sincronização`
+
+Requisitos:
+- O cabeçalho deve seguir `<tipo>: <titulo>` (ex.: `feat`, `fix`, `refactor`, `chore`).
+- O corpo da mensagem é obrigatório.
+- O corpo deve registrar contexto técnico, escopo da alteração e motivo da decisão.
