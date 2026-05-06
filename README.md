@@ -1,7 +1,6 @@
 # IronForge
 
 Sistema de log de treino e dieta com bot Telegram e banco SQLite.
-Sem planilhas. Sem dependência de LibreOffice. Tudo em Python puro + SQLite.
 
 ---
 
@@ -20,14 +19,14 @@ Sem planilhas. Sem dependência de LibreOffice. Tudo em Python puro + SQLite.
 │                                      │                      │
 │                                      ▼                      │
 │                           ┌─────────────────────┐           │
-│                           │   ironforge.db       │          │
-│                           │                      │          │
-│                           │  exercises           │          │
-│                           │  training_sessions   │          │
-│                           │  training_logs       │          │
-│                           │  foods               │          │
-│                           │  diet_targets        │          │
-│                           │  diet_entries        │          │
+│                           │   ironforge.db      │           │
+│                           │                     │           │
+│                           │  exercises          │           │
+│                           │  training_sessions  │           │
+│                           │  training_logs      │           │
+│                           │  foods              │           │
+│                           │  diet_targets       │           │
+│                           │  diet_entries       │           │
 │                           └─────────────────────┘           │
 └─────────────────────────────────────────────────────────────┘
 ```
