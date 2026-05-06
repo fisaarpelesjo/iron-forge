@@ -80,7 +80,7 @@ Ordem atual (linhas 1–13):
 5. Stiff com barra — 3x8
 6. Pullover (barra) — 3x10
 7. Remada alta (barra) — 3x10
-8. Remada curvada aberta (barra) — 3x10
+8. Remada curvada alta no peito (barra) — 3x10
 9. Encolhimento com barra — 2x10
 10. Rosca direta — 3x8
 11. Tríceps testa — 3x8

@@ -15,7 +15,7 @@ DEFAULT_EXERCISES = [
     {"name": "Stiff com barra", "sets": 3, "reps": 8},
     {"name": "Pullover (barra)", "sets": 3, "reps": 10},
     {"name": "Remada alta (barra)", "sets": 3, "reps": 10},
-    {"name": "Remada curvada aberta (barra)", "sets": 3, "reps": 10},
+    {"name": "Remada curvada alta no peito (barra)", "sets": 3, "reps": 10},
     {"name": "Encolhimento com barra", "sets": 2, "reps": 10},
     {"name": "Rosca direta", "sets": 3, "reps": 8},
     {"name": "Tríceps testa", "sets": 3, "reps": 8},

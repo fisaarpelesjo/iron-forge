@@ -21,7 +21,7 @@ MUSCLE_MAP = {
     "Remada alta (barra)":             ["Deltóide lateral", "Trapezio"],
     "Elevação lateral":                ["Deltóide lateral"],
     "Elevacao lateral":                ["Deltóide lateral"],
-    "Remada curvada aberta (barra)":   ["Deltóide posterior", "Trapezio"],
+    "Remada curvada alta no peito (barra)": ["Deltóide posterior", "Trapezio"],
     "Crucifixo invertido":             ["Deltóide posterior"],
     "Rosca direta":                    ["Biceps"],
     "Tríceps testa":                   ["Triceps"],

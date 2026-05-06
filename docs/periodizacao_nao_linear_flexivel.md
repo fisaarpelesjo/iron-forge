@@ -58,7 +58,7 @@ As 12 semanas foram divididas em 3 blocos de 4 semanas:
 - **Grupo FNL:** escolhia entre treinos de 10, 15 ou 20 RM com base em seu nível de energia (escala de 0–10), mantendo o mesmo total de cada tipo ao longo de cada bloco
 
 **Exercícios — membros inferiores:** leg press, leg curl, agachamento livre, deadlift, avanço  
-**Exercícios — membros superiores:** supino, desenvolvimento, remada sentada, puxada, desenvolvimento com halteres, remada curvada aberta (barra)
+**Exercícios — membros superiores:** supino, desenvolvimento, remada sentada, puxada, desenvolvimento com halteres, remada curvada alta no peito (barra)
 **Core:** extensão lombar, extensão lombar inversa, crunch, elevação de pernas
 
 ### Avaliações
