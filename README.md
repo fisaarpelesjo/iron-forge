@@ -270,7 +270,7 @@ Bot:   Agachamento (barra) ✓ 60kg RPE 7 (1/13)
  4  Desenvolvimento (barra em pé)     3      5    Deltóide anterior
  5  Stiff com barra                   3      8    Isquiotibiais, Glúteos
  6  Pullover (barra)                  3     10    Dorsais
- 7  Elevação lateral                  3     10    Deltóide lateral
+ 7  Remada alta (barra)               3     10    Deltóide lateral, Trapézio
  8  Crucifixo invertido               3     10    Deltóide posterior
  9  Encolhimento com barra            2     10    Trapézio
 10  Rosca direta                      3      8    Bíceps
@@ -292,7 +292,7 @@ Dorsais                     6               ~21
 Deltóide anterior           3               ~11
 Deltóide lateral            3               ~11
 Deltóide posterior          3               ~11
-Trapézio                    2                ~7
+Trapézio                    5               ~18
 Bíceps                      3               ~11
 Tríceps                     3               ~11
 Antebraço                   4               ~14

@@ -18,6 +18,7 @@ MUSCLE_MAP = {
     "Pullover (barra)":                ["Dorsais"],
     "Desenvolvimento (barra em pé)":   ["Deltóide anterior"],
     "Desenvolvimento (barra em pe)":   ["Deltóide anterior"],
+    "Remada alta (barra)":             ["Deltóide lateral", "Trapezio"],
     "Elevação lateral":                ["Deltóide lateral"],
     "Elevacao lateral":                ["Deltóide lateral"],
     "Crucifixo invertido":             ["Deltóide posterior"],

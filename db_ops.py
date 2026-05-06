@@ -14,7 +14,7 @@ DEFAULT_EXERCISES = [
     {"name": "Desenvolvimento (barra em pé)", "sets": 3, "reps": 5},
     {"name": "Stiff com barra", "sets": 3, "reps": 8},
     {"name": "Pullover (barra)", "sets": 3, "reps": 10},
-    {"name": "Elevação lateral", "sets": 3, "reps": 10},
+    {"name": "Remada alta (barra)", "sets": 3, "reps": 10},
     {"name": "Crucifixo invertido", "sets": 3, "reps": 10},
     {"name": "Encolhimento com barra", "sets": 2, "reps": 10},
     {"name": "Rosca direta", "sets": 3, "reps": 8},

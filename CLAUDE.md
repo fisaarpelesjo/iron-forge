@@ -79,7 +79,7 @@ Ordem atual (linhas 1–13):
 4. Desenvolvimento (barra em pé) — 3x5
 5. Stiff com barra — 3x8
 6. Pullover (barra) — 3x10
-7. Elevação lateral — 3x10
+7. Remada alta (barra) — 3x10
 8. Crucifixo invertido — 3x10
 9. Encolhimento com barra — 2x10
 10. Rosca direta — 3x8
