@@ -3,11 +3,11 @@ import json
 import time
 from pathlib import Path
 
+import db_ops
 import ods_ops
 
 BASE_DIR = Path(__file__).parent
 SESSION_FILE = BASE_DIR / "session.json"
-PENDING_FILE = BASE_DIR / "pending_log.csv"
 CHAT_ID = "6575275306"
 
 
@@ -45,54 +45,6 @@ def load_session():
         return json.load(f)
 
 
-def load_pending():
-    if not PENDING_FILE.exists():
-        return []
-    entries = []
-    with open(PENDING_FILE, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            parts = line.split(",")
-            entry = {"row": int(parts[0]), "carga": float(parts[1])}
-            if len(parts) > 2 and parts[2]:
-                entry["rpe"] = int(parts[2])
-            entries.append(entry)
-    return entries
-
-
-def save_pending(entries):
-    with open(PENDING_FILE, "w", encoding="utf-8") as f:
-        for e in entries:
-            rpe_str = str(e.get("rpe", ""))
-            f.write(f"{e['row']},{e['carga']},{rpe_str}\n")
-
-
-def sync_pending_to_ods(pending):
-    """
-    Try to apply all pending entries to ODS.
-    Returns (synced, failed, locked, error_message).
-    """
-    if not pending:
-        return 0, 0, False, None
-    if ods_ops.is_ods_locked():
-        return 0, len(pending), True, None
-
-    synced = 0
-    failed = 0
-    try:
-        for entry in pending:
-            ok = ods_ops.update_row_weights(entry["row"], entry["carga"], entry.get("rpe"))
-            if ok:
-                synced += 1
-            else:
-                failed += 1
-    except Exception as e:
-        return synced, len(pending) - synced, False, str(e)
-    return synced, failed, False, None
-
-
 def get_updates(offset=0):
     try:
         r = requests.get(
@@ -106,7 +58,7 @@ def get_updates(offset=0):
 
 
 def _format_gerar_msg(exercises):
-    prev = ods_ops.read_previous_weights()
+    prev = db_ops.get_last_weights()
     lines = ["<pre>Treino\n"]
     lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
     lines.append("-" * 36 + "\n")
@@ -129,29 +81,30 @@ def _format_exercises_msg(exercises):
 
 
 def handle_gerar():
-    if ods_ops.is_ods_locked():
-        send("ODS aberto no LibreOffice — feche primeiro.")
-        return
-
     try:
-        exercises = ods_ops.gerar_treino()
+        exercises, session_id = ods_ops.gerar_treino()
     except Exception as e:
         send(f"Erro ao gerar treino: {e}")
         return
 
-    ods_ops.write_session(exercises)
-    ods_ops.clear_pending()
+    ods_ops.write_session(exercises, session_id)
 
     msg = _format_gerar_msg(exercises)
     send(msg)
     send("Treino gerado! Mande <code>carga rpe</code> para cada exercicio.")
 
 
-def handle(text, session, pending):
+def handle(text, session):
     text = text.strip()
-    exercises = session["exercises"]
-    filled = len(pending)
+    exercises = session.get("exercises", [])
+
+    if not exercises or "log_id" not in exercises[0]:
+        send("Sessão antiga. Use /gerar para iniciar novo treino.")
+        return
+
+    log_ids = [ex["log_id"] for ex in exercises]
     total = len(exercises)
+    filled = db_ops.count_filled(log_ids)
 
     if text.lower() in ("/status", "status"):
         if filled >= total:
@@ -167,31 +120,12 @@ def handle(text, session, pending):
         return
 
     if text.lower() in ("/undo", "undo"):
-        if not pending:
+        if filled == 0:
             send("Nada para desfazer.")
             return
-        removed = pending.pop()
-        ex_name = next((e["name"] for e in exercises if e["row"] == removed["row"]), "?")
-        save_pending(pending)
-        send(f"↩ Desfeito: <b>{ex_name}</b>")
-        return
-
-    if text.lower() in ("/sync", "sync", "/sincronizar", "sincronizar"):
-        synced, failed, locked, err = sync_pending_to_ods(pending)
-        total = len(pending)
-        if err:
-            send(f"Erro ao sincronizar ODS: {err}")
-            return
-        if total == 0:
-            send("Sem registros para sincronizar.")
-            return
-        if locked:
-            send("ODS aberto no LibreOffice — feche o arquivo e rode <code>/sync</code> novamente.")
-            return
-        if failed:
-            send(f"Sincronização parcial: {synced}/{total} linhas aplicadas.")
-            return
-        send(f"Sincronização concluída: {synced}/{total} linhas aplicadas.")
+        last_ex = exercises[filled - 1]
+        db_ops.update_log_weight(last_ex["log_id"], None, None)
+        send(f"↩ Desfeito: <b>{last_ex['name']}</b>")
         return
 
     if filled >= total:
@@ -207,22 +141,10 @@ def handle(text, session, pending):
         return
 
     ex = exercises[filled]
-    entry = {"row": ex["row"], "carga": carga}
-    if rpe is not None:
-        entry["rpe"] = rpe
-
-    # Always track in pending (used for filled count / undo)
-    pending.append(entry)
-    save_pending(pending)
-
-    # Keep ODS in sync when possible; if locked, user can run /sync later.
-    _, _, _, err = sync_pending_to_ods(pending)
-    if err:
-        send(f"Registro salvo, mas houve erro ao gravar no ODS: {err}")
+    db_ops.update_log_weight(ex["log_id"], carga, rpe)
+    new_filled = filled + 1
 
     rpe_str = f" RPE {rpe}" if rpe is not None else ""
-    new_filled = len(pending)
-
     if new_filled >= total:
         send(
             f"<b>{ex['name']}</b> ✓ {carga}kg{rpe_str} ({new_filled}/{total})\n\n"
@@ -261,9 +183,8 @@ def main():
                 if lower in ("/help", "help"):
                     send(
                         "<b>IronForge — Comandos</b>\n\n"
-                        "/gerar — gera treino e registra no ODS\n"
+                        "/gerar — gera treino\n"
                         "/exercicios — lista os exercicios atuais\n"
-                        "/sync — aplica no ODS os registros pendentes\n"
                         "/aquecimento — lista de aquecimento\n"
                         "/volume — series por grupo muscular\n"
                         "/status — exercicio atual e progresso\n"
@@ -312,19 +233,16 @@ def main():
                     )
                     continue
 
-                # /gerar command — no session needed
                 if lower.startswith("/gerar"):
                     handle_gerar()
                     continue
 
                 session = load_session()
-                pending = load_pending()
-
                 if session is None:
                     send("Nenhuma sessão ativa. Use /gerar.")
                     continue
 
-                handle(text, session, pending)
+                handle(text, session)
 
             time.sleep(3)
     except KeyboardInterrupt:

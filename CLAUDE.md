@@ -2,71 +2,60 @@
 
 ## Projeto
 
-Log de treino em LibreOffice Calc (ODS) com bot Telegram para registro de pesos durante o treino. Arquivo principal: `log-de-treino-e-progressao.ods`.
+Log de treino com bot Telegram para registro de pesos durante o treino. Dados armazenados em SQLite (`data/ironforge.db`). Arquivo `log-de-treino-e-progressao.ods` mantido apenas para outras abas — aba TREINOS removida.
 
 ## Arquivos Python
 
 ### `ods_ops.py`
-Módulo de manipulação direta do ODS via XML (zipfile + regex). Funções principais:
+Módulo de operações de treino (sem dependência de ODS para o diário).
 
-- `gerar_treino()` — insere linhas na aba TREINOS, retorna lista de `{row, name, sets, reps}`
-- `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H de uma linha existente
-- `read_exercises()` — lê exercícios do SQLite (`data/ironforge.db`)
-- `read_previous_weights()` — retorna `{nome_exercicio: última_carga}` do histórico TREINOS
-- `write_session(exercises)` / `clear_pending()` — gerencia `session.json` / `pending_log.csv`
-- `is_ods_locked()` — verifica se ODS está aberto no LibreOffice (arquivo `.~lock.*#`)
+- `gerar_treino()` — cria sessão no SQLite, retorna `(exercises, session_id)` onde exercises é lista de `{log_id, name, sets, reps}`
+- `read_exercises()` — lê exercícios do SQLite
+- `read_previous_weights()` — retorna `{nome_exercicio: última_carga}` do SQLite
+- `write_session(exercises, session_id)` — grava `session.json`
+- `MUSCLE_MAP` — mapeamento exercício → grupos musculares
+- `TREINO_EXERCISES` — `range(0, 13)`, índices dos exercícios ativos
 
 ### `db_ops.py`
-Módulo SQLite para a lista de exercícios.
+Módulo SQLite — fonte única de dados.
 
 - Banco local: `data/ironforge.db`
-- Tabela principal: `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`)
-- Sem dependência da aba `EXERCICIOS` no ODS
+- Tabelas:
+  - `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`)
+  - `training_sessions` (`date`, `training_type`)
+  - `training_logs` (`session_id`, `exercise_name`, `sets`, `reps`, `weight`, `rpe`, `sort_order`)
+- Sem dependência de ODS
 
-**Índices de exercícios (0-indexed):**
-```python
-TREINO_EXERCISES = range(0, 13)
-```
-
-**Numeração de linhas:**
-- `r = n_data + 2 + idx` — número 1-based da linha no spreadsheet
-- `row_0idx = r - 1` — índice 0-based para `getCellByPosition`
-
-**Sintaxe de fórmulas ODS (content.xml):**
-- Prefixo `of:` obrigatório: `table:formula="of:=IF(...)"`
-- Referências: `[.A1]`, `[.$D$2]`
-- Separador de argumentos: ponto e vírgula (locale pt-BR)
-
-**Estilos de célula confirmados (content.xml):**
-- `ce22` = data (style:data-style-name="N120", date format), `ce9` = semana (fórmula), `ce71` = tipo treino, `ce16` = nome exercício
-- `ce20` = células com fórmula, `ce25` = carga/RPE (número), `ce65` = trailing (repeat 16371)
-- ATENÇÃO: `ce2` não existe no ODS → LibreOffice usa datetime padrão (bug). Usar `ce22` para datas.
+**Funções principais:**
+- `create_session(date_iso, training_type='TREINO')` → `session_id`
+- `log_exercise(session_id, name, sets, reps, sort_order)` → `log_id`
+- `update_log_weight(log_id, weight, rpe=None)` — atualiza ou limpa (None) peso/RPE
+- `get_last_weights()` → `{exercise_name: last_weight}`
+- `count_filled(log_ids)` → int — quantos log_ids têm weight definido
+- `import_log_rows(rows)` — importação em bulk (usado pela migração)
 
 ### `telegram_poller.py`
-Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
+Bot Telegram.
 
 **Comandos:**
-- `/gerar` — gera treino no ODS, envia tabela com exercícios e pesos anteriores
-- `/exercicios` — lista os exercícios atuais sem gerar treino
-- `/lista` — alias de `/exercicios`
-- `/sync` — aplica no ODS os registros pendentes de `pending_log.csv`
-- `/aquecimento` — lista aquecimento recomendado
-- `/volume` — calcula séries por grupo muscular por sessão e estimativa semanal
-- `80` ou `80 8` — registra carga (e RPE) do próximo exercício pendente
+- `/gerar` — cria sessão SQLite, envia tabela com exercícios e pesos anteriores
+- `/exercicios` / `/lista` — lista exercícios atuais
+- `/aquecimento` — lista de aquecimento recomendado
+- `/volume` — séries por grupo muscular por sessão e estimativa semanal
+- `80` ou `80 8` — registra carga (e RPE) no SQLite imediatamente
 - `/status` — mostra progresso da sessão atual
-- `/undo` — desfaz último registro
+- `/undo` — desfaz último registro (limpa weight/rpe no SQLite)
 - `/help` — lista comandos
 
 **Fluxo de dados:**
-1. `/gerar` → `ods_ops.gerar_treino()` → grava `session.json`, apaga `pending_log.csv`
-2. `80 8` → sempre salva em `pending_log.csv` + tenta gravar direto no ODS (se não estiver bloqueado)
-3. Se ODS estiver aberto, fechar o arquivo e executar `/sync` no Telegram para aplicar o `pending_log.csv`
+1. `/gerar` → `ods_ops.gerar_treino()` → cria sessão + logs no SQLite → grava `session.json`
+2. `80 8` → `db_ops.update_log_weight(log_id, carga, rpe)` imediato
+3. `/undo` → `db_ops.update_log_weight(log_id, None, None)` do último exercício preenchido
 
-**Arquivos de estado locais:**
-- `session.json` — sessão ativa: treino, data, lista de exercícios com row index
-- `pending_log.csv` — pesos pendentes: `row,carga,rpe` por linha
-- `data/ironforge.db` — banco SQLite local (versionado, lista de exercícios e futuras tabelas)
-- `data/*.db-shm` / `data/*.db-wal` — arquivos auxiliares SQLite não versionados
+**Arquivos de estado:**
+- `session.json` — sessão ativa: `{date, session_id, exercises: [{log_id, name, sets, reps}]}`
+- `data/ironforge.db` — banco SQLite (versionado)
+- `data/*.db-shm` / `data/*.db-wal` — auxiliares SQLite (não versionados)
 - `.env` — `TELEGRAM_TOKEN=...`
 
 **Executar:**
@@ -74,15 +63,10 @@ Bot Telegram que permite controle total do treino pelo celular, sem abrir o PC.
 python telegram_poller.py
 ```
 
-## Arquivo ODS
+## Scripts utilitários
 
-Formato ZIP com XML interno. Para inspecionar estrutura:
-```python
-import zipfile
-with zipfile.ZipFile("log-de-treino-e-progressao.ods") as z:
-    print(z.namelist())
-    content = z.read("content.xml").decode("utf-8")
-```
+- `migrate_ods_to_db.py` — migração one-time do ODS TREINOS → SQLite (já executado)
+- `remove_treinos_sheet.py` — remove aba TREINOS do ODS (já executado)
 
 ## Lista de exercícios (SQLite)
 

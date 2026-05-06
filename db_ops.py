@@ -1,6 +1,7 @@
 """SQLite operations for IronForge data."""
 
 import sqlite3
+from itertools import groupby
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -27,6 +28,7 @@ def _connect():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 
@@ -44,8 +46,33 @@ def init_db():
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS training_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date TEXT NOT NULL,
+                training_type TEXT NOT NULL DEFAULT 'TREINO'
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS training_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id INTEGER NOT NULL REFERENCES training_sessions(id),
+                exercise_name TEXT NOT NULL,
+                sets INTEGER NOT NULL,
+                reps INTEGER NOT NULL,
+                weight REAL,
+                rpe REAL,
+                sort_order INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
         conn.commit()
 
+
+# --- exercises ---
 
 def _insert_exercises(conn, exercises):
     conn.execute("DELETE FROM exercises")
@@ -92,3 +119,109 @@ def replace_exercises(exercises):
         _insert_exercises(conn, exercises)
         conn.commit()
 
+
+# --- training sessions ---
+
+def create_session(date_iso, training_type="TREINO"):
+    init_db()
+    with _connect() as conn:
+        cur = conn.execute(
+            "INSERT INTO training_sessions (date, training_type) VALUES (?, ?)",
+            (date_iso, training_type),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def log_exercise(session_id, exercise_name, sets, reps, sort_order):
+    with _connect() as conn:
+        cur = conn.execute(
+            """
+            INSERT INTO training_logs (session_id, exercise_name, sets, reps, sort_order)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (session_id, exercise_name, int(sets), int(reps), sort_order),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def update_log_weight(log_id, weight, rpe=None):
+    with _connect() as conn:
+        conn.execute(
+            "UPDATE training_logs SET weight=?, rpe=? WHERE id=?",
+            (
+                float(weight) if weight is not None else None,
+                float(rpe) if rpe is not None else None,
+                log_id,
+            ),
+        )
+        conn.commit()
+
+
+def get_last_weights():
+    """Return {exercise_name: last_weight} from most recent entry per exercise."""
+    init_db()
+    with _connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT exercise_name, weight
+            FROM training_logs
+            WHERE weight IS NOT NULL AND weight > 0
+              AND id IN (
+                SELECT MAX(id)
+                FROM training_logs
+                WHERE weight IS NOT NULL AND weight > 0
+                GROUP BY exercise_name
+              )
+            """
+        ).fetchall()
+        return {r["exercise_name"]: r["weight"] for r in rows}
+
+
+def count_filled(log_ids):
+    """Count how many of the given log_ids already have weight set."""
+    if not log_ids:
+        return 0
+    placeholders = ",".join("?" * len(log_ids))
+    with _connect() as conn:
+        row = conn.execute(
+            f"SELECT COUNT(*) FROM training_logs WHERE id IN ({placeholders}) AND weight IS NOT NULL",
+            list(log_ids),
+        ).fetchone()
+        return row[0]
+
+
+def import_log_rows(rows):
+    """
+    Bulk-import historical diary rows. Groups by (date, training_type) into sessions.
+    Each row dict: {date, training_type, exercise_name, sets, reps, weight?, rpe?}
+    """
+    init_db()
+    rows_sorted = sorted(rows, key=lambda r: (r["date"], r.get("training_type", "TREINO")))
+    with _connect() as conn:
+        for key, group in groupby(rows_sorted, key=lambda r: (r["date"], r.get("training_type", "TREINO"))):
+            date_iso, ttype = key
+            cur = conn.execute(
+                "INSERT INTO training_sessions (date, training_type) VALUES (?, ?)",
+                (date_iso, ttype),
+            )
+            session_id = cur.lastrowid
+            for idx, row in enumerate(group):
+                conn.execute(
+                    """
+                    INSERT INTO training_logs
+                        (session_id, exercise_name, sets, reps, weight, rpe, sort_order)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        session_id,
+                        row["exercise_name"],
+                        int(row.get("sets", 0)),
+                        int(row.get("reps", 0)),
+                        row.get("weight"),
+                        row.get("rpe"),
+                        idx,
+                    ),
+                )
+        conn.commit()
