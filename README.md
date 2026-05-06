@@ -1,6 +1,6 @@
 # IronForge
 
-Sistema de log de treino e dieta com bot Telegram e banco SQLite.  
+Sistema de log de treino e dieta com bot Telegram e banco SQLite.
 Sem planilhas. Sem dependência de LibreOffice. Tudo em Python puro + SQLite.
 
 ---
@@ -20,14 +20,14 @@ Sem planilhas. Sem dependência de LibreOffice. Tudo em Python puro + SQLite.
 │                                      │                      │
 │                                      ▼                      │
 │                           ┌─────────────────────┐           │
-│                           │   ironforge.db       │           │
-│                           │                      │           │
-│                           │  exercises           │           │
-│                           │  training_sessions   │           │
-│                           │  training_logs       │           │
-│                           │  foods               │           │
-│                           │  diet_targets        │           │
-│                           │  diet_entries        │           │
+│                           │   ironforge.db       │          │
+│                           │                      │          │
+│                           │  exercises           │          │
+│                           │  training_sessions   │          │
+│                           │  training_logs       │          │
+│                           │  foods               │          │
+│                           │  diet_targets        │          │
+│                           │  diet_entries        │          │
 │                           └─────────────────────┘           │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -52,8 +52,8 @@ ironforge/
 ## Banco de dados — schema completo
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  exercises                                                   │
+┌─────────────────────────────────────────────────────────────┐
+│  exercises                                                  │
 ├────────────┬──────────┬──────────┬────────────┬─────────────┤
 │ id (PK)    │ name     │ sets     │ reps       │ sort_order  │
 │ INTEGER    │ TEXT     │ INTEGER  │ INTEGER    │ INTEGER     │
@@ -63,8 +63,8 @@ ironforge/
 │ INTEGER(1) │          │          │            │             │
 └────────────┴──────────┴──────────┴────────────┴─────────────┘
 
-┌────────────────────────────────────────────────────────────────────┐
-│  training_sessions                                                 │
+┌───────────────────────────────────────────────────────────────────┐
+│  training_sessions                                                │
 ├─────────────┬────────────────────┬────────────────────────────────┤
 │ id (PK)     │ date               │ training_type                  │
 │ INTEGER     │ TEXT (YYYY-MM-DD)  │ TEXT DEFAULT 'TREINO'          │
@@ -72,16 +72,16 @@ ironforge/
 
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  training_logs                                                           │
-├─────────┬────────────┬───────────────┬──────┬──────┬────────┬───────────┤
-│ id (PK) │ session_id │ exercise_name │ sets │ reps │ weight │ rpe       │
-│ INTEGER │ FK→session │ TEXT          │ INT  │ INT  │ REAL   │ REAL      │
-├─────────┼────────────┼───────────────┴──────┴──────┴────────┴───────────┤
-│sort_order│           │                                                   │
-│ INTEGER │            │                                                   │
-└─────────┴────────────┴───────────────────────────────────────────────────┘
+├──────────┬────────────┬───────────────┬──────┬──────┬────────┬───────────┤
+│ id (PK)  │ session_id │ exercise_name │ sets │ reps │ weight │ rpe       │
+│ INTEGER  │ FK→session │ TEXT          │ INT  │ INT  │ REAL   │ REAL      │
+├──────────┼────────────┼───────────────┴──────┴──────┴────────┴───────────┤
+│sort_order│            │                                                  │
+│ INTEGER  │            │                                                  │
+└──────────┴────────────┴──────────────────────────────────────────────────┘
 
-┌────────────────────────────────────────────────────────────────────────────────┐
-│  foods                                                                         │
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  foods                                                                        │
 ├─────────┬────────────────┬────────┬───────────┬────────────────────────────── ┤
 │ id (PK) │ name (UNIQUE)  │ unit   │ serving_g │ protein_g  carbo_g  fat_g     │
 │ INTEGER │ TEXT           │ TEXT   │ REAL      │ calories   fiber_g  omega3_g  │
@@ -89,15 +89,15 @@ ironforge/
 │         │                │        │           │ zinc_mg  vitamin_d_ui         │
 └─────────┴────────────────┴────────┴───────────┴───────────────────────────────┘
 
-┌──────────────────────────────────────────────────────────────────────────┐
-│  diet_targets  (única linha)                                             │
+┌─────────────────────────────────────────────────────────────────────────┐
+│  diet_targets  (única linha)                                            │
 ├────────────┬──────────┬────────┬──────────┬────────┬────────────────────┤
 │ protein_g  │ carbo_g  │ fat_g  │ calories │ fiber_g│ omega3_g           │
 │ potassium  │ magnesium│ zinc   │ vitaminD │        │                    │
 └────────────┴──────────┴────────┴──────────┴────────┴────────────────────┘
 
-┌──────────────────────────────────────────────────────────┐
-│  diet_entries                                            │
+┌─────────────────────────────────────────────────────────┐
+│  diet_entries                                           │
 ├─────────┬──────────┬──────────────┬──────────┬──────────┤
 │ id (PK) │ meal     │ food_id (FK) │ quantity │sort_order│
 │ INTEGER │ TEXT     │ → foods.id   │ REAL     │ INTEGER  │
@@ -175,11 +175,11 @@ unit = qualquer outra → nutrientes por 1 unidade        (ex: 6g proteína / 1 
 ```
                 ┌─────────────────────────────────────────────┐
                 │                                             │
-  unit = 'g':  │  consumido = qty × nutriente / serving_g    │
-                │  ex: 15g aveia → 15 × 17 / 100 = 2.55g     │
+  unit = 'g':   │  consumido = qty × nutriente / serving_g    │
+                │  ex: 15g aveia → 15 × 17 / 100 = 2.55g      │
                 │                                             │
-  unit ≠ 'g':  │  consumido = qty × nutriente                │
-                │  ex: 4 ovos   → 4 × 6 = 24g                │
+  unit ≠ 'g':   │  consumido = qty × nutriente                │
+                │  ex: 4 ovos   → 4 × 6 = 24g                 │
                 │                                             │
                 └─────────────────────────────────────────────┘
 
@@ -194,10 +194,10 @@ Nutriente    Calculado    ODS original   Δ
 ──────────── ──────────── ────────────── ──
 Proteína     214.4 g      214.44 g       ✓
 Carboidrato  193.3 g      193.30 g       ✓
-Gordura       65.0 g       64.95 g       ✓
-Calorias    2178           2178.35        ✓
-Fibra         28.3 g       28.29 g       ✓
-Ômega-3        2.00 g       2.00 g       ✓
+Gordura      65.0 g       64.95 g        ✓
+Calorias     2178         2178.35        ✓
+Fibra        28.3 g       28.29 g        ✓
+Ômega-3      2.00 g       2.00 g         ✓
 ```
 
 ---
@@ -462,28 +462,28 @@ get_diet_totals()                       → {"totals": {...}, "targets": {...}}
 
 ```
                ┌──────────────────────────────────┐
-               │         telegram_poller.py        │
+               │         telegram_poller.py       │
                │                                  │
-               │  main() ──► get_updates()         │
+               │  main() ──► get_updates()        │
                │               │                  │
-               │          por mensagem:            │
+               │          por mensagem:           │
                │               │                  │
-               │    ┌──────────▼──────────┐        │
-               │    │  /gerar             │        │
-               │    │  handle_gerar()     │        │
-               │    │    ods_ops          │        │
-               │    │    .gerar_treino()  │        │
-               │    └──────────┬──────────┘        │
+               │    ┌──────────▼──────────┐       │
+               │    │  /gerar             │       │
+               │    │  handle_gerar()     │       │
+               │    │    ods_ops          │       │
+               │    │    .gerar_treino()  │       │
+               │    └──────────┬──────────┘       │
                │               │                  │
-               │    ┌──────────▼──────────┐        │
-               │    │  número (ex: 80 8)  │        │
-               │    │  handle(text,       │        │
-               │    │         session)   │        │
-               │    │    filled =         │        │
-               │    │    count_filled()   │        │
-               │    │    update_log_      │        │
-               │    │    weight()         │        │
-               │    └─────────────────────┘        │
+               │    ┌──────────▼──────────┐       │
+               │    │  número (ex: 80 8)  │       │
+               │    │  handle(text,       │       │
+               │    │         session)    │       │
+               │    │    filled =         │       │
+               │    │    count_filled()   │       │
+               │    │    update_log_      │       │
+               │    │    weight()         │       │
+               │    └─────────────────────┘       │
                └──────────────────────────────────┘
 ```
 
