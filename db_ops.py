@@ -69,6 +69,54 @@ def init_db():
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS foods (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                unit TEXT NOT NULL,
+                serving_g REAL NOT NULL DEFAULT 100,
+                protein_g REAL NOT NULL DEFAULT 0,
+                carbo_g REAL NOT NULL DEFAULT 0,
+                fat_g REAL NOT NULL DEFAULT 0,
+                calories REAL NOT NULL DEFAULT 0,
+                fiber_g REAL NOT NULL DEFAULT 0,
+                omega3_g REAL NOT NULL DEFAULT 0,
+                potassium_mg REAL NOT NULL DEFAULT 0,
+                magnesium_mg REAL NOT NULL DEFAULT 0,
+                zinc_mg REAL NOT NULL DEFAULT 0,
+                vitamin_d_ui REAL NOT NULL DEFAULT 0
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS diet_targets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                protein_g REAL,
+                carbo_g REAL,
+                fat_g REAL,
+                calories REAL,
+                fiber_g REAL,
+                omega3_g REAL,
+                potassium_mg REAL,
+                magnesium_mg REAL,
+                zinc_mg REAL,
+                vitamin_d_ui REAL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS diet_entries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                meal TEXT NOT NULL,
+                food_id INTEGER NOT NULL REFERENCES foods(id),
+                quantity REAL NOT NULL,
+                sort_order INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
         conn.commit()
 
 
@@ -225,3 +273,135 @@ def import_log_rows(rows):
                     ),
                 )
         conn.commit()
+
+
+# --- diet ---
+
+_NUTRIENT_COLS = (
+    "protein_g", "carbo_g", "fat_g", "calories",
+    "fiber_g", "omega3_g", "potassium_mg", "magnesium_mg", "zinc_mg", "vitamin_d_ui",
+)
+
+# Nutrients stored per serving_g for unit='g' foods, per 1 unit otherwise.
+# consumed = quantity * nutrient / (serving_g if unit='g' else 1)
+_NUTRIENT_SELECT = ", ".join(
+    f"e.quantity * f.{c} / CASE WHEN f.unit = 'g' THEN f.serving_g ELSE 1.0 END AS {c}"
+    for c in _NUTRIENT_COLS
+)
+
+
+def upsert_food(name, unit, serving_g, protein_g=0, carbo_g=0, fat_g=0,
+                calories=0, fiber_g=0, omega3_g=0, potassium_mg=0,
+                magnesium_mg=0, zinc_mg=0, vitamin_d_ui=0):
+    init_db()
+    with _connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO foods
+                (name, unit, serving_g, protein_g, carbo_g, fat_g, calories,
+                 fiber_g, omega3_g, potassium_mg, magnesium_mg, zinc_mg, vitamin_d_ui)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(name) DO UPDATE SET
+                unit=excluded.unit, serving_g=excluded.serving_g,
+                protein_g=excluded.protein_g, carbo_g=excluded.carbo_g,
+                fat_g=excluded.fat_g, calories=excluded.calories,
+                fiber_g=excluded.fiber_g, omega3_g=excluded.omega3_g,
+                potassium_mg=excluded.potassium_mg, magnesium_mg=excluded.magnesium_mg,
+                zinc_mg=excluded.zinc_mg, vitamin_d_ui=excluded.vitamin_d_ui
+            """,
+            (name, unit, float(serving_g),
+             float(protein_g), float(carbo_g), float(fat_g), float(calories),
+             float(fiber_g), float(omega3_g), float(potassium_mg),
+             float(magnesium_mg), float(zinc_mg), float(vitamin_d_ui)),
+        )
+        conn.commit()
+        row = conn.execute("SELECT id FROM foods WHERE name=?", (name,)).fetchone()
+        return row[0]
+
+
+def get_food_by_name(name):
+    init_db()
+    with _connect() as conn:
+        row = conn.execute("SELECT * FROM foods WHERE name=?", (name,)).fetchone()
+        return dict(row) if row else None
+
+
+def list_foods():
+    init_db()
+    with _connect() as conn:
+        rows = conn.execute("SELECT * FROM foods ORDER BY name ASC").fetchall()
+        return [dict(r) for r in rows]
+
+
+def set_diet_targets(protein_g=None, carbo_g=None, fat_g=None, calories=None,
+                     fiber_g=None, omega3_g=None, potassium_mg=None,
+                     magnesium_mg=None, zinc_mg=None, vitamin_d_ui=None):
+    init_db()
+    with _connect() as conn:
+        conn.execute("DELETE FROM diet_targets")
+        cur = conn.execute(
+            """
+            INSERT INTO diet_targets
+                (protein_g, carbo_g, fat_g, calories, fiber_g, omega3_g,
+                 potassium_mg, magnesium_mg, zinc_mg, vitamin_d_ui)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (protein_g, carbo_g, fat_g, calories, fiber_g, omega3_g,
+             potassium_mg, magnesium_mg, zinc_mg, vitamin_d_ui),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def get_diet_targets():
+    init_db()
+    with _connect() as conn:
+        row = conn.execute("SELECT * FROM diet_targets LIMIT 1").fetchone()
+        return dict(row) if row else None
+
+
+def add_diet_entry(meal, food_id, quantity, sort_order=0):
+    with _connect() as conn:
+        cur = conn.execute(
+            "INSERT INTO diet_entries (meal, food_id, quantity, sort_order) VALUES (?, ?, ?, ?)",
+            (meal, food_id, float(quantity), sort_order),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def list_diet_entries():
+    """Return diet entries with per-entry computed nutrients."""
+    init_db()
+    with _connect() as conn:
+        rows = conn.execute(
+            f"""
+            SELECT e.id, e.meal, f.name, e.quantity, f.unit, f.serving_g,
+                   {_NUTRIENT_SELECT}
+            FROM diet_entries e
+            JOIN foods f ON f.id = e.food_id
+            ORDER BY e.sort_order ASC
+            """,
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_diet_totals():
+    """Return summed nutrients across all diet_entries + current targets."""
+    init_db()
+    with _connect() as conn:
+        sums = conn.execute(
+            """
+            SELECT {}
+            FROM diet_entries e
+            JOIN foods f ON f.id = e.food_id
+            """.format(", ".join(
+                f"SUM(e.quantity * f.{c} / CASE WHEN f.unit = 'g' THEN f.serving_g ELSE 1.0 END) AS {c}"
+                for c in _NUTRIENT_COLS
+            )),
+        ).fetchone()
+        targets_row = conn.execute("SELECT * FROM diet_targets LIMIT 1").fetchone()
+        return {
+            "totals": dict(sums),
+            "targets": dict(targets_row) if targets_row else None,
+        }
