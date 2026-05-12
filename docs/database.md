@@ -193,6 +193,27 @@ Diet totals are computed by joining `diet_entries` with `foods`.
 This means the default list is only used when the database has no active
 exercises.
 
+## Current First Exercise
+
+The current active exercise catalog starts with:
+
+```text
+sort_order 1
+name       Zercher squat
+sets       3
+reps       5
+```
+
+`Zercher squat` replaced `Agachamento (barra)` for future generated sessions
+because the user does not have a proper squat rack. Historical training logs
+with `exercise_name = 'Agachamento (barra)'` should remain unchanged unless a
+task explicitly asks for a historical migration.
+
+When changing the active catalog for future sessions, update both:
+
+- `data/ironforge.db`, because SQLite is the active source of truth
+- `ironforge/db_ops.py`, because `DEFAULT_EXERCISES` seeds fresh databases
+
 ## Training Session Creation
 
 `ods_ops.generate_training()` creates a session through `db_ops`.
@@ -214,7 +235,7 @@ The returned `session_exercises` list contains dictionaries like:
 ```python
 {
     "log_id": 123,
-    "name": "Agachamento (barra)",
+    "name": "Zercher squat",
     "sets": 3,
     "reps": 5,
 }

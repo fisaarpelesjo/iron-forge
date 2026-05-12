@@ -13,6 +13,7 @@ TREINO_EXERCISES = TRAINING_EXERCISES
 
 MUSCLE_MAP = {
     "Agachamento (barra)":             ["Quadriceps", "Glutes"],
+    "Zercher squat":                   ["Quadriceps", "Glutes", "Core"],
     "Stiff com barra":                 ["Hamstrings", "Glutes"],
     "Supino reto (barra)":             ["Chest"],
     "Remada curvada (barra)":          ["Lats"],

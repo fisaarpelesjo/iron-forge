@@ -8,7 +8,7 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 DB_PATH = DATA_DIR / "ironforge.db"
 
 DEFAULT_EXERCISES = [
-    {"name": "Agachamento (barra)", "sets": 3, "reps": 5},
+    {"name": "Zercher squat", "sets": 3, "reps": 5},
     {"name": "Supino reto (barra)", "sets": 3, "reps": 5},
     {"name": "Remada curvada (barra)", "sets": 3, "reps": 8},
     {"name": "Desenvolvimento (barra em pé)", "sets": 3, "reps": 5},

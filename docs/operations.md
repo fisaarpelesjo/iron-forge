@@ -145,6 +145,16 @@ db_ops.replace_exercises([...])
 
 Do not replace the SQLite exercise source of truth with a spreadsheet.
 
+Current catalog note:
+
+- `Zercher squat` is the first exercise and is programmed as `3x5`.
+- It replaced `Agachamento (barra)` for future generated sessions because the
+  current setup does not have a proper squat rack.
+- Historical `Agachamento (barra)` logs should stay as historical records unless
+  a dedicated migration is requested.
+- If the catalog changes again, update both `data/ironforge.db` and
+  `ironforge/db_ops.py`.
+
 ## Common Problems
 
 ### `TELEGRAM_TOKEN not found in .env`

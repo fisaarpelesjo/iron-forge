@@ -34,6 +34,13 @@ Training operation helpers:
 - `read_previous_weights()` returns latest weights from SQLite.
 - `write_session()` writes active session state to `session.json`.
 
+Current training catalog note:
+
+- First active exercise is `Zercher squat` (`3x5`), replacing
+  `Agachamento (barra)` for future generated sessions because there is no
+  proper squat rack.
+- Historical `Agachamento (barra)` logs may remain in SQLite.
+
 ### `ironforge/db_ops.py`
 
 SQLite operations:
@@ -54,6 +61,8 @@ SQLite operations:
 - SQLite sidecar files (`*.db-shm`, `*.db-wal`) are not versioned.
 
 The SQLite database is the source of truth for exercises. Do not move exercise management back to an ODS sheet.
+Keep catalog changes synchronized between `data/ironforge.db` and
+`ironforge/db_ops.py` defaults when they should also apply to fresh databases.
 
 ## Commit Style
 

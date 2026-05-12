@@ -162,6 +162,19 @@ used by the bot to know which log IDs belong to the current workout.
 
 The exercise catalog should not be moved back to ODS or spreadsheet files.
 
+## Current Training Catalog Note
+
+The first active exercise is currently:
+
+```text
+Zercher squat - 3x5
+```
+
+It replaced `Agachamento (barra)` for future generated sessions because the
+current home gym setup does not have a proper squat rack. The change is a
+forward-looking catalog update. Historical `Agachamento (barra)` logs remain
+valid historical records.
+
 ## User-Facing Language
 
 All user-facing project interface text should be English:

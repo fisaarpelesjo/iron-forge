@@ -74,6 +74,18 @@ ironforge/
   -> db_ops.update_log_weight(log_id, None, None)
 ```
 
+## Current Training Catalog
+
+The active catalog starts with:
+
+```text
+Zercher squat    3x5
+```
+
+`Zercher squat` replaced `Agachamento (barra)` for future generated sessions
+because the current home setup does not have a proper squat rack. Historical
+`Agachamento (barra)` logs remain historical data and do not need to be renamed.
+
 ## Setup
 
 1. Install Python 3.10+.

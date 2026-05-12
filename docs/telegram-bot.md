@@ -135,6 +135,9 @@ help
 
 Creates a new training session.
 
+The current first generated exercise is `Zercher squat` (`3x5`), because it
+replaced `Agachamento (barra)` in the active SQLite exercise catalog.
+
 Flow:
 
 ```text
@@ -264,7 +267,7 @@ Format: 80 8 (weight + RPE) or 80 (weight only)
   "exercises": [
     {
       "log_id": 1,
-      "name": "Agachamento (barra)",
+      "name": "Zercher squat",
       "sets": 3,
       "reps": 5
     }

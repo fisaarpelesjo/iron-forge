@@ -52,6 +52,10 @@ Important rules:
 
 - Active exercise indexes: `TRAINING_EXERCISES = range(0, 13)`.
 - Keep `TREINO_EXERCISES` only as a compatibility alias.
+- The first active exercise is `Zercher squat` (`3x5`). It replaced
+  `Agachamento (barra)` for future generated sessions because the user does not
+  have a proper squat rack. Historical `Agachamento (barra)` logs may remain as
+  historical data.
 
 ### `ironforge/db_ops.py`
 
@@ -60,6 +64,8 @@ SQLite module for exercises, training logs, and diet data.
 - Versioned local database: `data/ironforge.db`.
 - Main exercise table: `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`).
 - The SQLite database is the source of truth for exercises.
+- Keep exercise-catalog changes synchronized between `data/ironforge.db` and
+  `ironforge/db_ops.py` defaults when they are meant to affect fresh databases.
 
 ## Local State
 
