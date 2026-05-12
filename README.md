@@ -21,7 +21,7 @@ ironforge/
 ├── telegram_poller.py       # Telegram bot long polling
 ├── ods_ops.py               # Training session operations
 ├── db_ops.py                # SQLite operations
-├── iniciar_bot.bat          # Windows launcher
+├── start_bot.bat            # Windows launcher
 ├── session.json             # Active session state, not versioned
 ├── .env                     # TELEGRAM_TOKEN=..., not versioned
 └── data/
@@ -88,7 +88,7 @@ echo "TELEGRAM_TOKEN=your_token_here" > .env
 python telegram_poller.py
 ```
 
-On Windows, you can also run `iniciar_bot.bat`.
+On Windows, you can also run `start_bot.bat`.
 
 ## Database
 

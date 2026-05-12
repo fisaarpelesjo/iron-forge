@@ -5,7 +5,7 @@
 This project is a training log with a Telegram bot and a versioned SQLite database.
 
 Main database: `data/ironforge.db`.
-Main launcher on Windows: `iniciar_bot.bat`.
+Main launcher on Windows: `start_bot.bat`.
 
 ## Main Files
 
