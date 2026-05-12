@@ -9,7 +9,7 @@ if "%exit_code%"=="9009" (
 )
 
 echo.
-echo Bot stopped with exit code %exit_code%.
+echo Bot encerrado com codigo de saida %exit_code%.
 echo.
 
 pause

@@ -1,10 +1,10 @@
-# Zercher Squat Effects On Back And Leg Strength In Basketball Players
+# Agachamento Zercher Em Forca De Costas E Pernas De Jogadores De Basquete
 
-## Source
+## Fonte
 
-**Title:** Influence of Zercher Squat Exercises on Back Strength and Leg Strength among College Basketball Players
+**Titulo original:** Influence of Zercher Squat Exercises on Back Strength and Leg Strength among College Basketball Players
 
-**Authors:** Satheesh Kumar K., Suriya P., and Arumugam S.
+**Autores:** Satheesh Kumar K., Suriya P. e Arumugam S.
 
 **Journal:** Journal of Information and Computational Science
 
@@ -12,210 +12,105 @@
 
 **ISSN:** 1548-7741
 
-**PDF used:** `temp/PublishedPaper.pdf`
+## Por Que Importa Para O IronForge
 
-## Why This Matters For IronForge
-
-IronForge currently programs:
+O treino atual usa:
 
 ```text
-Zercher squat - 3x5
+Agachamento Zercher - 3x5
 ```
 
-This paper is relevant because it studied Zercher squat training and reported improvements in back strength and leg strength among college basketball players.
+Esse artigo relata melhora de forca de costas e pernas em jogadores de basquete
+apos um bloco com Zercher. Ele serve como apoio geral, mas nao como base para
+decidir carga exata, porque o protocolo de treino nao e descrito com detalhe
+suficiente.
 
-The paper is useful as supporting context, but it should be interpreted cautiously. The design is small, short-term, and not as detailed as a high-quality strength-training trial.
+## Objetivo
 
-## Study Purpose
+Verificar se exercicios de agachamento Zercher melhoram:
 
-The study aimed to determine whether Zercher squat exercises improved:
+- forca de costas
+- forca de pernas
 
-- back strength
-- leg strength
+em jogadores universitarios de basquete.
 
-in male college basketball players.
+## Participantes
 
-## Participants
+- 24 homens jogadores universitarios de basquete
+- idade entre 18 e 22 anos
+- 12 no grupo Zercher
+- 12 no grupo controle
 
-The study used:
-
-- 24 male college basketball players
-- ages 18 to 22
-- randomly assigned into two groups
-- 12 athletes in the Zercher squat exercise group
-- 12 athletes in the control group
-
-The participants came from colleges in Tamilnadu, India.
-
-## Groups
-
-| Group | Size | Intervention |
-|---|---:|---|
-| Experimental | 12 | Zercher squat exercises |
-| Control | 12 | No special training beyond regular college schedule/curriculum |
-
-## Training Duration
-
-The intervention lasted:
+## Intervencao
 
 ```text
-6 weeks
-3 alternate days per week
+6 semanas
+3 dias alternados por semana
 ```
 
-The paper does not provide enough detail about the exact Zercher squat loading, progression model, set and rep scheme, or exercise execution standard.
+O grupo controle manteve apenas a rotina normal.
 
-## Outcome Measures
+## Testes Usados
 
-The dependent variables were:
+- teste isometrico de forca de costas
+- wall sit para forca/resistencia de pernas
 
-- back strength
-- leg strength
+## Resultados: Costas
 
-Tests used:
+| Grupo | Pre | Pos | t-ratio |
+|---|---:|---:|---:|
+| Zercher | 38,86 | 45,93 | 3,25 |
+| Controle | 38,80 | 39,06 | 0,19 |
 
-- isometric back strength test
-- wall sit test
-
-The paper reports the outcomes in seconds.
-
-## Statistical Methods
-
-The authors used:
-
-- dependent t-test
-- ANCOVA
-
-The confidence level was set at:
+ANCOVA reportado:
 
 ```text
-0.05
+F = 56,79
 ```
 
-## Back Strength Results
+## Resultados: Pernas
 
-### Pre/Post Scores
+| Grupo | Pre | Pos | t-ratio |
+|---|---:|---:|---:|
+| Zercher | 41,33 | 48,46 | 5,97 |
+| Controle | 40,86 | 42,06 | 1,40 |
 
-| Group | Pre Mean | Pre SD | Post Mean | Post SD | t-ratio |
-|---|---:|---:|---:|---:|---:|
-| Zercher squat group | 38.86 | 3.35 | 45.93 | 3.25 | 3.25 |
-| Control group | 38.80 | 2.75 | 39.06 | 2.72 | 0.19 |
-
-The experimental group improved more than the control group.
-
-### ANCOVA
-
-| Group | Adjusted Post Mean |
-|---|---:|
-| Zercher squat group | 45.61 |
-| Control group | 38.84 |
-
-Reported F-ratio:
+ANCOVA reportado:
 
 ```text
-56.79
+F = 50,54
 ```
 
-The paper reports this as significant at the 0.05 level.
+## Conclusao Dos Autores
 
-## Leg Strength Results
+O grupo que treinou Zercher melhorou significativamente forca de costas e pernas.
+O grupo controle nao apresentou melhora significativa.
 
-### Pre/Post Scores
+## Interpretacao Pratica
 
-| Group | Pre Mean | Pre SD | Post Mean | Post SD | t-ratio |
-|---|---:|---:|---:|---:|---:|
-| Zercher squat group | 41.33 | 3.15 | 48.46 | 3.88 | 5.97 |
-| Control group | 40.86 | 3.18 | 42.06 | 3.80 | 1.40 |
-
-The experimental group improved more than the control group.
-
-### ANCOVA
-
-| Group | Adjusted Post Mean |
-|---|---:|
-| Zercher squat group | 49.90 |
-| Control group | 41.80 |
-
-Reported F-ratio:
+Para o IronForge, o artigo reforca que o Zercher pode ser um movimento util para
+pernas e tronco. Ainda assim, a aplicacao deve ser conservadora:
 
 ```text
-50.54
+Agachamento Zercher
+3x5
+progredir devagar
+nao buscar falha no comeco
+nao comparar com carga antiga do agachamento com barra
 ```
 
-The paper reports this as significant at the 0.05 level.
+## Limitacoes
 
-## Authors' Conclusions
+- amostra pequena
+- apenas homens jovens jogadores de basquete
+- apenas 6 semanas
+- sem detalhe suficiente de series, repeticoes e progressao
+- desfechos nao sao 1RM de agachamento
+- sem follow-up longo
 
-The paper concluded that:
-
-- Zercher squat exercise significantly improved back strength among basketball players.
-- Zercher squat exercise significantly improved leg strength among basketball players.
-- The control group did not show significant improvements.
-- There were significant differences between experimental and control groups after the intervention.
-
-## Practical Interpretation
-
-For IronForge, this supports the idea that Zercher squat can be a useful lower-body and trunk-strength exercise.
-
-It fits the current use case because:
-
-- it can be trained without a high squat rack
-- it loads the legs
-- it challenges the trunk and upper back
-- it can be progressed as a main lower-body lift
-
-However, it should still be treated as a new lift with conservative loading.
-
-## Practical Programming Notes
-
-Current IronForge plan:
+## Takeaway
 
 ```text
-Zercher squat
-3 sets x 5 reps
-start around 25-30 kg
-target RPE 6-7 at first
-progress only with stable technique and no elbow pain
+O estudo apoia o Zercher como exercicio util para forca de pernas e costas, mas
+nao fornece detalhes suficientes para definir uma progressao precisa.
 ```
-
-This paper does not justify aggressive loading. It only supports that Zercher squat training can improve strength-related outcomes over a short training block.
-
-## Important Limitations
-
-Major limitations:
-
-- only 24 participants
-- only male college basketball players
-- only 6 weeks
-- no detailed loading prescription in the extracted text
-- no detailed set/rep/progression information
-- outcomes were back strength and wall sit performance, not squat 1RM
-- no detailed technique standard
-- no long-term follow-up
-- no detailed reporting of adherence or adverse effects
-
-Because of these limitations, this article should be used as supporting context, not as the main basis for precise programming.
-
-## Quality Note
-
-This paper is less useful for precise training decisions than the EMG squat-variation paper because it does not describe the Zercher squat training protocol in enough detail.
-
-Use it mainly for the broad takeaway:
-
-```text
-Zercher squat training can improve back-strength and leg-strength measures in a short-term basketball-player sample.
-```
-
-Do not use it to decide exact load jumps, weekly volume, or long-term progression.
-
-## IronForge Takeaway
-
-This paper supports keeping Zercher squat in the program as a practical lower-body and trunk-strength movement.
-
-The current conservative setup remains appropriate:
-
-```text
-Zercher squat - 3x5
-```
-
-Historical `Agachamento (barra)` logs should remain separate from new Zercher squat logs.

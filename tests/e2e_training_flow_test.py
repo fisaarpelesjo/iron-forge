@@ -60,7 +60,7 @@ def main():
             session = json.loads(test_session.read_text(encoding="utf-8"))
             exercises = session["exercises"]
             assert len(exercises) == len(list(ods_ops.TRAINING_EXERCISES))
-            assert "Training session generated." in sent_messages[-1]
+            assert "Sessao de treino gerada." in sent_messages[-1]
 
             first_log_id = exercises[0]["log_id"]
 
@@ -71,21 +71,21 @@ def main():
             assert "80.0kg RPE 8" in sent_messages[-1]
 
             telegram_poller.handle("/status", session)
-            assert "Training" in sent_messages[-1]
+            assert "Treino" in sent_messages[-1]
             assert "1/13" in sent_messages[-1]
 
-            telegram_poller.handle("/undo", session)
+            telegram_poller.handle("/desfazer", session)
             undone_log = _fetch_log(test_db, first_log_id)
             assert undone_log["weight"] is None
             assert undone_log["rpe"] is None
-            assert "Undone" in sent_messages[-1]
+            assert "Desfeito" in sent_messages[-1]
 
             telegram_poller.handle("80,5", session)
             relogged = _fetch_log(test_db, first_log_id)
             assert relogged["weight"] == 80.5
             assert relogged["rpe"] is None
 
-            print("End-to-end training flow test passed.")
+            print("Teste ponta a ponta do fluxo de treino passou.")
         finally:
             db_ops.DB_PATH = original_db_path
             db_ops.DATA_DIR = original_data_dir

@@ -1,62 +1,55 @@
-# Portability
+# Portabilidade
 
-IronForge is designed to run on common desktop and server environments.
+O IronForge foi feito para rodar em maquinas comuns e fracas.
 
-The core runtime is:
+Runtime:
 
 ```text
 Python 3.10+
 SQLite
 requests
 rich
-outbound internet access
+internet de saida
 ```
 
-There is no Docker requirement, no web server requirement, and no database
-server requirement.
+Nao precisa de Docker, servidor web ou banco externo.
 
-## Supported Environments
+## Ambientes Esperados
 
-Expected to work:
+Deve funcionar em:
 
 - Windows
 - Linux
 - macOS
 - WSL
-- Raspberry Pi or similar small Linux machines with Python 3.10+
-- low-cost VPS
-- old laptops that can run modern Python
+- Raspberry Pi ou Linux pequeno com Python 3.10+
+- VPS barata
+- notebook antigo com Python moderno
 
-Not expected to work without extra setup:
+Pode dar trabalho em:
 
-- machines without Python 3.10+
-- locked-down machines where dependencies cannot be installed
-- machines without internet
-- mobile OS environments without a real Python runtime
-- terminals that cannot render ANSI color correctly
+- sistema sem Python 3.10+
+- maquina sem internet
+- ambiente sem permissao para instalar pacote
+- terminal sem suporte ANSI
+- pasta sincronizada com lock agressivo
 
-## Python Command Differences
+## Comandos Python
 
-Windows often supports:
+Windows:
 
 ```bat
 py -3 start_bot.py
 python start_bot.py
 ```
 
-Linux and macOS often use:
+Linux/macOS:
 
 ```bash
 python3 start_bot.py
 ```
 
-Some systems also map `python` to Python 3:
-
-```bash
-python start_bot.py
-```
-
-Check with:
+Verifique:
 
 ```bash
 python --version
@@ -64,17 +57,13 @@ python3 --version
 py -3 --version
 ```
 
-Use whichever command reports Python 3.10 or newer.
-
-## Dependency Installation
-
-Install dependencies from the repository root:
+## Instalar Dependencias
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If `pip` points to the wrong Python:
+Se `pip` apontar para Python errado:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -82,134 +71,40 @@ python3 -m pip install -r requirements.txt
 py -3 -m pip install -r requirements.txt
 ```
 
-## Windows
+## Cor No Terminal
 
-Recommended command:
+O banner usa `rich`. Se o terminal nao renderizar cor, o bot ainda funciona. Cor
+e cosmetica.
 
-```bat
-start_bot.bat
-```
+## Maquina Fraca
 
-or:
+O app faz:
 
-```bat
-py -3 start_bot.py
-```
+- requests HTTP simples
+- leituras/escritas SQLite
+- JSON local
+- sleep entre polls
 
-The batch launcher:
+Gargalos provaveis:
 
-- changes to the project directory
-- tries `py -3 start_bot.py`
-- falls back to `python start_bot.py`
-- shows the process exit code
-- pauses before closing
+- internet ruim
+- Python mal instalado
+- permissao de arquivo
+- lock do SQLite
+- OneDrive ou sincronizador
 
-## Linux
+## OneDrive
 
-Recommended command:
+SQLite costuma funcionar em pasta sincronizada, mas locks podem acontecer.
 
-```bash
-python3 start_bot.py
-```
+Se travar:
 
-For a long-running shell session, run it inside `tmux`, `screen`, or a service
-manager.
+1. feche visualizadores SQLite
+2. pare outros bots/processos Python
+3. pause sincronizacao
+4. mova o repo para pasta nao sincronizada se persistir
 
-## macOS
-
-Recommended command:
-
-```bash
-python3 start_bot.py
-```
-
-If Python is missing, install it through python.org, Homebrew, or another
-trusted package manager.
-
-## WSL
-
-WSL should behave like Linux.
-
-Use:
-
-```bash
-python3 start_bot.py
-```
-
-Be careful if the repository is stored under the Windows filesystem and synced
-by OneDrive. SQLite locks can be more annoying there.
-
-## Terminal Color
-
-The banner uses `rich`.
-
-If color works, the banner shows fire and metal colors.
-
-If color does not work, the app should still run. Color is cosmetic.
-
-Possible terminal issues:
-
-- old Windows console
-- terminal with ANSI disabled
-- CI logs that show raw escape codes
-- redirected output
-
-The bot does not depend on colored output.
-
-## Weak Machine Requirements
-
-The app is lightweight.
-
-It does:
-
-- simple HTTP requests
-- local SQLite reads/writes
-- JSON file reads/writes
-- periodic sleeps
-
-It does not do:
-
-- video processing
-- browser automation at runtime
-- heavy machine learning
-- web serving
-- large batch jobs
-
-The usual bottleneck is not CPU. It is more likely to be:
-
-- internet reliability
-- Python installation
-- file permissions
-- SQLite locks
-- synced folders
-
-## OneDrive And Synced Folders
-
-The current workspace path is under OneDrive.
-
-SQLite usually works there, but sync tools can sometimes lock files or create
-conflicts.
-
-If database lock issues appear:
-
-1. close DB Browser for SQLite
-2. close other Python processes
-3. pause OneDrive sync
-4. move the repo to a non-synced folder
-5. retry the command
-
-## Fresh Machine Checklist
-
-1. Install Python 3.10+.
-2. Clone the repository.
-3. Enter the repository root.
-4. Install dependencies.
-5. Create `.env` from `.env.example`.
-6. Run smoke test.
-7. Run E2E test.
-8. Start the bot.
-
-Commands:
+## Checklist De Maquina Nova
 
 ```bash
 pip install -r requirements.txt
@@ -219,7 +114,7 @@ python tests/e2e_training_flow_test.py
 python start_bot.py
 ```
 
-Linux/macOS variant:
+Linux/macOS:
 
 ```bash
 python3 -m pip install -r requirements.txt

@@ -1,4 +1,4 @@
-"""SQLite operations for IronForge data."""
+"""Operacoes SQLite para os dados do IronForge."""
 
 import sqlite3
 from itertools import groupby
@@ -8,7 +8,7 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 DB_PATH = DATA_DIR / "ironforge.db"
 
 DEFAULT_EXERCISES = [
-    {"name": "Zercher squat", "sets": 3, "reps": 5},
+    {"name": "Agachamento Zercher", "sets": 3, "reps": 5},
     {"name": "Supino reto (barra)", "sets": 3, "reps": 5},
     {"name": "Remada curvada (barra)", "sets": 3, "reps": 8},
     {"name": "Desenvolvimento (barra em pé)", "sets": 3, "reps": 5},
@@ -19,8 +19,8 @@ DEFAULT_EXERCISES = [
     {"name": "Encolhimento com barra", "sets": 2, "reps": 10},
     {"name": "Rosca direta", "sets": 3, "reps": 8},
     {"name": "Tríceps testa", "sets": 3, "reps": 8},
-    {"name": "Wrist curl (barra)", "sets": 2, "reps": 15},
-    {"name": "Reverse wrist curl (barra)", "sets": 2, "reps": 15},
+    {"name": "Rosca de punho (barra)", "sets": 2, "reps": 15},
+    {"name": "Rosca de punho reversa (barra)", "sets": 2, "reps": 15},
 ]
 
 

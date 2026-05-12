@@ -1,21 +1,12 @@
-# Architecture
+# Arquitetura
 
-IronForge is organized as a small Python package with script entry points.
+O IronForge e um pacote Python pequeno com entry points de script. A ideia e
+manter tudo simples: Python, SQLite e API HTTP do Telegram.
 
-The architecture favors direct, explicit modules instead of a framework. This
-keeps the project easy to run on weak machines and easy to debug on Windows,
-Linux, macOS, WSL, and small VPS environments.
-
-## Directory Layout
+## Estrutura
 
 ```text
 .
-├── .env.example
-├── .gitignore
-├── AGENTS.md
-├── CLAUDE.md
-├── README.md
-├── requirements.txt
 ├── start_bot.py
 ├── start_bot.bat
 ├── data/
@@ -32,9 +23,9 @@ Linux, macOS, WSL, and small VPS environments.
     └── e2e_training_flow_test.py
 ```
 
-## Import Rules
+## Regra De Imports
 
-Application modules should be imported from the package:
+Codigo de aplicacao deve ser importado pelo pacote:
 
 ```python
 from ironforge import db_ops
@@ -43,12 +34,10 @@ from ironforge import telegram_poller
 from ironforge import banner
 ```
 
-Do not add new root-level application modules unless they are entry points like
-`start_bot.py`.
+Evite novos modulos de aplicacao na raiz. A raiz deve ficar para launchers,
+configuracao, docs e testes.
 
-## Dependency Direction
-
-The intended dependency direction is:
+## Direcao De Dependencias
 
 ```text
 start_bot.py
@@ -60,120 +49,66 @@ start_bot.py
        -> ironforge.db_ops
 ```
 
-`db_ops.py` should stay at the bottom. It should not import the bot layer.
+`db_ops.py` fica na base e nao deve importar a camada do bot.
 
-`ods_ops.py` may import `db_ops.py`.
+## Inicializacao
 
-`telegram_poller.py` may import both `ods_ops.py` and `db_ops.py`.
+`python start_bot.py`:
 
-Tests may import all runtime modules.
+1. importa o banner
+2. importa o poller Telegram
+3. imprime o banner
+4. imprime mensagem de inicio em PT-BR
+5. chama `telegram_poller.main()`
 
-## Launch Sequence
+## Polling
 
-When `python start_bot.py` runs:
+O bot usa long polling. Isso significa:
 
-1. Python loads `start_bot.py`.
-2. `start_bot.py` imports `ironforge.banner`.
-3. `start_bot.py` imports `ironforge.telegram_poller`.
-4. `telegram_poller.py` reads `.env` and builds the Telegram API base URL.
-5. `start_bot.py` calls `banner.print_banner()`.
-6. `start_bot.py` prints `Starting training bot...`.
-7. `start_bot.py` calls `telegram_poller.main()`.
-8. `telegram_poller.main()` starts long polling.
+- nao precisa de servidor publico
+- nao precisa abrir porta
+- precisa apenas de internet de saida
+- chama `getUpdates` periodicamente
 
-## Long Polling Model
+## Estado Local
 
-The bot uses Telegram long polling, not webhooks.
+Versionado:
 
-That means:
-
-- No public HTTP server is required.
-- No port forwarding is required.
-- The bot process periodically calls Telegram `getUpdates`.
-- The machine running the bot only needs outbound internet access.
-
-The polling loop sleeps for three seconds between update checks.
-
-## Local State Model
-
-There are three kinds of files:
-
-Versioned project files:
-
-- Python code
+- codigo
 - docs
-- tests
+- testes
 - `requirements.txt`
 - `data/ironforge.db`
 
-Local state files:
+Nao versionado:
 
 - `.env`
 - `session.json`
 - `pending_log.csv`
-
-Ignored SQLite sidecar files:
-
+- `temp/`
 - `data/*.db-shm`
 - `data/*.db-wal`
-
-Ignored Python cache files:
-
 - `__pycache__/`
-- `*.pyc`
-- `*.pyo`
-- `*.pyd`
 
-## Why `session.json` Exists
+## Por Que `session.json` Existe
 
-The database stores all durable training logs.
+O banco guarda o historico duravel. `session.json` so aponta qual sessao esta
+ativa e quais `log_id` devem receber as proximas cargas.
 
-The active bot flow still needs to know which session is currently being filled.
-That is what `session.json` does.
+## Por Que O Pacote Chama `ironforge`
 
-It contains:
+O app se chama IronForge no README, no banner e no banco `ironforge.db`.
+`ironforge` tambem e um nome valido e limpo para pacote Python.
 
-- current date
-- current `session_id`
-- exercise list
-- each exercise `log_id`
+## O Que Evitar
 
-The bot uses those `log_id` values to update the right SQLite rows when the
-user sends weight input.
+Nao:
 
-## Why The Package Is Named `ironforge`
-
-The app is called IronForge in the README, banner, and database name
-`ironforge.db`.
-
-The repository directory has a longer descriptive name, but that name includes
-hyphens and Portuguese words. It is not a good Python import namespace.
-
-`ironforge` is short, valid as a Python package name, and aligned with the app
-identity.
-
-## Design Constraints
-
-The project should remain:
-
-- easy to run locally
-- easy to inspect with SQLite tools
-- independent of a web framework
-- independent of a server process besides the Telegram poller
-- compatible with weak machines
-- compatible with Windows, Linux, and macOS
-
-Avoid adding infrastructure unless the project clearly needs it.
-
-## What Not To Do
-
-Do not:
-
-- move exercise source of truth out of SQLite
-- version `.env`
-- version `session.json`
-- version SQLite WAL/SHM sidecar files
-- add root-level compatibility wrappers unless explicitly needed
-- make Telegram messages Portuguese while the project standard is English
-- start using a web server just to receive Telegram messages
-- mutate the real database from tests unless the test explicitly says so
+- tirar exercicios do SQLite para voltar a ODS
+- versionar `.env`
+- versionar `session.json`
+- versionar sidecars SQLite
+- recriar wrappers na raiz sem necessidade
+- voltar a interface principal para ingles
+- criar servidor web para Telegram sem motivo claro
+- fazer teste mutar o banco real sem isolamento

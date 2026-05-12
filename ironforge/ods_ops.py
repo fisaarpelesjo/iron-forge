@@ -1,4 +1,4 @@
-"""Training operations for IronForge."""
+"""Operacoes de treino do IronForge."""
 
 import json
 from datetime import date
@@ -12,25 +12,28 @@ TRAINING_EXERCISES = range(0, 13)
 TREINO_EXERCISES = TRAINING_EXERCISES
 
 MUSCLE_MAP = {
-    "Agachamento (barra)":             ["Quadriceps", "Glutes"],
-    "Zercher squat":                   ["Quadriceps", "Glutes", "Core"],
-    "Stiff com barra":                 ["Hamstrings", "Glutes"],
-    "Supino reto (barra)":             ["Chest"],
-    "Remada curvada (barra)":          ["Lats"],
-    "Pullover (barra)":                ["Lats"],
-    "Desenvolvimento (barra em pé)":   ["Front delts"],
-    "Desenvolvimento (barra em pe)":   ["Front delts"],
-    "Remada alta (barra)":             ["Side delts", "Traps"],
-    "Elevação lateral":                ["Side delts"],
-    "Elevacao lateral":                ["Side delts"],
-    "Remada curvada alta no peito (barra)": ["Rear delts", "Traps"],
-    "Crucifixo invertido":             ["Rear delts"],
+    "Agachamento (barra)":             ["Quadriceps", "Gluteos"],
+    "Agachamento Zercher":             ["Quadriceps", "Gluteos", "Core"],
+    "Zercher squat":                   ["Quadriceps", "Gluteos", "Core"],
+    "Stiff com barra":                 ["Posteriores", "Gluteos"],
+    "Supino reto (barra)":             ["Peitoral"],
+    "Remada curvada (barra)":          ["Dorsais"],
+    "Pullover (barra)":                ["Dorsais"],
+    "Desenvolvimento (barra em pé)":   ["Deltoide anterior"],
+    "Desenvolvimento (barra em pe)":   ["Deltoide anterior"],
+    "Remada alta (barra)":             ["Deltoide lateral", "Trapezio"],
+    "Elevação lateral":                ["Deltoide lateral"],
+    "Elevacao lateral":                ["Deltoide lateral"],
+    "Remada curvada alta no peito (barra)": ["Deltoide posterior", "Trapezio"],
+    "Crucifixo invertido":             ["Deltoide posterior"],
     "Rosca direta":                    ["Biceps"],
     "Tríceps testa":                   ["Triceps"],
     "Triceps testa":                   ["Triceps"],
-    "Wrist curl (barra)":              ["Forearms"],
-    "Reverse wrist curl (barra)":      ["Forearms"],
-    "Encolhimento com barra":          ["Traps"],
+    "Wrist curl (barra)":              ["Antebracos"],
+    "Reverse wrist curl (barra)":      ["Antebracos"],
+    "Rosca de punho (barra)":          ["Antebracos"],
+    "Rosca de punho reversa (barra)":  ["Antebracos"],
+    "Encolhimento com barra":          ["Trapezio"],
 }
 
 
@@ -44,8 +47,8 @@ def read_previous_weights():
 
 def generate_training():
     """
-    Create training session in SQLite.
-    Returns (exercises, session_id) where exercises is list of
+    Cria uma sessao de treino no SQLite.
+    Retorna (exercises, session_id), onde exercises e uma lista de
     {log_id, name, sets, reps}.
     """
     all_ex = read_exercises()

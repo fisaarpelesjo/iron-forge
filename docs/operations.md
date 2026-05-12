@@ -1,87 +1,75 @@
-# Operations
+# Operacao
 
-This document explains how to run, maintain, and troubleshoot IronForge.
+Este documento explica como rodar, manter e depurar o IronForge.
 
-## Daily Use
+## Uso Diario
 
-1. Start the bot.
-2. Open Telegram.
-3. Send `/generate`.
-4. Train.
-5. Send weight inputs as you finish exercises.
-6. Use `/status` to check progress.
-7. Use `/undo` if the last logged exercise was wrong.
-8. Stop the bot with `Ctrl+C` when finished.
+1. Inicie o bot.
+2. Abra o Telegram.
+3. Envie `/gerar`.
+4. Treine.
+5. Envie cargas conforme terminar os exercicios.
+6. Use `/status` para ver progresso.
+7. Use `/desfazer` se registrou algo errado.
+8. Pare o bot com `Ctrl+C`.
 
-## Start The Bot
+## Iniciar O Bot
 
-Cross-platform:
+Multiplataforma:
 
 ```bash
 python start_bot.py
 ```
 
-Linux/macOS if needed:
+Linux/macOS se necessario:
 
 ```bash
 python3 start_bot.py
 ```
 
-Windows wrapper:
+Windows:
 
 ```bat
 start_bot.bat
 ```
 
-## First-Time Setup
-
-From the repository root:
+## Primeiro Setup
 
 ```bash
 pip install -r requirements.txt
-```
-
-Create `.env`:
-
-```bash
 copy .env.example .env
-```
-
-On Linux/macOS:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set:
-
-```text
-TELEGRAM_TOKEN=your_real_token
-```
-
-Then run:
-
-```bash
 python tests/smoke_test.py
 python tests/e2e_training_flow_test.py
 ```
 
-## Bot Commands
+Linux/macOS:
 
-```text
-/generate     Create a new training session
-/exercises    List active exercises
-/warmup       Show warmup
-/volume       Show muscle volume estimate
-/status       Show current progress
-/undo         Clear the last logged exercise
-/help         Show help
+```bash
+python3 -m pip install -r requirements.txt
+cp .env.example .env
+python3 tests/smoke_test.py
+python3 tests/e2e_training_flow_test.py
 ```
 
-The `/warmup` list is compact, uses PT-BR exercise names to match the user's
-local training vocabulary, and avoids prescribed warmup loads.
+Edite `.env` e configure:
 
-Weight input:
+```text
+TELEGRAM_TOKEN=seu_token_real
+```
+
+## Comandos Do Bot
+
+```text
+/gerar          Cria uma nova sessao de treino
+/exercicios     Lista exercicios ativos
+/aquecimento    Mostra aquecimento
+/volume         Mostra estimativa de volume
+/status         Mostra progresso
+/desfazer       Limpa o ultimo registro
+/ajuda          Mostra ajuda
+```
+
+Entrada de carga:
 
 ```text
 80
@@ -90,54 +78,55 @@ Weight input:
 80,5 8
 ```
 
-## Files To Back Up
+## Arquivos Para Backup
 
-Most important:
+Principal:
 
 ```text
 data/ironforge.db
 ```
 
-Optional local state:
+Estado local opcional:
 
 ```text
 session.json
 ```
 
-Secret token:
+Segredo local:
 
 ```text
 .env
 ```
 
-Do not publish `.env`.
+Nao publique `.env`.
 
-## Files That Should Stay Local
+## Arquivos Que Ficam Locais
 
-These should not be committed:
+Nao commitar:
 
 ```text
 .env
 session.json
 pending_log.csv
+temp/
 data/*.db-shm
 data/*.db-wal
 __pycache__/
 *.pyc
 ```
 
-## Updating Exercises
+## Atualizar Exercicios
 
-The exercise catalog lives in SQLite.
+O catalogo de exercicios fica no SQLite.
 
-Code path:
+Codigo:
 
 ```text
 ironforge/db_ops.py
-  -> exercises table
+  -> tabela exercises
 ```
 
-Use the existing helpers where possible:
+Use os helpers quando possivel:
 
 ```python
 from ironforge import db_ops
@@ -146,142 +135,56 @@ db_ops.list_exercises()
 db_ops.replace_exercises([...])
 ```
 
-Do not replace the SQLite exercise source of truth with a spreadsheet.
+Nao substituir a fonte da verdade SQLite por planilha.
 
-Current catalog note:
+Catalogo atual:
 
-- `Zercher squat` is the first exercise and is programmed as `3x5`.
-- It replaced `Agachamento (barra)` for future generated sessions because the
-  current setup does not have a proper squat rack.
-- Historical `Agachamento (barra)` logs should stay as historical records unless
-  a dedicated migration is requested.
-- If the catalog changes again, update both `data/ironforge.db` and
-  `ironforge/db_ops.py`.
+- `Agachamento Zercher` e o primeiro exercicio e esta como `3x5`.
+- Ele substitui o agachamento com barra em sessoes futuras por falta de rack.
+- Historico antigo pode continuar com nomes antigos.
+- Se o catalogo mudar de novo, atualizar `data/ironforge.db` e `ironforge/db_ops.py`.
 
-## Common Problems
+## Problemas Comuns
 
-### `TELEGRAM_TOKEN not found in .env`
+### `TELEGRAM_TOKEN nao encontrado no .env`
 
-Cause:
+Crie `.env` a partir de `.env.example` e configure o token.
 
-- missing `.env`
-- wrong filename
-- missing `TELEGRAM_TOKEN=` line
+### Bot inicia mas ignora mensagens
 
-Fix:
+Possiveis causas:
 
-```bash
-copy .env.example .env
-```
+- `CHAT_ID` diferente
+- token de outro bot
+- updates antigos no Telegram
 
-Then edit `.env`.
+### `Nenhuma sessao ativa. Use /gerar.`
 
-### Bot starts but ignores messages
+Voce enviou carga antes de gerar treino, ou `session.json` foi apagado.
 
-Possible causes:
+### SQLite travado
 
-- message is coming from a chat ID different from `CHAT_ID`
-- token belongs to a different bot
-- Telegram update offset has old updates
+Feche DB Browser, outros processos Python e pause sincronizacao de OneDrive se
+isso persistir.
 
-Check `CHAT_ID` in:
+## Checklist De Manutencao
 
-```text
-ironforge/telegram_poller.py
-```
-
-### `No active session. Use /generate.`
-
-Cause:
-
-- user sent a weight before generating a session
-- `session.json` was deleted
-
-Fix:
-
-```text
-/generate
-```
-
-### `Old session format. Use /generate...`
-
-Cause:
-
-- `session.json` exists but does not contain `log_id` values
-- the file was created by an older version
-
-Fix:
-
-```text
-/generate
-```
-
-### SQLite database is locked
-
-Possible causes:
-
-- DB Browser for SQLite is open
-- another Python process is using the DB
-- OneDrive or another sync tool is touching the file
-
-Fix:
-
-1. close DB viewers
-2. stop other bot processes
-3. pause sync
-4. retry
-
-### Raw color codes appear in terminal
-
-Cause:
-
-- terminal does not render ANSI escape codes
-
-Impact:
-
-- cosmetic only
-- bot can still run
-
-Fix:
-
-- use Windows Terminal, PowerShell, a modern terminal emulator, or Linux/macOS
-  terminal
-
-## Maintenance Checklist
-
-Before pushing a change:
+Antes de push:
 
 ```bash
 python tests/smoke_test.py
 python tests/e2e_training_flow_test.py
 ```
 
-For Python syntax checks:
+Checagem de sintaxe:
 
 ```bash
 python -m py_compile start_bot.py ironforge/*.py tests/*.py
 ```
 
-Before committing:
+Antes de commitar:
 
 ```bash
 git status --short
 git diff --check
-```
-
-Commit style:
-
-```text
-type: short title
-
-Body explaining technical context, scope, and reason.
-```
-
-Examples:
-
-```text
-feat: add training summary command
-fix: preserve rpe when formatting status
-refactor: split telegram command handlers
-docs: expand system documentation
 ```

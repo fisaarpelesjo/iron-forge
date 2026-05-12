@@ -30,7 +30,7 @@ def main():
     if not db_path.exists():
         raise FileNotFoundError(f"Missing database: {db_path}")
 
-    print("Smoke test passed.")
+    print("Teste de fumaca passou.")
 
 
 if __name__ == "__main__":

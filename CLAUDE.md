@@ -1,51 +1,48 @@
-# Repository Notes
+# Notas Do Repositorio
 
-IronForge is a training log with a Telegram bot and SQLite storage.
+IronForge e um diario de treino com bot do Telegram e armazenamento SQLite.
 
-## Core Modules
+## Modulos Principais
 
-Runtime modules live in the `ironforge/` package. Import application modules
-from that package, for example `from ironforge import db_ops`.
+Os modulos de runtime ficam no pacote `ironforge/`. Importe codigo de aplicacao
+com `from ironforge import db_ops`, `ods_ops` ou `telegram_poller`.
 
 ### `ironforge/telegram_poller.py`
 
-Telegram long-polling bot.
+Bot Telegram com long polling.
 
-Commands:
+Comandos principais em PT-BR:
 
-- `/generate` creates a SQLite training session and sends the exercise table.
-- `/exercises` lists current exercises.
-- `/warmup` shows the warmup protocol.
-- `/volume` shows sets by muscle group.
-- `/status` shows active-session progress.
-- `/undo` clears the last logged exercise.
-- `/help` lists commands.
-- `80` or `80 8` logs weight and optional RPE.
+- `/gerar` cria uma sessao de treino e envia a tabela de exercicios.
+- `/exercicios` lista exercicios atuais.
+- `/aquecimento` mostra o aquecimento.
+- `/volume` mostra series por grupo muscular.
+- `/status` mostra progresso da sessao ativa.
+- `/desfazer` limpa o ultimo exercicio registrado.
+- `/ajuda` lista comandos.
+- `80` ou `80 8` registra carga e RPE opcional.
 
-All user-facing commands and bot messages should be English.
-Exercise names may use PT-BR when they reflect the user's local training terminology,
-including the `/warmup` exercise list. Telegram commands remain English.
+Aliases antigos em ingles podem permanecer para compatibilidade.
 
 ### `ironforge/ods_ops.py`
 
-Training operation helpers:
+Helpers de operacao de treino:
 
-- `generate_training()` creates a session and training log rows in SQLite.
-- `gerar_treino()` remains as a compatibility alias.
-- `read_exercises()` reads exercises from SQLite.
-- `read_previous_weights()` returns latest weights from SQLite.
-- `write_session()` writes active session state to `session.json`.
+- `generate_training()` cria sessao e linhas de treino no SQLite.
+- `gerar_treino()` permanece como alias de compatibilidade.
+- `read_exercises()` le exercicios do SQLite.
+- `read_previous_weights()` retorna cargas recentes do SQLite.
+- `write_session()` escreve estado ativo em `session.json`.
 
-Current training catalog note:
+Catalogo atual:
 
-- First active exercise is `Zercher squat` (`3x5`), replacing
-  `Agachamento (barra)` for future generated sessions because there is no
-  proper squat rack.
-- Historical `Agachamento (barra)` logs may remain in SQLite.
+- Primeiro exercicio ativo: `Agachamento Zercher` (`3x5`).
+- Substitui o agachamento com barra para sessoes futuras por falta de rack adequado.
+- Logs historicos podem permanecer com nomes antigos.
 
 ### `ironforge/db_ops.py`
 
-SQLite operations:
+Operacoes SQLite:
 
 - `get_or_seed_exercises()`
 - `list_exercises()`
@@ -55,23 +52,23 @@ SQLite operations:
 - `get_last_weights()`
 - `count_filled()`
 
-## Data And State
+## Dados E Estado
 
-- Versioned database: `data/ironforge.db`.
-- Local state: `session.json`, not versioned.
-- Secret config: `.env`, not versioned.
-- SQLite sidecar files (`*.db-shm`, `*.db-wal`) are not versioned.
+- Banco versionado: `data/ironforge.db`.
+- Estado local: `session.json`, nao versionado.
+- Configuracao secreta: `.env`, nao versionada.
+- Sidecars SQLite (`*.db-shm`, `*.db-wal`) nao sao versionados.
 
-The SQLite database is the source of truth for exercises. Do not move exercise management back to an ODS sheet.
-Keep catalog changes synchronized between `data/ironforge.db` and
-`ironforge/db_ops.py` defaults when they should also apply to fresh databases.
+SQLite e a fonte da verdade dos exercicios. Nao mover a gestao de exercicios de volta para ODS.
+Mudancas de catalogo devem sincronizar `data/ironforge.db` e `ironforge/db_ops.py`
+quando tambem precisarem valer para bancos novos.
 
-## Commit Style
+## Estilo De Commit
 
 Use Conventional Commits:
 
 ```text
 feat: add sync command
 
-Explain the technical context, scope, and reason for the change.
+Explique contexto tecnico, escopo e motivo da mudanca.
 ```

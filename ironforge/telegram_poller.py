@@ -35,7 +35,7 @@ def send(text):
             timeout=10,
         )
     except Exception as e:
-        print(f"Send error: {e}")
+        print(f"Erro ao enviar mensagem: {e}")
 
 
 def load_session():
@@ -59,8 +59,8 @@ def get_updates(offset=0):
 
 def _format_training_msg(exercises):
     prev = db_ops.get_last_weights()
-    lines = ["<pre>Training\n"]
-    lines.append(f"{'Exercise':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
+    lines = ["<pre>Treino\n"]
+    lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
     lines.append("-" * 36 + "\n")
     for ex in exercises:
         kg = prev.get(ex["name"], 0)
@@ -71,8 +71,8 @@ def _format_training_msg(exercises):
 
 
 def _format_exercises_msg(exercises):
-    lines = ["<pre>Exercise list\n"]
-    lines.append(f"{'#':>2} {'Exercise':<22} {'S':>2} {'R':>3}\n")
+    lines = ["<pre>Lista de exercicios\n"]
+    lines.append(f"{'#':>2} {'Exercicio':<22} {'S':>2} {'R':>3}\n")
     lines.append("-" * 34 + "\n")
     for idx, ex in enumerate(exercises, start=1):
         lines.append(f"{idx:>2} {ex['name'][:22]:<22} {ex['sets']:>2} {ex['reps']:>3}\n")
@@ -84,14 +84,14 @@ def handle_generate():
     try:
         exercises, session_id = ods_ops.generate_training()
     except Exception as e:
-        send(f"Error generating training session: {e}")
+        send(f"Erro ao gerar sessao de treino: {e}")
         return
 
     ods_ops.write_session(exercises, session_id)
 
     msg = _format_training_msg(exercises)
     send(msg)
-    send("Training session generated. Send <code>weight rpe</code> for each exercise.")
+    send("Sessao de treino gerada. Envie <code>carga rpe</code> para cada exercicio.")
 
 
 def handle(text, session):
@@ -99,7 +99,7 @@ def handle(text, session):
     exercises = session.get("exercises", [])
 
     if not exercises or "log_id" not in exercises[0]:
-        send("Old session format. Use /generate to start a new training session.")
+        send("Formato de sessao antigo. Use /gerar para iniciar uma nova sessao de treino.")
         return
 
     log_ids = [ex["log_id"] for ex in exercises]
@@ -108,28 +108,28 @@ def handle(text, session):
 
     if text.lower() in ("/status", "status"):
         if filled >= total:
-            send(f"Training complete. {total}/{total} ✓")
+            send(f"Treino completo. {total}/{total} ✓")
         else:
             ex = exercises[filled]
             done = "\n".join(f"✓ {exercises[i]['name']}" for i in range(filled))
-            msg = f"Training — {filled}/{total}\n"
+            msg = f"Treino — {filled}/{total}\n"
             if done:
                 msg += done + "\n"
             msg += f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']})"
             send(msg)
         return
 
-    if text.lower() in ("/undo", "undo"):
+    if text.lower() in ("/desfazer", "desfazer", "/undo", "undo"):
         if filled == 0:
-            send("Nothing to undo.")
+            send("Nada para desfazer.")
             return
         last_ex = exercises[filled - 1]
         db_ops.update_log_weight(last_ex["log_id"], None, None)
-        send(f"↩ Undone: <b>{last_ex['name']}</b>")
+        send(f"↩ Desfeito: <b>{last_ex['name']}</b>")
         return
 
     if filled >= total:
-        send("Training is already complete. Use /status.")
+        send("O treino ja esta completo. Use /status.")
         return
 
     parts = text.replace(",", ".").split()
@@ -137,7 +137,7 @@ def handle(text, session):
         weight = float(parts[0])
         rpe = int(parts[1]) if len(parts) > 1 else None
     except (ValueError, IndexError):
-        send("Format: <code>80 8</code> (weight + RPE) or <code>80</code> (weight only)")
+        send("Formato: <code>80 8</code> (carga + RPE) ou <code>80</code> (somente carga)")
         return
 
     ex = exercises[filled]
@@ -148,7 +148,7 @@ def handle(text, session):
     if new_filled >= total:
         send(
             f"<b>{ex['name']}</b> ✓ {weight}kg{rpe_str} ({new_filled}/{total})\n\n"
-            f"Training complete."
+            f"Treino completo."
         )
     else:
         nxt = exercises[new_filled]
@@ -160,11 +160,11 @@ def handle(text, session):
 
 def main():
     if not TOKEN:
-        print("TELEGRAM_TOKEN not found in .env")
+        print("TELEGRAM_TOKEN nao encontrado no .env")
         return
 
     offset = 0
-    print("IronForge bot polling... (Ctrl+C to stop)")
+    print("Bot IronForge em polling... (Ctrl+C para parar)")
 
     try:
         while True:
@@ -180,23 +180,23 @@ def main():
 
                 lower = text.strip().lower()
 
-                if lower in ("/help", "help"):
+                if lower in ("/ajuda", "ajuda", "/help", "help"):
                     send(
-                        "<b>IronForge — Commands</b>\n\n"
-                        "/generate — creates a training session\n"
-                        "/exercises — lists current exercises\n"
-                        "/warmup — shows the warmup list\n"
-                        "/volume — sets by muscle group\n"
-                        "/status — current exercise and progress\n"
-                        "/undo — clears the last logged entry\n"
-                        "/help — this message\n\n"
-                        "<b>Log weight:</b>\n"
-                        "<code>80</code> — weight only\n"
-                        "<code>80 8</code> — weight + RPE"
+                        "<b>IronForge — Comandos</b>\n\n"
+                        "/gerar — cria uma sessao de treino\n"
+                        "/exercicios — lista os exercicios atuais\n"
+                        "/aquecimento — mostra o aquecimento\n"
+                        "/volume — volume por grupo muscular\n"
+                        "/status — exercicio atual e progresso\n"
+                        "/desfazer — apaga o ultimo registro\n"
+                        "/ajuda — esta mensagem\n\n"
+                        "<b>Registrar carga:</b>\n"
+                        "<code>80</code> — somente carga\n"
+                        "<code>80 8</code> — carga + RPE"
                     )
                     continue
 
-                if lower in ("/exercises", "exercises"):
+                if lower in ("/exercicios", "exercicios", "/exercises", "exercises"):
                     exercises = ods_ops.read_exercises()
                     send(_format_exercises_msg(exercises))
                     continue
@@ -208,16 +208,16 @@ def main():
                         muscles = ods_ops.MUSCLE_MAP.get(ex["name"], ["Other"])
                         for m in muscles:
                             muscle_sets[m] = muscle_sets.get(m, 0) + ex["sets"]
-                    lines = ["<b>Volume by muscle</b>\n", "<i>sets/session → sets/week (~3.5x)</i>\n"]
+                    lines = ["<b>Volume por musculo</b>\n", "<i>series/sessao → series/semana (~3.5x)</i>\n"]
                     for muscle, sets in sorted(muscle_sets.items()):
                         weekly = round(sets * 3.5, 1)
                         lines.append(f"{muscle}: <b>{sets}</b> → ~{weekly:.0f}/sem")
                     send("\n".join(lines))
                     continue
 
-                if lower in ("/warmup", "warmup"):
+                if lower in ("/aquecimento", "aquecimento", "/warmup", "warmup"):
                     send(
-                        "<b>Warmup</b>\n\n"
+                        "<b>Aquecimento</b>\n\n"
                         "1. Agachamento livre — 1x10\n"
                         "2. Dobradiça de quadril — 1x10\n"
                         "3. Sustentação Zercher com barra vazia — 1x15s\n"
@@ -228,20 +228,20 @@ def main():
                     )
                     continue
 
-                if lower.startswith("/generate"):
+                if lower.startswith("/gerar") or lower.startswith("/generate"):
                     handle_generate()
                     continue
 
                 session = load_session()
                 if session is None:
-                    send("No active session. Use /generate.")
+                    send("Nenhuma sessao ativa. Use /gerar.")
                     continue
 
                 handle(text, session)
 
             time.sleep(3)
     except KeyboardInterrupt:
-        print("\nBot stopped.")
+        print("\nBot encerrado.")
 
 
 if __name__ == "__main__":

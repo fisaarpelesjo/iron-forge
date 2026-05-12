@@ -1,45 +1,54 @@
-# Telegram Bot
+# Bot Telegram
 
-The Telegram bot lives in:
+O bot Telegram fica em:
 
 ```text
 ironforge/telegram_poller.py
 ```
 
-It uses Telegram long polling through the HTTP API.
+Ele usa long polling pela API HTTP do Telegram. Nao ha webhook nem servidor web.
 
-## Configuration
+## Configuracao
 
-The bot reads the token from:
+O token fica em:
 
 ```text
 .env
 ```
 
-Expected format:
+Formato esperado:
 
 ```text
-TELEGRAM_TOKEN=your_token_here
+TELEGRAM_TOKEN=seu_token_aqui
 ```
 
-The parser is intentionally small:
+O bot so responde ao `CHAT_ID` configurado no codigo.
 
-- opens `.env`
-- strips each line
-- looks for a key named `TELEGRAM_TOKEN`
-- returns the value after the first `=`
+## Comandos Principais
 
-The current chat allowlist is stored in code as:
-
-```python
-CHAT_ID = "6575275306"
+```text
+/gerar          cria uma sessao de treino
+/exercicios     lista exercicios atuais
+/aquecimento    mostra o aquecimento
+/volume         mostra volume por musculo
+/status         mostra progresso
+/desfazer       apaga o ultimo registro
+/ajuda          mostra ajuda
 ```
 
-Only messages from this chat ID are handled.
+Aliases em ingles podem continuar funcionando por compatibilidade:
+
+```text
+/generate
+/exercises
+/warmup
+/undo
+/help
+```
 
 ## Startup
 
-The normal startup path is:
+Fluxo normal:
 
 ```text
 start_bot.py
@@ -47,199 +56,89 @@ start_bot.py
   -> telegram_poller.main()
 ```
 
-If the token is missing, `main()` prints:
+Se o token estiver ausente, o bot imprime:
 
 ```text
-TELEGRAM_TOKEN not found in .env
+TELEGRAM_TOKEN nao encontrado no .env
 ```
 
-and returns without polling.
+e nao inicia o polling.
 
-## Polling Loop
+## Loop De Polling
 
-`main()` starts with:
+`main()`:
 
-```python
-offset = 0
-```
+1. inicia `offset = 0`
+2. chama `get_updates(offset)`
+3. atualiza `offset` para `update_id + 1`
+4. ignora mensagens de outros chats
+5. despacha comandos ou entrada de carga
+6. dorme 3 segundos
 
-Then it loops forever:
+`Ctrl+C` encerra o processo.
 
-1. call `get_updates(offset)`
-2. iterate returned updates
-3. update `offset` to `update_id + 1`
-4. ignore messages from any chat other than `CHAT_ID`
-5. ignore updates without text
-6. dispatch commands or weight input
-7. sleep for 3 seconds
+## `/gerar`
 
-`KeyboardInterrupt` prints:
+Cria uma nova sessao de treino.
 
-```text
-Bot stopped.
-```
-
-## Telegram API Calls
-
-`get_updates(offset)` calls:
-
-```text
-GET https://api.telegram.org/bot<TOKEN>/getUpdates
-```
-
-Parameters:
-
-```python
-{
-    "offset": offset,
-    "timeout": 3,
-}
-```
-
-`send(text)` calls:
-
-```text
-POST https://api.telegram.org/bot<TOKEN>/sendMessage
-```
-
-JSON body:
-
-```python
-{
-    "chat_id": CHAT_ID,
-    "text": text,
-    "parse_mode": "HTML",
-}
-```
-
-Messages may use Telegram HTML formatting such as:
-
-- `<b>bold</b>`
-- `<i>italic</i>`
-- `<code>monospace</code>`
-- `<pre>preformatted</pre>`
-
-## Commands
-
-### `/help`
-
-Shows command list and weight logging examples.
-
-Also accepts:
-
-```text
-help
-```
-
-### `/generate`
-
-Creates a new training session.
-
-The current first generated exercise is `Zercher squat` (`3x5`), because it
-replaced `Agachamento (barra)` in the active SQLite exercise catalog.
-
-Flow:
+Fluxo:
 
 ```text
 handle_generate()
   -> ods_ops.generate_training()
   -> ods_ops.write_session(exercises, session_id)
   -> _format_training_msg(exercises)
-  -> send(training table)
-  -> send("Training session generated...")
+  -> send(tabela do treino)
+  -> send("Sessao de treino gerada...")
 ```
 
-This command writes to:
+O primeiro exercicio gerado atualmente e `Agachamento Zercher` (`3x5`).
 
-- `data/ironforge.db`
-- `session.json`
+## `/exercicios`
 
-### `/exercises`
+Le os exercicios ativos do SQLite e envia uma tabela compacta.
 
-Reads active exercises from SQLite and sends a compact table.
+## `/aquecimento`
 
-Also accepts:
+Mostra um aquecimento curto, sem cargas prescritas, usando nomes em PT-BR:
 
 ```text
-exercises
+1. Agachamento livre — 1x10
+2. Dobradiça de quadril — 1x10
+3. Sustentação Zercher com barra vazia — 1x15s
+4. Agachamento Zercher com barra vazia — 1x5
+5. Agachamento Zercher leve — 1x3
+6. Supino reto com barra vazia — 1x8
+7. Supino reto leve — 1x3
 ```
 
-### `/warmup`
+## `/volume`
 
-Sends the hardcoded warmup protocol.
+Le exercicios ativos, usa `ods_ops.MUSCLE_MAP` e calcula series por grupo
+muscular. A estimativa semanal usa aproximadamente `3.5x` sessoes por semana.
 
-The warmup is intentionally compact because the full workout already takes about
-two hours. The exercise names in this list use PT-BR local training terminology,
-while the command itself remains `/warmup`. It avoids prescribed warmup loads and
-uses simple "barra vazia" or "leve" cues instead.
+## `/status`
 
-Also accepts:
+Carrega `session.json`, conta quantos logs tem carga e informa:
+
+- progresso atual
+- exercicios ja feitos
+- proximo exercicio
+- treino completo quando todos os logs estao preenchidos
+
+## `/desfazer`
+
+Limpa o ultimo exercicio preenchido da sessao ativa.
+
+Se nada foi preenchido, responde:
 
 ```text
-warmup
+Nada para desfazer.
 ```
 
-### `/volume`
+## Entrada De Carga
 
-Reads active exercises, maps each exercise to muscles through
-`ods_ops.MUSCLE_MAP`, then sends estimated volume.
-
-The weekly estimate is:
-
-```python
-weekly = round(sets * 3.5, 1)
-```
-
-Also accepts:
-
-```text
-volume
-```
-
-### `/status`
-
-Loads the active session and counts filled logs.
-
-If all logs are filled, it sends:
-
-```text
-Training complete. total/total
-```
-
-Otherwise it sends:
-
-- current progress
-- completed exercises
-- current exercise
-
-Also accepts:
-
-```text
-status
-```
-
-### `/undo`
-
-Clears the last filled exercise in the active session.
-
-Flow:
-
-```text
-load active session
-count filled log rows
-if filled == 0 -> send "Nothing to undo."
-else -> update latest filled log row weight=NULL and rpe=NULL
-```
-
-Also accepts:
-
-```text
-undo
-```
-
-## Weight Input
-
-Supported examples:
+Exemplos:
 
 ```text
 80
@@ -248,22 +147,22 @@ Supported examples:
 80,5 8
 ```
 
-Parsing rules:
+Regras:
 
-1. replace comma with dot
-2. split on whitespace
-3. parse first part as `float`
-4. parse second part as `int` if present
+1. troca virgula por ponto
+2. separa por espacos
+3. primeiro valor vira `float`
+4. segundo valor vira `int` se existir
 
-Invalid input receives:
+Entrada invalida recebe:
 
 ```text
-Format: 80 8 (weight + RPE) or 80 (weight only)
+Formato: 80 8 (carga + RPE) ou 80 (somente carga)
 ```
 
-## Active Session Format
+## Formato Da Sessao Ativa
 
-`session.json` must contain:
+`session.json` contem:
 
 ```json
 {
@@ -272,7 +171,7 @@ Format: 80 8 (weight + RPE) or 80 (weight only)
   "exercises": [
     {
       "log_id": 1,
-      "name": "Zercher squat",
+      "name": "Agachamento Zercher",
       "sets": 3,
       "reps": 5
     }
@@ -280,41 +179,34 @@ Format: 80 8 (weight + RPE) or 80 (weight only)
 }
 ```
 
-If the session is missing or old-format, the bot asks the user to run
-`/generate`.
+Se a sessao estiver ausente, o bot pede `/gerar`.
 
-## Important Failure Modes
+## Falhas Comuns
 
-Missing `.env`:
+Token ausente:
 
-- bot prints a local error and does not poll
+- bot nao inicia polling
 
-Wrong Telegram token:
+Token errado:
 
-- API calls fail
-- send errors may be printed locally
+- chamadas da API falham
 
-Wrong chat ID:
+Chat ID errado:
 
-- bot receives updates but ignores them
+- bot recebe updates mas ignora mensagens
 
-Missing `session.json`:
+`session.json` ausente:
 
-- weight input sends `No active session. Use /generate.`
+- entrada de carga responde `Nenhuma sessao ativa. Use /gerar.`
 
-Old `session.json` format:
+SQLite travado:
 
-- bot sends `Old session format. Use /generate to start a new training session.`
+- fechar visualizadores de banco
+- parar outros processos Python
+- pausar OneDrive se necessario
 
-SQLite locked:
+## Regra De Seguranca
 
-- usually caused by another process holding the database file
-- more likely in synced folders such as OneDrive
-- close SQLite viewers and retry
-
-## Safety Rule
-
-The bot never trusts Telegram input to directly choose a database row.
-
-It uses the active `session.json` log IDs and the count of filled rows to choose
-the next exercise.
+O bot nao deixa o usuario escolher diretamente uma linha do banco. Ele usa os
+`log_id` da sessao ativa e a contagem de linhas preenchidas para decidir qual
+exercicio recebera a proxima carga.

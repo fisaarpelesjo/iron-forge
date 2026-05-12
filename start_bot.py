@@ -6,7 +6,7 @@ from ironforge import telegram_poller
 
 def main():
     banner.print_banner()
-    print("Starting training bot...\n")
+    print("Iniciando bot de treino...\n")
     telegram_poller.main()
     return 0
 

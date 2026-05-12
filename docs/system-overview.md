@@ -1,189 +1,81 @@
-# System Overview
+# Visao Geral Do Sistema
 
-IronForge is a small training log controlled from Telegram.
+IronForge e um diario de treino controlado pelo Telegram.
 
-The project has three core responsibilities:
+Responsabilidades principais:
 
-1. Keep a versioned local SQLite database at `data/ironforge.db`.
-2. Run a Telegram long-polling bot that accepts training commands from a phone.
-3. Store the currently active training session in local state at `session.json`.
+1. manter o SQLite versionado em `data/ironforge.db`
+2. rodar um bot Telegram com long polling
+3. guardar a sessao ativa em `session.json`
 
-The project is intentionally simple. There is no web server, no container
-runtime, no background queue, and no external database server. The runtime is
-Python plus SQLite plus the Telegram HTTP API.
-
-## Main User Flow
-
-The normal workout flow is:
+## Fluxo Principal
 
 ```text
-User sends /generate in Telegram
-  -> bot creates a training session in SQLite
-  -> bot creates one training log row per active exercise
-  -> bot writes session.json with the active exercise list and log IDs
-  -> bot sends the exercise table back to Telegram
+Usuario envia /gerar
+  -> bot cria uma sessao no SQLite
+  -> bot cria um log por exercicio ativo
+  -> bot escreve session.json
+  -> bot envia a tabela do treino
 
-User sends 80 or 80 8
-  -> bot loads session.json
-  -> bot counts filled log rows in SQLite
-  -> bot finds the next unfilled exercise
-  -> bot writes weight and optional RPE into SQLite
-  -> bot replies with progress and next exercise
+Usuario envia 80 ou 80 8
+  -> bot carrega session.json
+  -> bot conta logs preenchidos
+  -> bot atualiza o proximo exercicio pendente
+  -> bot responde com progresso
 
-User sends /undo
-  -> bot loads session.json
-  -> bot counts filled log rows in SQLite
-  -> bot clears the most recent filled log row
-  -> bot replies with the undone exercise
+Usuario envia /desfazer
+  -> bot encontra o ultimo log preenchido
+  -> bot limpa carga e RPE
 ```
 
-## Runtime Entry Points
-
-Use these commands from the repository root.
+## Entry Points
 
 ```bash
 python start_bot.py
 ```
 
-This is the cross-platform launcher. It prints the terminal banner and starts
-the Telegram polling loop.
-
-On Windows, this also works:
+No Windows:
 
 ```bat
 start_bot.bat
 ```
 
-The batch file is only a Windows wrapper. It delegates to `start_bot.py`.
+## Arquivos Principais
 
-## Package Layout
+`start_bot.py`: launcher multiplataforma.
 
-Application code lives in the `ironforge/` Python package:
+`ironforge/banner.py`: banner colorido do terminal.
 
-```text
-ironforge/
-├── __init__.py
-├── banner.py
-├── db_ops.py
-├── ods_ops.py
-└── telegram_poller.py
-```
+`ironforge/telegram_poller.py`: comandos, polling e mensagens Telegram.
 
-Test scripts live in `tests/`:
+`ironforge/ods_ops.py`: gera sessoes e escreve `session.json`.
 
-```text
-tests/
-├── smoke_test.py
-└── e2e_training_flow_test.py
-```
+`ironforge/db_ops.py`: acesso SQLite.
 
-Documentation lives in `docs/`.
+`tests/`: testes locais.
 
-Versioned data lives in `data/`.
+## Fonte Da Verdade
 
-Local state and secrets stay at the repository root but are not versioned:
+SQLite e a fonte da verdade para exercicios e logs.
+
+`session.json` nao e fonte da verdade; ele so guarda o contexto da sessao ativa.
+
+## Catalogo Atual
 
 ```text
-.env
-session.json
-pending_log.csv
+Agachamento Zercher - 3x5
 ```
 
-## Responsibilities By File
+Esse exercicio substitui o agachamento com barra para sessoes futuras porque o
+setup atual nao tem rack adequado. Historico antigo permanece como historico.
 
-`start_bot.py`
+## Idioma
 
-- Cross-platform launcher.
-- Imports `ironforge.banner`.
-- Imports `ironforge.telegram_poller`.
-- Prints the banner.
-- Starts the bot by calling `telegram_poller.main()`.
+A interface principal deve ser em PT-BR:
 
-`start_bot.bat`
+- comandos principais do Telegram
+- mensagens do bot
+- docs de uso
+- mensagens de launcher
 
-- Windows-only wrapper.
-- Changes into the repository directory.
-- Runs `py -3 start_bot.py`.
-- Falls back to `python start_bot.py` if the Python launcher is not available.
-- Prints the exit code when the bot stops.
-
-`ironforge/banner.py`
-
-- Owns the terminal ASCII banner.
-- Uses `rich` for color when available.
-- Falls back to plain text if `rich` cannot be imported.
-- Does not start the bot.
-
-`ironforge/telegram_poller.py`
-
-- Owns Telegram communication.
-- Reads `TELEGRAM_TOKEN` from `.env`.
-- Polls `getUpdates`.
-- Sends messages through `sendMessage`.
-- Parses Telegram commands and weight inputs.
-- Uses `ods_ops` and `db_ops` for training state and persistence.
-
-`ironforge/ods_ops.py`
-
-- Owns training-session helper behavior.
-- Reads active exercises from SQLite through `db_ops`.
-- Creates a training session.
-- Creates one training log row per active exercise.
-- Writes `session.json`.
-- Keeps `gerar_treino()` as a compatibility alias.
-
-`ironforge/db_ops.py`
-
-- Owns SQLite access.
-- Creates tables if missing.
-- Reads and writes exercises.
-- Creates training sessions.
-- Creates and updates training logs.
-- Stores diet foods, diet entries, and diet targets.
-
-`tests/smoke_test.py`
-
-- Checks that the local environment is minimally usable.
-- Verifies Python version, imports, dependencies, and database presence.
-
-`tests/e2e_training_flow_test.py`
-
-- Runs an isolated local training flow.
-- Uses a temporary SQLite database and temporary `session.json`.
-- Does not call Telegram.
-- Does not mutate `data/ironforge.db`.
-
-## Source Of Truth
-
-SQLite is the source of truth for exercises and logs.
-
-`session.json` is not the source of truth. It is only the active-session pointer
-used by the bot to know which log IDs belong to the current workout.
-
-The exercise catalog should not be moved back to ODS or spreadsheet files.
-
-## Current Training Catalog Note
-
-The first active exercise is currently:
-
-```text
-Zercher squat - 3x5
-```
-
-It replaced `Agachamento (barra)` for future generated sessions because the
-current home gym setup does not have a proper squat rack. The change is a
-forward-looking catalog update. Historical `Agachamento (barra)` logs remain
-valid historical records.
-
-## User-Facing Language
-
-All user-facing project interface text should be English:
-
-- Telegram commands
-- Telegram bot messages
-- README usage instructions
-- launcher messages
-- future user-visible text
-
-Historical exercise names already stored in SQLite may remain as-is unless a
-task explicitly asks for a data migration.
+Aliases antigos em ingles podem continuar existindo por compatibilidade.

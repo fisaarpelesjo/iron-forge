@@ -1,130 +1,142 @@
 # IronForge
 
-Training and diet log with a Telegram bot and a local SQLite database.
+Diario de treino e dieta com bot do Telegram e banco SQLite local.
 
-## Overview
+## Visao Geral
 
-IronForge lets you control a training session from Telegram:
+O IronForge permite controlar uma sessao de treino pelo Telegram:
 
-- `/generate` creates a new training session in SQLite.
-- Sending `80` logs 80 kg for the next pending exercise.
-- Sending `80 8` logs 80 kg with RPE 8.
-- `/status` shows progress in the active session.
-- `/undo` clears the last logged exercise.
+- `/gerar` cria uma nova sessao de treino no SQLite.
+- Enviar `80` registra 80 kg no proximo exercicio pendente.
+- Enviar `80 8` registra 80 kg com RPE 8.
+- `/status` mostra o progresso da sessao ativa.
+- `/desfazer` apaga o ultimo exercicio registrado.
 
-The main local database is `data/ironforge.db`. The active Telegram session is stored in `session.json`, which is intentionally not versioned.
+O banco principal e `data/ironforge.db`. A sessao ativa fica em `session.json`,
+que e estado local e nao deve ser versionado.
 
-## Files
+## Estrutura
 
 ```text
 ironforge/
-├── start_bot.py             # Cross-platform launcher
-├── start_bot.bat            # Windows launcher wrapper
+├── start_bot.py             # launcher multiplataforma
+├── start_bot.bat            # wrapper Windows
 ├── ironforge/
-│   ├── banner.py            # Terminal banner
-│   ├── telegram_poller.py   # Telegram bot long polling
-│   ├── ods_ops.py           # Training session operations
-│   └── db_ops.py            # SQLite operations
+│   ├── banner.py            # banner do terminal
+│   ├── telegram_poller.py   # bot Telegram com long polling
+│   ├── ods_ops.py           # operacoes de sessao de treino
+│   └── db_ops.py            # operacoes SQLite
 ├── tests/
-│   ├── smoke_test.py        # Local setup check
-│   └── e2e_training_flow_test.py # Local end-to-end flow test
-├── session.json             # Active session state, not versioned
-├── .env.example             # Environment template
-├── .env                     # TELEGRAM_TOKEN=..., not versioned
+│   ├── smoke_test.py        # checagem basica do ambiente
+│   └── e2e_training_flow_test.py # teste ponta a ponta local
+├── docs/
+│   └── index.md             # indice da documentacao detalhada
+├── session.json             # estado local, nao versionado
+├── .env.example             # modelo de ambiente
+├── .env                     # TELEGRAM_TOKEN=..., nao versionado
 └── data/
-    └── ironforge.db         # Versioned SQLite database
+    └── ironforge.db         # banco SQLite versionado
 ```
 
-## Telegram Commands
+## Comandos Do Telegram
 
 ```text
-/generate     Create a SQLite training session and show the exercise table
-/exercises    List the current exercises, sets, reps, and last weights
-/warmup       Show the recommended warmup
-/volume       Show sets by muscle group and weekly estimate
-/status       Show current exercise and session progress
-/undo         Clear the last logged exercise
-/help         Show command help
+/gerar          Cria uma sessao de treino SQLite e mostra a tabela
+/exercicios     Lista exercicios atuais, series, repeticoes e cargas recentes
+/aquecimento    Mostra o aquecimento
+/volume         Mostra series por grupo muscular e estimativa semanal
+/status         Mostra exercicio atual e progresso da sessao
+/desfazer       Limpa o ultimo registro de carga
+/ajuda          Mostra ajuda
 ```
 
-## Logging Weights
+Aliases antigos em ingles ainda podem funcionar por compatibilidade:
+`/generate`, `/exercises`, `/warmup`, `/undo`, `/help`.
+
+## Registro De Carga
 
 ```text
-80        Log 80 kg for the next pending exercise
-80 8      Log 80 kg and RPE 8
-80,5 8    Decimal comma is accepted and stored as 80.5 kg
+80        Registra 80 kg no proximo exercicio pendente
+80 8      Registra 80 kg e RPE 8
+80,5 8    Virgula decimal e aceita e salva como 80.5 kg
 ```
 
-## Training Flow
+## Fluxo Do Treino
 
 ```text
-/generate
+/gerar
   -> db_ops.get_or_seed_exercises()
   -> db_ops.create_session(date)
-  -> db_ops.log_exercise(...) for each active exercise
-  -> ods_ops.write_session(...) writes session.json
+  -> db_ops.log_exercise(...) para cada exercicio ativo
+  -> ods_ops.write_session(...) escreve session.json
 
 "80 8"
-  -> load active session
-  -> find the next exercise without weight
+  -> carrega a sessao ativa
+  -> encontra o proximo exercicio sem carga
   -> db_ops.update_log_weight(log_id, 80.0, 8)
 
-/undo
-  -> find the last filled exercise
+/desfazer
+  -> encontra o ultimo exercicio preenchido
   -> db_ops.update_log_weight(log_id, None, None)
 ```
 
-## Current Training Catalog
+## Catalogo Atual
 
-The active catalog starts with:
+O catalogo ativo comeca com:
 
 ```text
-Zercher squat    3x5
+Agachamento Zercher    3x5
 ```
 
-`Zercher squat` replaced `Agachamento (barra)` for future generated sessions
-because the current home setup does not have a proper squat rack. Historical
-`Agachamento (barra)` logs remain historical data and do not need to be renamed.
+Ele substituiu o agachamento com barra para sessoes futuras porque o setup atual
+nao tem rack de agachamento adequado. Logs historicos com nomes antigos continuam
+como historico.
 
 ## Setup
 
-1. Install Python 3.10+.
-2. Install dependencies:
+1. Instale Python 3.10+.
+2. Instale dependencias:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create `.env`:
+3. Crie `.env`:
 
 ```bash
-echo "TELEGRAM_TOKEN=your_token_here" > .env
+copy .env.example .env
 ```
 
-4. Check the setup:
+No Linux/macOS:
+
+```bash
+cp .env.example .env
+```
+
+4. Rode a checagem basica:
 
 ```bash
 python tests/smoke_test.py
 ```
 
-5. Run the local end-to-end test:
+5. Rode o teste ponta a ponta local:
 
 ```bash
 python tests/e2e_training_flow_test.py
 ```
 
-6. Start the bot:
+6. Inicie o bot:
 
 ```bash
 python start_bot.py
 ```
 
-On Linux and macOS, use `python3 start_bot.py` if `python` points to Python 2.
-On Windows, you can also run `start_bot.bat`.
+No Linux/macOS, use `python3 start_bot.py` se `python` apontar para Python 2.
+No Windows, tambem pode rodar `start_bot.bat`.
 
-## Database
+## Banco De Dados
 
-Main tables:
+Tabelas principais:
 
 - `exercises`
 - `training_sessions`
@@ -133,11 +145,13 @@ Main tables:
 - `diet_targets`
 - `diet_entries`
 
-The exercise catalog is stored in SQLite. Do not replace it with an ODS sheet.
+O catalogo de exercicios fica no SQLite. Nao substituir por ODS.
 
-## Internal API
+## API Interna
 
 ```python
+from ironforge import db_ops, ods_ops
+
 db_ops.get_or_seed_exercises()
 db_ops.create_session(date_iso, training_type="TREINO")
 db_ops.log_exercise(session_id, name, sets, reps, sort_order)
@@ -151,16 +165,15 @@ ods_ops.read_exercises()
 ods_ops.read_previous_weights()
 ```
 
-Import these APIs from the package, for example `from ironforge import db_ops`.
-`ironforge.ods_ops.gerar_treino()` is kept as a compatibility alias for older local scripts.
+`ironforge.ods_ops.gerar_treino()` existe como alias de compatibilidade.
 
-## Detailed Documentation
+## Documentacao Detalhada
 
-Detailed project documentation is in [`docs/index.md`](docs/index.md):
+A documentacao detalhada fica em [`docs/index.md`](docs/index.md):
 
-- architecture and module boundaries
-- SQLite schema and source-of-truth rules
-- Telegram command flow
-- smoke and end-to-end tests
-- portability across Windows, Linux, macOS, and weak machines
-- operations and troubleshooting
+- arquitetura e fronteiras dos modulos
+- schema SQLite e regras de fonte da verdade
+- fluxo dos comandos Telegram
+- testes smoke e ponta a ponta
+- portabilidade entre Windows, Linux, macOS e maquinas fracas
+- operacao e troubleshooting
