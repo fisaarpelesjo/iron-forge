@@ -57,10 +57,10 @@ def get_updates(offset=0):
         return []
 
 
-def _format_gerar_msg(exercises):
+def _format_training_msg(exercises):
     prev = db_ops.get_last_weights()
-    lines = ["<pre>Treino\n"]
-    lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
+    lines = ["<pre>Training\n"]
+    lines.append(f"{'Exercise':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
     lines.append("-" * 36 + "\n")
     for ex in exercises:
         kg = prev.get(ex["name"], 0)
@@ -71,8 +71,8 @@ def _format_gerar_msg(exercises):
 
 
 def _format_exercises_msg(exercises):
-    lines = ["<pre>Lista de exercicios\n"]
-    lines.append(f"{'#':>2} {'Exercicio':<22} {'S':>2} {'R':>3}\n")
+    lines = ["<pre>Exercise list\n"]
+    lines.append(f"{'#':>2} {'Exercise':<22} {'S':>2} {'R':>3}\n")
     lines.append("-" * 34 + "\n")
     for idx, ex in enumerate(exercises, start=1):
         lines.append(f"{idx:>2} {ex['name'][:22]:<22} {ex['sets']:>2} {ex['reps']:>3}\n")
@@ -80,18 +80,18 @@ def _format_exercises_msg(exercises):
     return "".join(lines)
 
 
-def handle_gerar():
+def handle_generate():
     try:
-        exercises, session_id = ods_ops.gerar_treino()
+        exercises, session_id = ods_ops.generate_training()
     except Exception as e:
-        send(f"Erro ao gerar treino: {e}")
+        send(f"Error generating training session: {e}")
         return
 
     ods_ops.write_session(exercises, session_id)
 
-    msg = _format_gerar_msg(exercises)
+    msg = _format_training_msg(exercises)
     send(msg)
-    send("Treino gerado! Mande <code>carga rpe</code> para cada exercicio.")
+    send("Training session generated. Send <code>weight rpe</code> for each exercise.")
 
 
 def handle(text, session):
@@ -99,7 +99,7 @@ def handle(text, session):
     exercises = session.get("exercises", [])
 
     if not exercises or "log_id" not in exercises[0]:
-        send("Sessão antiga. Use /gerar para iniciar novo treino.")
+        send("Old session format. Use /generate to start a new training session.")
         return
 
     log_ids = [ex["log_id"] for ex in exercises]
@@ -108,11 +108,11 @@ def handle(text, session):
 
     if text.lower() in ("/status", "status"):
         if filled >= total:
-            send(f"Treino completo! {total}/{total} ✓")
+            send(f"Training complete. {total}/{total} ✓")
         else:
             ex = exercises[filled]
             done = "\n".join(f"✓ {exercises[i]['name']}" for i in range(filled))
-            msg = f"Treino — {filled}/{total}\n"
+            msg = f"Training — {filled}/{total}\n"
             if done:
                 msg += done + "\n"
             msg += f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']})"
@@ -121,39 +121,39 @@ def handle(text, session):
 
     if text.lower() in ("/undo", "undo"):
         if filled == 0:
-            send("Nada para desfazer.")
+            send("Nothing to undo.")
             return
         last_ex = exercises[filled - 1]
         db_ops.update_log_weight(last_ex["log_id"], None, None)
-        send(f"↩ Desfeito: <b>{last_ex['name']}</b>")
+        send(f"↩ Undone: <b>{last_ex['name']}</b>")
         return
 
     if filled >= total:
-        send("Treino já completo! Use /status.")
+        send("Training is already complete. Use /status.")
         return
 
     parts = text.replace(",", ".").split()
     try:
-        carga = float(parts[0])
+        weight = float(parts[0])
         rpe = int(parts[1]) if len(parts) > 1 else None
     except (ValueError, IndexError):
-        send("Formato: <code>80 8</code> (carga + RPE) ou <code>80</code> (só carga)")
+        send("Format: <code>80 8</code> (weight + RPE) or <code>80</code> (weight only)")
         return
 
     ex = exercises[filled]
-    db_ops.update_log_weight(ex["log_id"], carga, rpe)
+    db_ops.update_log_weight(ex["log_id"], weight, rpe)
     new_filled = filled + 1
 
     rpe_str = f" RPE {rpe}" if rpe is not None else ""
     if new_filled >= total:
         send(
-            f"<b>{ex['name']}</b> ✓ {carga}kg{rpe_str} ({new_filled}/{total})\n\n"
-            f"Treino completo!"
+            f"<b>{ex['name']}</b> ✓ {weight}kg{rpe_str} ({new_filled}/{total})\n\n"
+            f"Training complete."
         )
     else:
         nxt = exercises[new_filled]
         send(
-            f"<b>{ex['name']}</b> ✓ {carga}kg{rpe_str} ({new_filled}/{total})\n"
+            f"<b>{ex['name']}</b> ✓ {weight}kg{rpe_str} ({new_filled}/{total})\n"
             f"▶ {nxt['name']} ({nxt['sets']}x{nxt['reps']})"
         )
 
@@ -182,21 +182,21 @@ def main():
 
                 if lower in ("/help", "help"):
                     send(
-                        "<b>IronForge — Comandos</b>\n\n"
-                        "/gerar — gera treino\n"
-                        "/exercicios — lista os exercicios atuais\n"
-                        "/aquecimento — lista de aquecimento\n"
-                        "/volume — series por grupo muscular\n"
-                        "/status — exercicio atual e progresso\n"
-                        "/undo — desfaz último registro\n"
-                        "/help — esta mensagem\n\n"
-                        "<b>Registrar peso:</b>\n"
-                        "<code>80</code> — só carga\n"
-                        "<code>80 8</code> — carga + RPE"
+                        "<b>IronForge — Commands</b>\n\n"
+                        "/generate — creates a training session\n"
+                        "/exercises — lists current exercises\n"
+                        "/warmup — shows the warmup list\n"
+                        "/volume — sets by muscle group\n"
+                        "/status — current exercise and progress\n"
+                        "/undo — clears the last logged entry\n"
+                        "/help — this message\n\n"
+                        "<b>Log weight:</b>\n"
+                        "<code>80</code> — weight only\n"
+                        "<code>80 8</code> — weight + RPE"
                     )
                     continue
 
-                if lower in ("/exercicios", "exercicios", "/lista", "lista"):
+                if lower in ("/exercises", "exercises"):
                     exercises = ods_ops.read_exercises()
                     send(_format_exercises_msg(exercises))
                     continue
@@ -205,48 +205,48 @@ def main():
                     exercises = ods_ops.read_exercises()
                     muscle_sets = {}
                     for ex in exercises:
-                        muscles = ods_ops.MUSCLE_MAP.get(ex["name"], ["Outro"])
+                        muscles = ods_ops.MUSCLE_MAP.get(ex["name"], ["Other"])
                         for m in muscles:
                             muscle_sets[m] = muscle_sets.get(m, 0) + ex["sets"]
-                    lines = ["<b>Volume por músculo</b>\n", "<i>séries/sessão → séries/semana (~3.5x)</i>\n"]
+                    lines = ["<b>Volume by muscle</b>\n", "<i>sets/session → sets/week (~3.5x)</i>\n"]
                     for muscle, sets in sorted(muscle_sets.items()):
                         weekly = round(sets * 3.5, 1)
                         lines.append(f"{muscle}: <b>{sets}</b> → ~{weekly:.0f}/sem")
                     send("\n".join(lines))
                     continue
 
-                if lower in ("/aquecimento", "aquecimento"):
+                if lower in ("/warmup", "warmup"):
                     send(
-                        "<b>Aquecimento</b>\n\n"
-                        "1. Pular corda ou polichinelo — 3 min\n"
-                        "2. Agachamento livre — 2x10\n"
+                        "<b>Warmup</b>\n\n"
+                        "1. Jump rope or jumping jacks — 3 min\n"
+                        "2. Bodyweight squat — 2x10\n"
                         "3. Hip hinge (stiff) — 2x10\n"
-                        "4. Círculos de braço — 15 frente + 15 trás\n"
-                        "5. Flexão de braço leve — 1x10\n"
-                        "6. Remada leve (barra vazia ou elástico) — 1x12\n"
-                        "7. Agachamento barra vazia — 1x10\n"
-                        "8. Agachamento ~50% carga — 1x5\n"
-                        "9. Agachamento ~70% carga — 1x3\n"
-                        "10. Supino barra vazia — 1x10\n"
-                        "11. Supino ~60% carga — 1x5\n"
-                        "12. Desenvolvimento leve — 1x8"
+                        "4. Arm circles — 15 forward + 15 backward\n"
+                        "5. Easy push-up — 1x10\n"
+                        "6. Easy row (empty bar or band) — 1x12\n"
+                        "7. Empty-bar squat — 1x10\n"
+                        "8. Squat ~50% working weight — 1x5\n"
+                        "9. Squat ~70% working weight — 1x3\n"
+                        "10. Empty-bar bench press — 1x10\n"
+                        "11. Bench press ~60% working weight — 1x5\n"
+                        "12. Easy overhead press — 1x8"
                     )
                     continue
 
-                if lower.startswith("/gerar"):
-                    handle_gerar()
+                if lower.startswith("/generate"):
+                    handle_generate()
                     continue
 
                 session = load_session()
                 if session is None:
-                    send("Nenhuma sessão ativa. Use /gerar.")
+                    send("No active session. Use /generate.")
                     continue
 
                 handle(text, session)
 
             time.sleep(3)
     except KeyboardInterrupt:
-        print("\nBot encerrado.")
+        print("\nBot stopped.")
 
 
 if __name__ == "__main__":

@@ -8,27 +8,28 @@ import db_ops
 
 SESSION_FILE = Path(__file__).parent / "session.json"
 
-TREINO_EXERCISES = range(0, 13)
+TRAINING_EXERCISES = range(0, 13)
+TREINO_EXERCISES = TRAINING_EXERCISES
 
 MUSCLE_MAP = {
-    "Agachamento (barra)":             ["Quadriceps", "Gluteos"],
-    "Stiff com barra":                 ["Isquiotibiais", "Gluteos"],
-    "Supino reto (barra)":             ["Peitoral"],
-    "Remada curvada (barra)":          ["Dorsais"],
-    "Pullover (barra)":                ["Dorsais"],
-    "Desenvolvimento (barra em pé)":   ["Deltóide anterior"],
-    "Desenvolvimento (barra em pe)":   ["Deltóide anterior"],
-    "Remada alta (barra)":             ["Deltóide lateral", "Trapezio"],
-    "Elevação lateral":                ["Deltóide lateral"],
-    "Elevacao lateral":                ["Deltóide lateral"],
-    "Remada curvada alta no peito (barra)": ["Deltóide posterior", "Trapezio"],
-    "Crucifixo invertido":             ["Deltóide posterior"],
+    "Agachamento (barra)":             ["Quadriceps", "Glutes"],
+    "Stiff com barra":                 ["Hamstrings", "Glutes"],
+    "Supino reto (barra)":             ["Chest"],
+    "Remada curvada (barra)":          ["Lats"],
+    "Pullover (barra)":                ["Lats"],
+    "Desenvolvimento (barra em pé)":   ["Front delts"],
+    "Desenvolvimento (barra em pe)":   ["Front delts"],
+    "Remada alta (barra)":             ["Side delts", "Traps"],
+    "Elevação lateral":                ["Side delts"],
+    "Elevacao lateral":                ["Side delts"],
+    "Remada curvada alta no peito (barra)": ["Rear delts", "Traps"],
+    "Crucifixo invertido":             ["Rear delts"],
     "Rosca direta":                    ["Biceps"],
     "Tríceps testa":                   ["Triceps"],
     "Triceps testa":                   ["Triceps"],
-    "Wrist curl (barra)":              ["Antebraco"],
-    "Reverse wrist curl (barra)":      ["Antebraco"],
-    "Encolhimento com barra":          ["Trapezio"],
+    "Wrist curl (barra)":              ["Forearms"],
+    "Reverse wrist curl (barra)":      ["Forearms"],
+    "Encolhimento com barra":          ["Traps"],
 }
 
 
@@ -40,14 +41,14 @@ def read_previous_weights():
     return db_ops.get_last_weights()
 
 
-def gerar_treino():
+def generate_training():
     """
     Create training session in SQLite.
     Returns (exercises, session_id) where exercises is list of
     {log_id, name, sets, reps}.
     """
     all_ex = read_exercises()
-    exercises = [all_ex[i] for i in TREINO_EXERCISES if i < len(all_ex)]
+    exercises = [all_ex[i] for i in TRAINING_EXERCISES if i < len(all_ex)]
 
     today = date.today().strftime("%Y-%m-%d")
     session_id = db_ops.create_session(today)
@@ -63,6 +64,10 @@ def gerar_treino():
         })
 
     return session_exercises, session_id
+
+
+def gerar_treino():
+    return generate_training()
 
 
 def write_session(exercises, session_id=None):
