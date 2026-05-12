@@ -9,5 +9,7 @@ __pycache__/
 .env
 session.json
 pending_log.csv
+temp/
 data/*.db-shm
 data/*.db-wal
+temp

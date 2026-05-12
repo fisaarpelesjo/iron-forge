@@ -33,6 +33,8 @@ material that support the project but are not part of the software architecture:
 - [Training frequency and hypertrophy](training-references/frequencia_treino_hipertrofia.md)
 - [Maximizing strength for athletes](training-references/maximizando_forca_atletas.md)
 - [Flexible nonlinear periodization](training-references/periodizacao_nao_linear_flexivel.md)
+- [Zercher squat and EMG across squat variations](training-references/zercher_squat_emg_variations.md)
+- [Zercher squat effects on basketball-player back and leg strength](training-references/zercher_squat_basketball_strength.md)
 
 ## Fast Path
 
