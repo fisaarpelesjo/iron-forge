@@ -141,3 +141,14 @@ ods_ops.read_previous_weights()
 
 Import these APIs from the package, for example `from ironforge import db_ops`.
 `ironforge.ods_ops.gerar_treino()` is kept as a compatibility alias for older local scripts.
+
+## Detailed Documentation
+
+Detailed project documentation is in [`docs/index.md`](docs/index.md):
+
+- architecture and module boundaries
+- SQLite schema and source-of-truth rules
+- Telegram command flow
+- smoke and end-to-end tests
+- portability across Windows, Linux, macOS, and weak machines
+- operations and troubleshooting
