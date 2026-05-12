@@ -48,8 +48,12 @@ def print_rich_banner():
     console.print()
 
 
-if __name__ == "__main__":
+def print_banner():
     if Console is None or Text is None:
         print_plain_banner()
     else:
         print_rich_banner()
+
+
+if __name__ == "__main__":
+    print_banner()

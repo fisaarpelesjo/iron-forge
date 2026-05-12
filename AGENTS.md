@@ -5,11 +5,15 @@
 This project is a training log with a Telegram bot and a versioned SQLite database.
 
 Main database: `data/ironforge.db`.
-Main launcher on Windows: `start_bot.bat`.
+Cross-platform launcher: `start_bot.py`.
+Windows launcher wrapper: `start_bot.bat`.
 
 ## Main Files
 
-### `telegram_poller.py`
+Runtime modules live in the `ironforge/` package. Import application modules
+from that package, for example `from ironforge import db_ops`.
+
+### `ironforge/telegram_poller.py`
 
 Telegram bot used to control training from the phone.
 
@@ -32,7 +36,7 @@ Flow:
 2. Weight input is written directly to SQLite.
 3. `/undo` clears the last logged exercise.
 
-### `ods_ops.py`
+### `ironforge/ods_ops.py`
 
 Training-session helper layer.
 
@@ -49,7 +53,7 @@ Important rules:
 - Active exercise indexes: `TRAINING_EXERCISES = range(0, 13)`.
 - Keep `TREINO_EXERCISES` only as a compatibility alias.
 
-### `db_ops.py`
+### `ironforge/db_ops.py`
 
 SQLite module for exercises, training logs, and diet data.
 

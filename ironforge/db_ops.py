@@ -4,7 +4,7 @@ import sqlite3
 from itertools import groupby
 from pathlib import Path
 
-DATA_DIR = Path(__file__).parent / "data"
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 DB_PATH = DATA_DIR / "ironforge.db"
 
 DEFAULT_EXERCISES = [

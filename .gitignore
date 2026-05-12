@@ -4,6 +4,8 @@
 # Claude Code local settings
 .claude/settings.local.json
 
+__pycache__/
+*.py[cod]
 .env
 session.json
 pending_log.csv

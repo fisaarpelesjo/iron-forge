@@ -4,9 +4,9 @@ import json
 from datetime import date
 from pathlib import Path
 
-import db_ops
+from . import db_ops
 
-SESSION_FILE = Path(__file__).parent / "session.json"
+SESSION_FILE = Path(__file__).resolve().parents[1] / "session.json"
 
 TRAINING_EXERCISES = range(0, 13)
 TREINO_EXERCISES = TRAINING_EXERCISES

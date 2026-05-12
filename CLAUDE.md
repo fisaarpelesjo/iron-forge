@@ -4,7 +4,10 @@ IronForge is a training log with a Telegram bot and SQLite storage.
 
 ## Core Modules
 
-### `telegram_poller.py`
+Runtime modules live in the `ironforge/` package. Import application modules
+from that package, for example `from ironforge import db_ops`.
+
+### `ironforge/telegram_poller.py`
 
 Telegram long-polling bot.
 
@@ -21,7 +24,7 @@ Commands:
 
 All user-facing commands and bot messages should be English.
 
-### `ods_ops.py`
+### `ironforge/ods_ops.py`
 
 Training operation helpers:
 
@@ -31,7 +34,7 @@ Training operation helpers:
 - `read_previous_weights()` returns latest weights from SQLite.
 - `write_session()` writes active session state to `session.json`.
 
-### `db_ops.py`
+### `ironforge/db_ops.py`
 
 SQLite operations:
 

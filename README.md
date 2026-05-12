@@ -18,11 +18,18 @@ The main local database is `data/ironforge.db`. The active Telegram session is s
 
 ```text
 ironforge/
-├── telegram_poller.py       # Telegram bot long polling
-├── ods_ops.py               # Training session operations
-├── db_ops.py                # SQLite operations
-├── start_bot.bat            # Windows launcher
+├── start_bot.py             # Cross-platform launcher
+├── start_bot.bat            # Windows launcher wrapper
+├── ironforge/
+│   ├── banner.py            # Terminal banner
+│   ├── telegram_poller.py   # Telegram bot long polling
+│   ├── ods_ops.py           # Training session operations
+│   └── db_ops.py            # SQLite operations
+├── tests/
+│   ├── smoke_test.py        # Local setup check
+│   └── e2e_training_flow_test.py # Local end-to-end flow test
 ├── session.json             # Active session state, not versioned
+├── .env.example             # Environment template
 ├── .env                     # TELEGRAM_TOKEN=..., not versioned
 └── data/
     └── ironforge.db         # Versioned SQLite database
@@ -82,12 +89,25 @@ pip install -r requirements.txt
 echo "TELEGRAM_TOKEN=your_token_here" > .env
 ```
 
-4. Start the bot:
+4. Check the setup:
 
 ```bash
-python telegram_poller.py
+python tests/smoke_test.py
 ```
 
+5. Run the local end-to-end test:
+
+```bash
+python tests/e2e_training_flow_test.py
+```
+
+6. Start the bot:
+
+```bash
+python start_bot.py
+```
+
+On Linux and macOS, use `python3 start_bot.py` if `python` points to Python 2.
 On Windows, you can also run `start_bot.bat`.
 
 ## Database
@@ -119,4 +139,5 @@ ods_ops.read_exercises()
 ods_ops.read_previous_weights()
 ```
 
-`ods_ops.gerar_treino()` is kept as a compatibility alias for older local scripts.
+Import these APIs from the package, for example `from ironforge import db_ops`.
+`ironforge.ods_ops.gerar_treino()` is kept as a compatibility alias for older local scripts.

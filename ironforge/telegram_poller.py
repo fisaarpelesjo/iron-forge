@@ -3,10 +3,10 @@ import json
 import time
 from pathlib import Path
 
-import db_ops
-import ods_ops
+from . import db_ops
+from . import ods_ops
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 SESSION_FILE = BASE_DIR / "session.json"
 CHAT_ID = "6575275306"
 
