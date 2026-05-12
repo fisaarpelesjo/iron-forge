@@ -73,7 +73,7 @@ ironforge/
 2. Install dependencies:
 
 ```bash
-pip install requests
+pip install -r requirements.txt
 ```
 
 3. Create `.env`:

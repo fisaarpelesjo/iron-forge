@@ -1,15 +1,13 @@
 @echo off
 cd /d "%~dp0"
 
-echo.
-echo  III  RRRR   OOO  N   N  FFFFF  OOO  RRRR   GGG  EEEEE
-echo   I   R   R O   O NN  N  F     O   O R   R G     E
-echo   I   RRRR  O   O N N N  FFF   O   O RRRR  G  GG EEEE
-echo   I   R  R  O   O N  NN  F     O   O R  R  G   G E
-echo  III  R   R  OOO  N   N  F      OOO  R   R  GGG  EEEEE
-echo.
+py -3 ironforge_banner.py
+if "%ERRORLEVEL%"=="9009" (
+  python ironforge_banner.py
+)
+
 echo Starting training bot...
-echo.
+echo(
 
 py -3 telegram_poller.py
 set "exit_code=%ERRORLEVEL%"
