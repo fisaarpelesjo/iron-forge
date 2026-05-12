@@ -78,6 +78,9 @@ python tests/e2e_training_flow_test.py
 /help         Show help
 ```
 
+The `/warmup` list is compact, uses PT-BR exercise names to match the user's
+local training vocabulary, and avoids prescribed warmup loads.
+
 Weight input:
 
 ```text

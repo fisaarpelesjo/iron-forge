@@ -168,6 +168,11 @@ exercises
 
 Sends the hardcoded warmup protocol.
 
+The warmup is intentionally compact because the full workout already takes about
+two hours. The exercise names in this list use PT-BR local training terminology,
+while the command itself remains `/warmup`. It avoids prescribed warmup loads and
+uses simple "barra vazia" or "leve" cues instead.
+
 Also accepts:
 
 ```text

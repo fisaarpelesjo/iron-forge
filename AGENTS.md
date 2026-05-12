@@ -92,6 +92,8 @@ The project interface must be English:
 - future user-facing text
 
 Historical exercise names stored in SQLite may remain as-is unless the task explicitly includes a data migration.
+Exercise names may use PT-BR when they reflect the user's local training terminology,
+including the `/warmup` exercise list. Keep Telegram commands themselves in English.
 
 ## Change Guidelines
 

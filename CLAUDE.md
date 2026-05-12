@@ -23,6 +23,8 @@ Commands:
 - `80` or `80 8` logs weight and optional RPE.
 
 All user-facing commands and bot messages should be English.
+Exercise names may use PT-BR when they reflect the user's local training terminology,
+including the `/warmup` exercise list. Telegram commands remain English.
 
 ### `ironforge/ods_ops.py`
 

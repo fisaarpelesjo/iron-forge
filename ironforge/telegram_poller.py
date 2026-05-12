@@ -218,18 +218,13 @@ def main():
                 if lower in ("/warmup", "warmup"):
                     send(
                         "<b>Warmup</b>\n\n"
-                        "1. Jump rope or jumping jacks — 3 min\n"
-                        "2. Bodyweight squat — 2x10\n"
-                        "3. Hip hinge (stiff) — 2x10\n"
-                        "4. Arm circles — 15 forward + 15 backward\n"
-                        "5. Easy push-up — 1x10\n"
-                        "6. Easy row (empty bar or band) — 1x12\n"
-                        "7. Empty-bar squat — 1x10\n"
-                        "8. Squat ~50% working weight — 1x5\n"
-                        "9. Squat ~70% working weight — 1x3\n"
-                        "10. Empty-bar bench press — 1x10\n"
-                        "11. Bench press ~60% working weight — 1x5\n"
-                        "12. Easy overhead press — 1x8"
+                        "1. Agachamento livre — 1x10\n"
+                        "2. Dobradiça de quadril — 1x10\n"
+                        "3. Sustentação Zercher com barra vazia — 1x15s\n"
+                        "4. Agachamento Zercher com barra vazia — 1x5\n"
+                        "5. Agachamento Zercher leve — 1x3\n"
+                        "6. Supino reto com barra vazia — 1x8\n"
+                        "7. Supino reto leve — 1x3"
                     )
                     continue
 
