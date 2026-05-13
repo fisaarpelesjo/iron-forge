@@ -33,8 +33,8 @@ apoiam o projeto, mas nao fazem parte da arquitetura do software:
 - [Frequencia de treino e hipertrofia](training-references/frequencia_treino_hipertrofia.md)
 - [Maximizando forca em atletas](training-references/maximizando_forca_atletas.md)
 - [Periodizacao nao linear flexivel](training-references/periodizacao_nao_linear_flexivel.md)
-- [Agachamento Zercher e EMG em variacoes de agachamento](training-references/zercher_squat_emg_variations.md)
-- [Agachamento Zercher em forca de costas e pernas de jogadores de basquete](training-references/zercher_squat_basketball_strength.md)
+- [Agachamento Zercher e EMG em variacoes de agachamento](training-references/agachamento_zercher_emg_variacoes.md)
+- [Agachamento Zercher em forca de costas e pernas de jogadores de basquete](training-references/agachamento_zercher_forca_basquete.md)
 
 ## Caminho Rapido
 

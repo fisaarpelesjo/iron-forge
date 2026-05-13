@@ -1,4 +1,4 @@
-# Agachamento Zercher Em Forca De Costas E Pernas De Jogadores De Basquete
+# Agachamento Zercher E Forca De Costas E Pernas Em Jogadores De Basquete
 
 ## Fonte
 
@@ -6,9 +6,9 @@
 
 **Autores:** Satheesh Kumar K., Suriya P. e Arumugam S.
 
-**Journal:** Journal of Information and Computational Science
+**Publicacao:** *Journal of Information and Computational Science*
 
-**Volume/Issue:** Volume 10, Issue 2, 2020
+**Volume/edicao:** Volume 10, edicao 2, 2020
 
 **ISSN:** 1548-7741
 
@@ -21,9 +21,9 @@ Agachamento Zercher - 3x5
 ```
 
 Esse artigo relata melhora de forca de costas e pernas em jogadores de basquete
-apos um bloco com Zercher. Ele serve como apoio geral, mas nao como base para
-decidir carga exata, porque o protocolo de treino nao e descrito com detalhe
-suficiente.
+apos um bloco de treino com agachamento Zercher. Ele serve como apoio geral, mas
+nao como base para decidir carga exata, porque o protocolo nao descreve series,
+repeticoes e progressao com detalhe suficiente.
 
 ## Objetivo
 
@@ -53,11 +53,11 @@ O grupo controle manteve apenas a rotina normal.
 ## Testes Usados
 
 - teste isometrico de forca de costas
-- wall sit para forca/resistencia de pernas
+- teste de sentar na parede para forca/resistencia de pernas
 
 ## Resultados: Costas
 
-| Grupo | Pre | Pos | t-ratio |
+| Grupo | Pre | Pos | Valor t |
 |---|---:|---:|---:|
 | Zercher | 38,86 | 45,93 | 3,25 |
 | Controle | 38,80 | 39,06 | 0,19 |
@@ -70,7 +70,7 @@ F = 56,79
 
 ## Resultados: Pernas
 
-| Grupo | Pre | Pos | t-ratio |
+| Grupo | Pre | Pos | Valor t |
 |---|---:|---:|---:|
 | Zercher | 41,33 | 48,46 | 5,97 |
 | Controle | 40,86 | 42,06 | 1,40 |
@@ -108,7 +108,7 @@ nao comparar com carga antiga do agachamento com barra
 - desfechos nao sao 1RM de agachamento
 - sem follow-up longo
 
-## Takeaway
+## Resumo Final
 
 ```text
 O estudo apoia o Zercher como exercicio util para forca de pernas e costas, mas

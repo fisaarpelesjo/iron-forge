@@ -6,7 +6,7 @@
 
 **Autores:** Erdag Deniz e Yavuz Hasan Ulas
 
-**Contexto:** ICSCCW 2019, Advances in Intelligent Systems and Computing, volume 1095, Springer Nature Switzerland AG, 2020.
+**Contexto:** ICSCCW 2019, *Advances in Intelligent Systems and Computing*, volume 1095, Springer Nature Switzerland AG, 2020.
 
 **DOI:** https://doi.org/10.1007/978-3-030-35249-3_114
 
@@ -28,8 +28,8 @@ Comparar atividade muscular em:
 
 - agachamento com barra nas costas
 - agachamento frontal
-- hack squat
-- sumo squat
+- agachamento hack
+- agachamento sumo
 - agachamento Zercher
 
 ## Participantes
@@ -51,9 +51,9 @@ Comparar atividade muscular em:
 
 | Variacao | Carga media |
 |---|---:|
-| Agachamento costas | 103,5 kg |
-| Sumo squat | 91,5 kg |
-| Hack squat | 80,1 kg |
+| Agachamento com barra nas costas | 103,5 kg |
+| Agachamento sumo | 91,5 kg |
+| Agachamento hack | 80,1 kg |
 | Agachamento frontal | 79,7 kg |
 | Agachamento Zercher | 74,1 kg |
 
@@ -79,7 +79,7 @@ Valores medios em %MVIC:
 - Agachamento frontal teve maior atividade media de quadriceps.
 - Zercher teve menor media de quadriceps entre as variacoes testadas.
 - Gluteo maximo nao diferiu significativamente entre variacoes.
-- Hack squat teve menor atividade de ereitores e semitendinoso.
+- Agachamento hack teve menor atividade de eretores e semitendinoso.
 - Zercher teve demanda relevante de tronco/eretores.
 
 ## Aplicacao No Treino
@@ -104,7 +104,7 @@ comparar diretamente com cargas antigas de `Agachamento (barra)`.
 - sem analise cinemática detalhada
 - resultados dependem de tecnica, profundidade e carga relativa
 
-## Takeaway
+## Resumo Final
 
 ```text
 Agachamento Zercher e uma variacao valida, com carga absoluta menor esperada e
