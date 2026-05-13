@@ -1,4 +1,4 @@
-# Atividade Eletromiografica No Deadlift E Suas Variacoes: Revisao Sistematica
+# Atividade Eletromiografica No Levantamento Terra E Suas Variacoes: Revisao Sistematica
 
 ## Fonte
 

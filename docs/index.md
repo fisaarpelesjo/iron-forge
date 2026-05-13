@@ -3,38 +3,43 @@
 Esta pasta contem a documentacao detalhada do projeto.
 
 As referencias cientificas e notas de treino ficam separadas em
-[`training-references/`](training-references/). A raiz de `docs/` fica focada
+[`referencias-treino/`](referencias-treino/). A raiz de `docs/` fica focada
 na documentacao do software.
 
 ## Documentos Do Projeto
 
-- [Visao geral do sistema](system-overview.md): o que o projeto faz, quais
+- [Visao geral do sistema](visao-geral.md): o que o projeto faz, quais
   arquivos importam e como os dados circulam.
-- [Arquitetura](architecture.md): layout do pacote, fronteiras de modulos,
+- [Arquitetura](arquitetura.md): layout do pacote, fronteiras de modulos,
   launchers, estado local e direcao de dependencias.
-- [Banco de dados](database.md): SQLite, tabelas, relacoes, fonte da verdade e
+- [Banco de dados](banco-de-dados.md): SQLite, tabelas, relacoes, fonte da verdade e
   comandos seguros de inspecao.
-- [Bot Telegram](telegram-bot.md): comandos, parsing de entrada, fluxo de
+- [Bot Telegram](bot-telegram.md): comandos, parsing de entrada, fluxo de
   mensagens, polling e falhas comuns.
-- [Testes](testing.md): smoke test, teste ponta a ponta, o que cada um garante e
+- [Testes](testes.md): smoke test, teste ponta a ponta, o que cada um garante e
   como adicionar novos testes.
-- [Portabilidade](portability.md): Windows, Linux, macOS, WSL, maquinas fracas,
+- [Portabilidade](portabilidade.md): Windows, Linux, macOS, WSL, maquinas fracas,
   terminal, Python e problemas comuns de ambiente.
-- [Operacao](operations.md): uso diario, setup limpo, backup, troubleshooting e
+- [Operacao](operacao.md): uso diario, setup limpo, backup, troubleshooting e
   checklist de manutencao.
 
 ## Referencias De Treino
 
-A pasta `training-references/` contem notas de pesquisa e material de treino que
+A pasta `referencias-treino/` contem notas de pesquisa e material de treino que
 apoiam o projeto, mas nao fazem parte da arquitetura do software:
 
-- [Forca e hipertrofia: carga baixa vs alta](training-references/forca_hipertrofia_carga_baixa_vs_alta.md)
-- [Forca e hipertrofia: notas do preprint](training-references/forca_hipertrofia_carga_baixa_vs_alta_preprint.md)
-- [Frequencia de treino e hipertrofia](training-references/frequencia_treino_hipertrofia.md)
-- [Maximizando forca em atletas](training-references/maximizando_forca_atletas.md)
-- [Periodizacao nao linear flexivel](training-references/periodizacao_nao_linear_flexivel.md)
-- [Agachamento Zercher e EMG em variacoes de agachamento](training-references/agachamento_zercher_emg_variacoes.md)
-- [Agachamento Zercher em forca de costas e pernas de jogadores de basquete](training-references/agachamento_zercher_forca_basquete.md)
+- [Forca e hipertrofia: carga baixa vs alta](referencias-treino/forca_hipertrofia_carga_baixa_vs_alta.md)
+- [Forca e hipertrofia: versao aceita](referencias-treino/forca_hipertrofia_carga_baixa_vs_alta_versao_aceita.md)
+- [Frequencia de treino e hipertrofia](referencias-treino/frequencia_treino_hipertrofia.md)
+- [Maximizando forca em atletas](referencias-treino/maximizando_forca_atletas.md)
+- [Periodizacao nao linear flexivel](referencias-treino/periodizacao_nao_linear_flexivel.md)
+- [Agachamento Zercher e eletromiografia em variacoes de agachamento](referencias-treino/agachamento_zercher_eletromiografia_variacoes.md)
+- [Agachamento Zercher em forca de costas e pernas de jogadores de basquete](referencias-treino/agachamento_zercher_forca_basquete.md)
+- [Forca e alongamento dos isquiotibiais: levantamento terra romeno e corrida](referencias-treino/forca_alongamento_isquiotibiais_levantamento_terra_romeno_corrida.md)
+- [Agachamento, levantamento terra romeno e elevacao pelvica](referencias-treino/agachamento_levantamento_terra_romeno_elevacao_pelvica_eletromiografia.md)
+- [Levantamento terra romeno, romeno em plataforma e pernas estendidas](referencias-treino/levantamento_terra_romeno_plataforma_pernas_estendidas_eletromiografia.md)
+- [Levantamento terra convencional vs. levantamento terra romeno](referencias-treino/levantamento_terra_convencional_vs_romeno_eletromiografia_cinetica.md)
+- [Levantamento terra e suas variacoes: revisao sistematica](referencias-treino/levantamento_terra_variacoes_eletromiografia_revisao_sistematica.md)
 
 ## Caminho Rapido
 

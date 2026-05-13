@@ -1,4 +1,4 @@
-# Força e Hipertrofia: Carga Baixa vs. Alta — Versão Aceita/Preprint
+# Força e Hipertrofia: Carga Baixa vs. Alta — Versão Aceita/Pré-publicação
 
 **Autores:** Brad J. Schoenfeld, Jozo Grgic, Dan Ogborn, James W. Krieger  
 **Publicação:** Journal of Strength and Conditioning Research (Publish Ahead of Print)  

@@ -1,4 +1,4 @@
-# Deadlift Convencional Vs. Levantamento Terra Romeno: EMG E Cinetica
+# Levantamento Terra Convencional Vs. Levantamento Terra Romeno: Eletromiografia E Cinetica
 
 ## Fonte
 

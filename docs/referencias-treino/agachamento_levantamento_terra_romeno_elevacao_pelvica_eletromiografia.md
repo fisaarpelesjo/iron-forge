@@ -1,4 +1,4 @@
-# Agachamento, Levantamento Terra Romeno E Hip Thrust: Atividade De Pernas E Quadril
+# Agachamento, Levantamento Terra Romeno E Elevacao Pelvica: Atividade De Pernas E Quadril
 
 ## Fonte
 

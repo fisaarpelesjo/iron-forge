@@ -1,4 +1,4 @@
-# Forca E Alongamento Dos Isquiotibiais: RDL, Corrida E Exercicios De Reabilitacao
+# Forca E Alongamento Dos Isquiotibiais: Levantamento Terra Romeno, Corrida E Exercicios De Reabilitacao
 
 ## Fonte
 

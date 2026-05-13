@@ -1,4 +1,4 @@
-# Levantamento Terra Romeno, Romeno Em Step E Stiff-Leg: Analise Eletromiografica
+# Levantamento Terra Romeno, Romeno Em Plataforma E Pernas Estendidas: Analise Eletromiografica
 
 ## Fonte
 

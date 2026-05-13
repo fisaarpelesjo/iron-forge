@@ -1,4 +1,4 @@
-# Agachamento Zercher E EMG Em Variacoes De Agachamento
+# Agachamento Zercher E Eletromiografia Em Variacoes De Agachamento
 
 ## Fonte
 
