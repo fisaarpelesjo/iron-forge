@@ -15,7 +15,7 @@ MUSCLE_MAP = {
     "Agachamento (barra)":             ["Quadriceps", "Gluteos"],
     "Agachamento Zercher":             ["Quadriceps", "Gluteos", "Core"],
     "Zercher squat":                   ["Quadriceps", "Gluteos", "Core"],
-    "Stiff com barra":                 ["Posteriores", "Gluteos"],
+    "Levantamento Terra Romeno":       ["Posteriores", "Gluteos"],
     "Supino reto (barra)":             ["Peitoral"],
     "Remada curvada (barra)":          ["Dorsais"],
     "Pullover (barra)":                ["Dorsais"],
