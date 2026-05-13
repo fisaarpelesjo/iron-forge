@@ -1,119 +1,203 @@
-# Instruções do Copilot para este repositório
+# Instrucoes Do Copilot Para Este Repositorio
 
-## Contexto do projeto
+## Contexto Do Projeto
 
-Este projeto é um log de treino em LibreOffice Calc (ODS) com integração Telegram para registrar cargas durante o treino.  
-Arquivo principal: `log-de-treino-e-progressao.ods`.
+IronForge e um diario de treino e dieta com bot do Telegram e banco SQLite local.
 
-## Arquivos principais
+Banco principal: `data/ironforge.db`.
+Launcher multiplataforma: `start_bot.py`.
+Wrapper Windows: `start_bot.bat`.
 
-### `ods_ops.py`
-Manipula o ODS diretamente via XML (`zipfile` + regex).
+SQLite e a fonte da verdade para exercicios, sessoes, logs de treino e dados de
+dieta. Nao mover a gestao de exercicios de volta para ODS.
 
-Funções-chave:
-- `gerar_treino()` — insere linhas na aba TREINOS e retorna `{row, name, sets, reps}`
-- `update_row_weights(row_0idx, carga, rpe)` — atualiza colunas G/H
-- `read_exercises()` — lê do SQLite (`data/ironforge.db`)
-- `read_previous_weights()` — busca última carga por exercício
-- `write_session()` / `clear_pending()` — gerencia `session.json` e `pending_log.csv`
-- `is_ods_locked()` — detecta lock do LibreOffice (`.~lock.*#`)
+## Padrao De Idioma
 
-Regras importantes:
-- Índices de exercícios: `TREINO_EXERCISES = range(0, 13)`
-- Numeração de linhas:
-  - `r = n_data + 2 + idx` (1-based no spreadsheet)
-  - `row_0idx = r - 1` (0-based para API)
-- Fórmulas ODS em `content.xml`:
-  - Prefixo obrigatório `of:`
-  - Referências como `[.A1]`, `[.$D$2]`
-  - Separador de argumentos: `;` (locale pt-BR)
-- Estilos confirmados:
-  - `ce22` (data), `ce9` (semana), `ce71` (tipo treino), `ce16` (exercício)
-  - `ce20` (fórmula), `ce25` (carga/RPE), `ce65` (trailing)
-  - Não usar `ce2` para data (não existe no ODS deste projeto)
+O projeto deve ser o mais PT-BR possivel. Use portugues brasileiro como padrao
+para interface, mensagens do bot, comandos principais, ajuda, documentacao
+tecnica, exemplos, titulos Markdown, nomes de arquivos e pastas novos de
+documentacao, mensagens de launcher e textos visiveis ao usuario.
 
-### `telegram_poller.py`
-Bot Telegram para controlar o treino sem abrir o PC.
+Aliases antigos em ingles podem permanecer por compatibilidade, mas a ajuda
+principal, os exemplos e a documentacao devem priorizar nomes e comandos em
+PT-BR.
 
-Comandos:
+## Sincronizacao Das Instrucoes De Agentes
+
+Sempre que uma mudanca alterar comportamento, comandos, fluxo de uso, estrutura
+de arquivos, nomes de caminhos, catalogo de exercicios, banco de dados,
+launchers, padrao de idioma ou documentacao principal, revisar e atualizar em
+conjunto:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `.github/copilot-instructions.md`
+
+Nao atualizar apenas um arquivo de agente quando a informacao tambem se aplicar
+aos outros. Antes de finalizar uma mudanca, verificar se README, `docs/index.md`
+ou outros documentos em `docs/` tambem precisam ser atualizados.
+
+## Arquivos Principais
+
+### `start_bot.py`
+
+Launcher principal para iniciar o bot.
+
+### `start_bot.bat`
+
+Wrapper Windows para iniciar o bot com duplo clique ou pelo terminal.
+
+### `ironforge/telegram_poller.py`
+
+Bot Telegram com long polling.
+
+Comandos principais:
+
 - `/gerar`
 - `/exercicios`
-- `/lista`
-- `/sync`
 - `/aquecimento`
 - `/volume`
-- `80` ou `80 8`
 - `/status`
+- `/desfazer`
+- `/ajuda`
+- `80` ou `80 8` para registrar carga e RPE opcional
+
+Aliases legados em ingles podem existir para compatibilidade:
+
+- `/generate`
+- `/exercises`
+- `/warmup`
 - `/undo`
 - `/help`
 
-Fluxo:
-1. `/gerar` gera treino no ODS e reinicia pendências.
-2. Entrada de carga salva sempre em `pending_log.csv` e tenta gravar no ODS.
-3. Se ODS estiver aberto, fechar o arquivo e usar `/sync` no Telegram para sincronizar.
+Fluxo principal:
 
-### `db_ops.py`
-Módulo SQLite para a lista de exercícios.
+1. `/gerar` cria uma sessao de treino no SQLite.
+2. `ods_ops.write_session(...)` grava o estado ativo em `session.json`.
+3. Entrada de carga atualiza diretamente o log correspondente em `data/ironforge.db`.
+4. `/desfazer` limpa o ultimo registro preenchido.
 
-- Banco local versionado: `data/ironforge.db`
-- Tabela principal: `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`)
-- Sem dependência da aba `EXERCICIOS` no ODS
+### `ironforge/ods_ops.py`
 
-## Estado local (não versionar)
+Camada auxiliar de sessao de treino. O nome e historico, mas o fluxo atual usa
+SQLite e `session.json`.
+
+Funcoes importantes:
+
+- `generate_training()` cria uma sessao SQLite e retorna `(exercises, session_id)`.
+- `gerar_treino()` e alias de compatibilidade.
+- `read_exercises()` le exercicios do SQLite.
+- `read_previous_weights()` retorna a carga mais recente por exercicio.
+- `write_session()` escreve `session.json`.
+
+Regras importantes:
+
+- Indices ativos: `TRAINING_EXERCISES = range(0, 13)`.
+- Manter `TREINO_EXERCISES` apenas como alias de compatibilidade.
+- O primeiro exercicio ativo e `Agachamento Zercher` (`3x5`).
+
+### `ironforge/db_ops.py`
+
+Modulo SQLite para exercicios, logs de treino e dados de dieta.
+
+- Banco versionado: `data/ironforge.db`.
+- Tabela principal de exercicios: `exercises` (`name`, `sets`, `reps`, `sort_order`, `active`).
+- Mudancas de catalogo que devem valer para bancos novos tambem precisam atualizar `DEFAULT_EXERCISES`.
+- Mudancas que devem valer no banco atual precisam atualizar `data/ironforge.db`.
+
+## Estado Local E Segredos
+
+Nao versionar:
 
 - `session.json`
-- `pending_log.csv`
 - `.env` (`TELEGRAM_TOKEN=...`)
 - `data/*.db-shm`
 - `data/*.db-wal`
+- arquivos temporarios em `temp/`
 
-O banco `data/ironforge.db` é versionado e contém o catálogo de exercícios.
+Antes de alterar arquivos de estado local, verifique se a mudanca e realmente
+necessaria.
 
-## Fluxo sem macro
+## Catalogo Ativo
 
-O fluxo de macro no LibreOffice foi descontinuado neste repositório.
-Toda geração e sincronização de treino deve acontecer via comandos do bot Telegram (`/gerar` e `/sync`).
-
-## Lista de exercícios (SQLite)
-
-Fonte única: tabela `exercises` no banco `data/ironforge.db`.
+Fonte unica: tabela `exercises` em `data/ironforge.db`.
 
 Ordem ativa atual:
-1. Agachamento Zercher — 3x5
-2. Supino reto (barra) — 3x5
-3. Remada curvada (barra) — 3x8
-4. Desenvolvimento (barra em pé) — 3x5
-5. Levantamento Terra Romeno — 3x8
-6. Pullover (barra) — 3x10
-7. Remada alta (barra) — 3x10
-8. Remada curvada alta no peito (barra) — 3x10
-9. Encolhimento com barra — 2x10
-10. Rosca direta — 3x8
-11. Tríceps testa — 3x8
-12. Rosca de punho (barra) — 2x15
-13. Rosca de punho reversa (barra) — 2x15
 
-## Dependências e execução
+1. Agachamento Zercher - 3x5
+2. Supino reto (barra) - 3x5
+3. Remada curvada (barra) - 3x8
+4. Desenvolvimento (barra em pe) - 3x5
+5. Levantamento Terra Romeno - 3x8
+6. Pullover (barra) - 3x10
+7. Remada alta (barra) - 3x10
+8. Remada curvada alta no peito (barra) - 3x10
+9. Encolhimento com barra - 2x10
+10. Rosca direta - 3x8
+11. Triceps testa - 3x8
+12. Rosca de punho (barra) - 2x15
+13. Rosca de punho reversa (barra) - 2x15
 
-- Dependências Python: `requests`
-- Biblioteca padrão usada no projeto: `sqlite3`, `zipfile`, `re`, `shutil`, `json`, `datetime`, `pathlib`, `time`
-- Executar bot: `python telegram_poller.py`
-- LibreOffice: `C:\Program Files\LibreOffice\program\soffice.exe`
+## Documentacao
 
-## Diretrizes para alterações
+A documentacao detalhada fica em `docs/index.md`.
 
-- Priorizar mudanças cirúrgicas e compatíveis com o fluxo atual.
-- Não quebrar o comportamento de lock/sincronização (`is_ods_locked` + `pending_log.csv`).
-- Manter consistência de índices 0-based (API) x linhas 1-based (planilha).
-- Em fórmulas ODS, preservar sintaxe `of:` e separador `;`.
+Arquivos tecnicos principais:
 
-## Padrão de commit
+- `docs/visao-geral.md`
+- `docs/arquitetura.md`
+- `docs/banco-de-dados.md`
+- `docs/bot-telegram.md`
+- `docs/testes.md`
+- `docs/portabilidade.md`
+- `docs/operacao.md`
 
-Adote Conventional Commits no cabeçalho, com tipo e título objetivo:
+Referencias cientificas e notas de treino ficam em `docs/referencias-treino/`.
 
-`feat: adiciona comando de sincronização`
+## Dependencias E Execucao
+
+Dependencias Python:
+
+- `requests`
+
+Biblioteca padrao usada no projeto:
+
+- `sqlite3`
+- `json`
+- `datetime`
+- `pathlib`
+- `time`
+
+Comandos uteis:
+
+```bash
+pip install -r requirements.txt
+python tests/smoke_test.py
+python tests/e2e_training_flow_test.py
+python start_bot.py
+```
+
+No Linux/macOS, use `python3` se necessario.
+
+## Diretrizes Para Alteracoes
+
+- Preferir mudancas cirurgicas e compativeis com o fluxo atual.
+- Manter SQLite como fonte da verdade dos exercicios.
+- Preservar a diferenca entre dados versionados e estado local.
+- Preferir helpers existentes antes de criar novas abstracoes.
+- Atualizar documentacao quando uma mudanca alterar comandos, caminhos, nomes de arquivos, catalogo ou fluxo de uso.
+- Nao versionar segredos.
+
+## Padrao De Commit
+
+Use Conventional Commits no titulo:
+
+```text
+feat: adiciona comando de sincronizacao
+```
 
 Requisitos:
-- O cabeçalho deve seguir `<tipo>: <titulo>` (ex.: `feat`, `fix`, `refactor`, `chore`).
-- O corpo da mensagem é obrigatório.
-- O corpo deve registrar contexto técnico, escopo da alteração e motivo da decisão.
+
+- Titulo no formato `<type>: <title>` (`feat`, `fix`, `refactor`, `docs`, etc.).
+- Corpo do commit e obrigatorio.
+- Corpo deve explicar contexto tecnico, escopo e motivo da decisao.

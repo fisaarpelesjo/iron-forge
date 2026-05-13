@@ -2,6 +2,32 @@
 
 IronForge e um diario de treino com bot do Telegram e armazenamento SQLite.
 
+## Padrao De Idioma
+
+O projeto deve ser o mais PT-BR possivel. Use portugues brasileiro como padrao
+para interface, mensagens do bot, comandos principais, documentacao de uso,
+documentacao tecnica, titulos de Markdown, exemplos, nomes de arquivos e pastas
+novos de documentacao, mensagens de launcher e textos visiveis ao usuario.
+
+Evite criar novos nomes ou textos em ingles quando houver uma alternativa natural
+em PT-BR. Aliases legados em ingles podem permanecer por compatibilidade, mas a
+ajuda principal, os exemplos e a documentacao devem priorizar os nomes em PT-BR.
+
+## Sincronizacao Das Instrucoes De Agentes
+
+Sempre que uma mudanca alterar comportamento, comandos, fluxo de uso, estrutura
+de arquivos, nomes de caminhos, catalogo de exercicios, banco de dados,
+launchers, padrao de idioma ou documentacao principal, revisar e atualizar em
+conjunto:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `.github/copilot-instructions.md`
+
+Nao atualizar apenas um arquivo de agente quando a informacao tambem se aplicar
+aos outros. Antes de finalizar uma mudanca, verificar se README, `docs/index.md`
+ou outros documentos em `docs/` tambem precisam ser atualizados.
+
 ## Modulos Principais
 
 Os modulos de runtime ficam no pacote `ironforge/`. Importe codigo de aplicacao

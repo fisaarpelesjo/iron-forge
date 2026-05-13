@@ -10,16 +10,43 @@ Wrapper Windows: `start_bot.bat`.
 
 ## Padrao De Idioma
 
-A interface principal do projeto deve ser em PT-BR:
+O projeto deve ser o mais PT-BR possivel. Use portugues brasileiro como padrao
+para tudo que for criado ou alterado, especialmente:
 
 - comandos do Telegram
 - mensagens do bot
+- ajuda principal do bot
 - documentacao de uso
+- documentacao tecnica
+- titulos e secoes de Markdown
+- nomes de arquivos e pastas novos, quando forem parte da documentacao
 - mensagens dos launchers
+- comentarios novos, quando comentarios forem necessarios
 - textos futuros visiveis ao usuario
 
+Evitar criar novos nomes, textos ou caminhos em ingles quando houver uma opcao
+natural em PT-BR. Termos tecnicos muito estabelecidos podem aparecer quando
+ajudarem a clareza, mas devem ser acompanhados de contexto em portugues sempre
+que forem visiveis ao usuario ou na documentacao.
+
 Aliases antigos em ingles podem continuar existindo para compatibilidade, mas a
-documentacao e a ajuda principal devem mostrar os comandos em PT-BR.
+documentacao, a ajuda principal e os exemplos devem priorizar os comandos e nomes
+em PT-BR.
+
+## Sincronizacao Das Instrucoes De Agentes
+
+Sempre que uma mudanca alterar comportamento, comandos, fluxo de uso, estrutura
+de arquivos, nomes de caminhos, catalogo de exercicios, banco de dados,
+launchers, padrao de idioma ou documentacao principal, revisar e atualizar em
+conjunto:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `.github/copilot-instructions.md`
+
+Nao atualizar apenas um arquivo de agente quando a informacao tambem se aplicar
+aos outros. Antes de finalizar uma mudanca, verificar se README, `docs/index.md`
+ou outros documentos em `docs/` tambem precisam ser atualizados.
 
 ## Modulos Principais
 
