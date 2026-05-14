@@ -7,7 +7,7 @@ Este documento explica como rodar, manter e depurar o IronForge.
 1. Inicie o bot.
 2. Abra o Telegram.
 3. Envie `/gerar`.
-4. Treine.
+4. Use a coluna `Alvo` como carga sugerida.
 5. Envie cargas conforme terminar os exercicios.
 6. Use `/status` para ver progresso.
 7. Use `/desfazer` se registrou algo errado.
@@ -77,6 +77,30 @@ Entrada de carga:
 80,5
 80,5 8
 ```
+
+## Progressao De Carga Por RPE
+
+Ao gerar treino, o bot sugere a proxima carga usando a ultima carga registrada
+no exercicio e o RPE:
+
+```text
+RPE 7 ou menor  -> +4 kg
+RPE 8           -> +2 kg
+RPE 9           -> manter
+RPE 10 ou maior -> -2 kg
+Sem RPE         -> manter
+```
+
+```text
+Hoje: 40 8
+Proximo /gerar: alvo 42 kg
+
+Hoje: 40 10
+Proximo /gerar: alvo 38 kg
+```
+
+Se nao houver historico para o exercicio, o alvo aparece como `-`. Registre
+sempre a carga real feita; ela sera a base do proximo alvo.
 
 ## Arquivos Para Backup
 

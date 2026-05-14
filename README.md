@@ -7,6 +7,7 @@ Diario de treino e dieta com bot do Telegram e banco SQLite local.
 O IronForge permite controlar uma sessao de treino pelo Telegram:
 
 - `/gerar` cria uma nova sessao de treino no SQLite.
+- A tabela gerada sugere a proxima carga com base na ultima carga e no RPE.
 - Enviar `80` registra 80 kg no proximo exercicio pendente.
 - Enviar `80 8` registra 80 kg com RPE 8.
 - `/status` mostra o progresso da sessao ativa.
@@ -42,7 +43,7 @@ ironforge/
 
 ```text
 /gerar          Cria uma sessao de treino SQLite e mostra a tabela
-/exercicios     Lista exercicios atuais, series, repeticoes e cargas recentes
+/exercicios     Lista exercicios atuais, series e repeticoes
 /aquecimento    Mostra o aquecimento
 /volume         Mostra series por grupo muscular e estimativa semanal
 /status         Mostra exercicio atual e progresso da sessao
@@ -61,13 +62,38 @@ Aliases antigos em ingles ainda podem funcionar por compatibilidade:
 80,5 8    Virgula decimal e aceita e salva como 80.5 kg
 ```
 
+## Progressao De Carga Por RPE
+
+Ao gerar uma nova sessao, o bot busca a ultima carga registrada de cada
+exercicio e sugere a proxima carga conforme o RPE registrado:
+
+```text
+RPE 7 ou menor  -> +4 kg
+RPE 8           -> +2 kg
+RPE 9           -> manter
+RPE 10 ou maior -> -2 kg
+Sem RPE         -> manter
+```
+
+Exemplo:
+
+```text
+Treino anterior: 40 kg RPE 8
+Proximo /gerar: 42 kg na coluna Alvo
+```
+
+Se o exercicio ainda nao tiver historico de carga, o alvo aparece como `-`.
+A carga alvo fica em `session.json`; o banco continua guardando apenas a carga
+real registrada pelo usuario.
+
 ## Fluxo Do Treino
 
 ```text
 /gerar
   -> db_ops.get_or_seed_exercises()
+  -> db_ops.get_last_performance()
   -> db_ops.create_session(date)
-  -> db_ops.log_exercise(...) para cada exercicio ativo
+  -> db_ops.log_exercise(...) para cada exercicio ativo, com alvo calculado por carga + RPE
   -> ods_ops.write_session(...) escreve session.json
 
 "80 8"
@@ -157,9 +183,11 @@ db_ops.create_session(date_iso, training_type="TREINO")
 db_ops.log_exercise(session_id, name, sets, reps, sort_order)
 db_ops.update_log_weight(log_id, weight, rpe=None)
 db_ops.get_last_weights()
+db_ops.get_last_performance()
 db_ops.count_filled(log_ids)
 
 ods_ops.generate_training()
+ods_ops.suggest_next_weight(previous_weight, previous_rpe=None)
 ods_ops.write_session(exercises, session_id)
 ods_ops.read_exercises()
 ods_ops.read_previous_weights()

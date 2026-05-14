@@ -10,6 +10,12 @@ SESSION_FILE = Path(__file__).resolve().parents[1] / "session.json"
 
 TRAINING_EXERCISES = range(0, 13)
 TREINO_EXERCISES = TRAINING_EXERCISES
+RPE_PROGRESSION_KG = {
+    7: 4.0,
+    8: 2.0,
+    9: 0.0,
+    10: -2.0,
+}
 
 MUSCLE_MAP = {
     "Agachamento (barra)":             ["Quadriceps", "Gluteos"],
@@ -45,6 +51,26 @@ def read_previous_weights():
     return db_ops.get_last_weights()
 
 
+def read_previous_performance():
+    return db_ops.get_last_performance()
+
+
+def suggest_next_weight(previous_weight, previous_rpe=None):
+    if previous_weight is None:
+        return None
+    if previous_rpe is None:
+        return float(previous_weight)
+
+    rpe = int(previous_rpe)
+    if rpe <= 7:
+        delta = RPE_PROGRESSION_KG[7]
+    elif rpe >= 10:
+        delta = RPE_PROGRESSION_KG[10]
+    else:
+        delta = RPE_PROGRESSION_KG.get(rpe, 0.0)
+    return float(previous_weight) + delta
+
+
 def generate_training():
     """
     Cria uma sessao de treino no SQLite.
@@ -53,6 +79,7 @@ def generate_training():
     """
     all_ex = read_exercises()
     exercises = [all_ex[i] for i in TRAINING_EXERCISES if i < len(all_ex)]
+    previous_performance = read_previous_performance()
 
     today = date.today().strftime("%Y-%m-%d")
     session_id = db_ops.create_session(today)
@@ -60,11 +87,13 @@ def generate_training():
     session_exercises = []
     for idx, ex in enumerate(exercises):
         log_id = db_ops.log_exercise(session_id, ex["name"], ex["sets"], ex["reps"], idx)
+        previous = previous_performance.get(ex["name"], {})
         session_exercises.append({
             "log_id": log_id,
             "name": ex["name"],
             "sets": ex["sets"],
             "reps": ex["reps"],
+            "target_weight": suggest_next_weight(previous.get("weight"), previous.get("rpe")),
         })
 
     return session_exercises, session_id

@@ -94,6 +94,20 @@ handle_generate()
 
 O primeiro exercicio gerado atualmente e `Agachamento Zercher` (`3x5`).
 
+A tabela enviada usa a coluna `Alvo`. Quando existe carga anterior para o
+exercicio, o alvo e calculado pela ultima carga registrada e pelo RPE:
+
+```text
+RPE 7 ou menor  -> +4 kg
+RPE 8           -> +2 kg
+RPE 9           -> manter
+RPE 10 ou maior -> -2 kg
+Sem RPE         -> manter
+```
+
+Exemplo: se o treino anterior registrou `40 8`, o proximo `/gerar` mostra `42`
+como alvo. Se registrou `40 10`, o proximo `/gerar` mostra `38`.
+
 ## `/exercicios`
 
 Le os exercicios ativos do SQLite e envia uma tabela compacta.
@@ -172,8 +186,9 @@ Formato: 80 8 (carga + RPE) ou 80 (somente carga)
     {
       "log_id": 1,
       "name": "Agachamento Zercher",
-      "sets": 3,
-      "reps": 5
+        "sets": 3,
+      "reps": 5,
+      "target_weight": 42.0
     }
   ]
 }

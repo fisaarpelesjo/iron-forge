@@ -60,6 +60,7 @@ def main():
             session = json.loads(test_session.read_text(encoding="utf-8"))
             exercises = session["exercises"]
             assert len(exercises) == len(list(ods_ops.TRAINING_EXERCISES))
+            assert exercises[0]["target_weight"] is None
             assert "Sessao de treino gerada." in sent_messages[-1]
 
             first_log_id = exercises[0]["log_id"]
@@ -69,6 +70,12 @@ def main():
             assert first_log["weight"] == 80.0
             assert first_log["rpe"] == 8.0
             assert "80.0kg RPE 8" in sent_messages[-1]
+
+            telegram_poller.handle_generate()
+            progressed_session = json.loads(test_session.read_text(encoding="utf-8"))
+            progressed_first = progressed_session["exercises"][0]
+            assert progressed_first["target_weight"] == 82.0
+            assert "82" in sent_messages[-2]
 
             telegram_poller.handle("/status", session)
             assert "Treino" in sent_messages[-1]
@@ -84,6 +91,17 @@ def main():
             relogged = _fetch_log(test_db, first_log_id)
             assert relogged["weight"] == 80.5
             assert relogged["rpe"] is None
+
+            telegram_poller.handle_generate()
+            maintained_session = json.loads(test_session.read_text(encoding="utf-8"))
+            maintained_first = maintained_session["exercises"][0]
+            assert maintained_first["target_weight"] == 80.5
+
+            telegram_poller.handle("80.5 10", maintained_session)
+            telegram_poller.handle_generate()
+            reduced_session = json.loads(test_session.read_text(encoding="utf-8"))
+            reduced_first = reduced_session["exercises"][0]
+            assert reduced_first["target_weight"] == 78.5
 
             print("Teste ponta a ponta do fluxo de treino passou.")
         finally:

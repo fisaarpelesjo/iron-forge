@@ -105,7 +105,28 @@ ods_ops.generate_training()
 ```
 
 `session.json` guarda `session_id` e `log_id` para o bot saber qual linha
-atualizar quando o usuario envia carga.
+atualizar quando o usuario envia carga. Ele tambem guarda `target_weight`, que
+e a carga alvo calculada para a sessao atual.
+
+## Progressao De Carga
+
+`db_ops.get_last_performance()` busca a ultima carga valida e o RPE mais recente
+por exercicio. Durante `ods_ops.generate_training()`, cada exercicio recebe um
+`target_weight` calculado assim:
+
+```text
+RPE 7 ou menor  -> ultima carga + 4 kg
+RPE 8           -> ultima carga + 2 kg
+RPE 9           -> ultima carga
+RPE 10 ou maior -> ultima carga - 2 kg
+Sem RPE         -> ultima carga
+```
+
+Se nao houver historico de carga para o exercicio, `target_weight` fica `None` e
+a tabela do bot mostra `-`.
+
+A carga alvo nao altera `training_logs.weight` ao gerar a sessao. `weight`
+continua `NULL` ate o usuario registrar a carga real pelo Telegram.
 
 ## Progresso
 

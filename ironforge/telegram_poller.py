@@ -57,14 +57,25 @@ def get_updates(offset=0):
         return []
 
 
+def _format_weight(weight):
+    if weight is None:
+        return "-"
+    return str(int(weight) if weight == int(weight) else weight)
+
+
+def _format_target_suffix(ex):
+    target_weight = ex.get("target_weight")
+    if target_weight is None:
+        return ""
+    return f" - alvo {_format_weight(target_weight)}kg"
+
+
 def _format_training_msg(exercises):
-    prev = db_ops.get_last_weights()
     lines = ["<pre>Treino\n"]
-    lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Kg':>6}\n")
+    lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Alvo':>6}\n")
     lines.append("-" * 36 + "\n")
     for ex in exercises:
-        kg = prev.get(ex["name"], 0)
-        kg_str = "-" if kg == 0 else str(int(kg) if kg == int(kg) else kg)
+        kg_str = _format_weight(ex.get("target_weight"))
         lines.append(f"{ex['name'][:22]:<22} {ex['sets']:>2} {ex['reps']:>3}  {kg_str:>6}\n")
     lines.append("</pre>")
     return "".join(lines)
@@ -115,7 +126,7 @@ def handle(text, session):
             msg = f"Treino — {filled}/{total}\n"
             if done:
                 msg += done + "\n"
-            msg += f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']})"
+            msg += f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']}){_format_target_suffix(ex)}"
             send(msg)
         return
 
@@ -154,7 +165,7 @@ def handle(text, session):
         nxt = exercises[new_filled]
         send(
             f"<b>{ex['name']}</b> ✓ {weight}kg{rpe_str} ({new_filled}/{total})\n"
-            f"▶ {nxt['name']} ({nxt['sets']}x{nxt['reps']})"
+            f"▶ {nxt['name']} ({nxt['sets']}x{nxt['reps']}){_format_target_suffix(nxt)}"
         )
 
 

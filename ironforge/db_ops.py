@@ -227,6 +227,29 @@ def get_last_weights():
         return {r["exercise_name"]: r["weight"] for r in rows}
 
 
+def get_last_performance():
+    """Return {exercise_name: {weight, rpe}} from most recent entry per exercise."""
+    init_db()
+    with _connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT exercise_name, weight, rpe
+            FROM training_logs
+            WHERE weight IS NOT NULL AND weight > 0
+              AND id IN (
+                SELECT MAX(id)
+                FROM training_logs
+                WHERE weight IS NOT NULL AND weight > 0
+                GROUP BY exercise_name
+              )
+            """
+        ).fetchall()
+        return {
+            r["exercise_name"]: {"weight": r["weight"], "rpe": r["rpe"]}
+            for r in rows
+        }
+
+
 def count_filled(log_ids):
     """Count how many of the given log_ids already have weight set."""
     if not log_ids:
