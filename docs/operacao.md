@@ -108,15 +108,15 @@ sempre a carga real feita; ela sera a base do proximo alvo.
 
 ## Descanso Entre Series
 
-O `/gerar` mostra descanso sugerido por exercicio. Use esses intervalos como
+O `/gerar` mostra descanso fixo sugerido por exercicio. Use esses tempos como
 base para preservar a qualidade tecnica:
 
 ```text
-Compostos pesados: 3-5 min
-Compostos medios: 2-4 min
-Acessorios: 90-150 s
-Bracos: 60-120 s
-Punhos: 45-90 s
+Compostos pesados: 4 min
+Compostos medios: 3 min
+Acessorios: 2 min
+Bracos: 90 s
+Punhos: 60 s
 ```
 
 ## Arquivos Para Backup

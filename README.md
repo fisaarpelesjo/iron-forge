@@ -93,14 +93,14 @@ real registrada pelo usuario.
 O `/gerar` tambem mostra o descanso sugerido por exercicio:
 
 ```text
-Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 3-5 min
-Remada curvada, Desenvolvimento: 2-4 min
-Acessorios: 90-150 s
-Rosca direta, Triceps testa: 60-120 s
-Punhos: 45-90 s
+Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 4 min
+Remada curvada, Desenvolvimento: 3 min
+Acessorios: 2 min
+Rosca direta, Triceps testa: 90 s
+Punhos: 60 s
 ```
 
-Esses intervalos ajudam a manter a qualidade das series e deixam o RPE mais
+Esses tempos fixos ajudam a manter a qualidade das series e deixam o RPE mais
 confiavel para calcular a proxima carga.
 
 ## Fluxo Do Treino

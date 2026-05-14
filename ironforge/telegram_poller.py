@@ -72,10 +72,10 @@ def _format_target_suffix(ex):
 
 def _format_exercise_line(idx, ex):
     target = _format_weight(ex.get("target_weight"))
-    rest = ex.get("rest_interval", "2-3 min")
+    rest = ex.get("rest_interval", "2 min")
     return (
         f"{idx}. <b>{ex['name']}</b>\n"
-        f"   {ex['sets']}x{ex['reps']} | alvo: {target}kg | descanso: {rest}"
+            f"   {ex['sets']}x{ex['reps']} | alvo: {target}kg | descanso: {rest}"
     )
 
 
@@ -144,7 +144,7 @@ def handle(text, session):
                 msg += done + "\n"
             msg += (
                 f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']})"
-                f"{_format_target_suffix(ex)} - descanso {ex.get('rest_interval', '2-3 min')}"
+                f"{_format_target_suffix(ex)} - descanso {ex.get('rest_interval', '2 min')}"
             )
             send(msg)
         return
@@ -185,7 +185,7 @@ def handle(text, session):
         send(
             f"<b>{ex['name']}</b> ✓ {weight}kg{rpe_str} ({new_filled}/{total})\n"
             f"▶ {nxt['name']} ({nxt['sets']}x{nxt['reps']})"
-            f"{_format_target_suffix(nxt)} - descanso {nxt.get('rest_interval', '2-3 min')}"
+            f"{_format_target_suffix(nxt)} - descanso {nxt.get('rest_interval', '2 min')}"
         )
 
 

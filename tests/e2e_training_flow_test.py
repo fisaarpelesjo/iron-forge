@@ -75,8 +75,8 @@ def main():
             exercises = session["exercises"]
             assert len(exercises) == len(list(ods_ops.TRAINING_EXERCISES))
             assert exercises[0]["target_weight"] is None
-            assert exercises[0]["rest_interval"] == "3-5 min"
-            assert "descanso: 3-5 min" in sent_messages[-2]
+            assert exercises[0]["rest_interval"] == "4 min"
+            assert "descanso: 4 min" in sent_messages[-2]
             assert "<pre>" not in sent_messages[-2]
             assert "Sessao de treino gerada." in sent_messages[-1]
 
@@ -93,7 +93,7 @@ def main():
             progressed_first = progressed_session["exercises"][0]
             assert progressed_first["target_weight"] == 82.0
             assert "82" in sent_messages[-2]
-            assert "descanso: 3-5 min" in sent_messages[-2]
+            assert "descanso: 4 min" in sent_messages[-2]
 
             telegram_poller.handle("/status", session)
             assert "Treino" in sent_messages[-1]

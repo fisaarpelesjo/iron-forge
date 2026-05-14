@@ -18,21 +18,21 @@ RPE_PROGRESSION_KG = {
 }
 
 REST_INTERVALS = {
-    "Agachamento Zercher": "3-5 min",
-    "Supino reto (barra)": "3-5 min",
-    "Remada curvada (barra)": "2-4 min",
-    "Desenvolvimento (barra em pé)": "2-4 min",
-    "Desenvolvimento (barra em pe)": "2-4 min",
-    "Levantamento Terra Romeno": "3-5 min",
-    "Pullover (barra)": "90-150 s",
-    "Remada alta (barra)": "90-150 s",
-    "Remada curvada alta no peito (barra)": "90-150 s",
-    "Encolhimento com barra": "90-150 s",
-    "Rosca direta": "60-120 s",
-    "Tríceps testa": "60-120 s",
-    "Triceps testa": "60-120 s",
-    "Rosca de punho (barra)": "45-90 s",
-    "Rosca de punho reversa (barra)": "45-90 s",
+    "Agachamento Zercher": "4 min",
+    "Supino reto (barra)": "4 min",
+    "Remada curvada (barra)": "3 min",
+    "Desenvolvimento (barra em pé)": "3 min",
+    "Desenvolvimento (barra em pe)": "3 min",
+    "Levantamento Terra Romeno": "4 min",
+    "Pullover (barra)": "2 min",
+    "Remada alta (barra)": "2 min",
+    "Remada curvada alta no peito (barra)": "2 min",
+    "Encolhimento com barra": "2 min",
+    "Rosca direta": "90 s",
+    "Tríceps testa": "90 s",
+    "Triceps testa": "90 s",
+    "Rosca de punho (barra)": "60 s",
+    "Rosca de punho reversa (barra)": "60 s",
 }
 
 MUSCLE_MAP = {
@@ -90,7 +90,7 @@ def suggest_next_weight(previous_weight, previous_rpe=None):
 
 
 def get_rest_interval(exercise_name):
-    return REST_INTERVALS.get(exercise_name, "2-3 min")
+    return REST_INTERVALS.get(exercise_name, "2 min")
 
 
 def build_training_plan(persist=True):
