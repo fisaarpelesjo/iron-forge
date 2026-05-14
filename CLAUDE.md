@@ -39,7 +39,8 @@ Bot Telegram com long polling.
 
 Comandos principais em PT-BR:
 
-- `/gerar` cria uma sessao de treino e envia a tabela de exercicios.
+- `/gerar` cria uma sessao de treino e envia o treino em texto.
+- `/prever` mostra o treino em texto sem salvar sessao ou logs.
 - `/exercicios` lista exercicios atuais.
 - `/aquecimento` mostra o aquecimento.
 - `/volume` mostra series por grupo muscular.
@@ -47,7 +48,7 @@ Comandos principais em PT-BR:
 - `/desfazer` limpa o ultimo exercicio registrado.
 - `/ajuda` lista comandos.
 - `80` ou `80 8` registra carga e RPE opcional.
-- A tabela de `/gerar` mostra `Alvo`, calculado pela ultima carga do exercicio e pelo RPE.
+- O texto de `/gerar` mostra `alvo`, calculado pela ultima carga do exercicio e pelo RPE, e `descanso`.
 
 Aliases antigos em ingles podem permanecer para compatibilidade.
 
@@ -56,17 +57,20 @@ Aliases antigos em ingles podem permanecer para compatibilidade.
 Helpers de operacao de treino:
 
 - `generate_training()` cria sessao e linhas de treino no SQLite.
+- `preview_training()` monta o treino sem persistir sessao, logs ou `session.json`.
 - `gerar_treino()` permanece como alias de compatibilidade.
 - `read_exercises()` le exercicios do SQLite.
 - `read_previous_weights()` retorna cargas recentes do SQLite.
 - `read_previous_performance()` retorna carga e RPE recentes do SQLite.
 - `suggest_next_weight(previous_weight, previous_rpe=None)` calcula a carga alvo pela regra de RPE.
+- `get_rest_interval(exercise_name)` retorna o descanso sugerido entre series.
 - `write_session()` escreve estado ativo em `session.json`.
 
 Catalogo atual:
 
 - Progressao por RPE: RPE 7 ou menor `+4 kg`, RPE 8 `+2 kg`, RPE 9 mantem, RPE 10 ou maior `-2 kg`, sem RPE mantem.
 - `target_weight` fica em `session.json`.
+- `rest_interval` fica em `session.json` e aparece em `/gerar`, `/status` e proximo exercicio.
 - Primeiro exercicio ativo: `Agachamento Zercher` (`3x5`).
 - Substitui o agachamento com barra para sessoes futuras por falta de rack adequado.
 - Logs historicos podem permanecer com nomes antigos.

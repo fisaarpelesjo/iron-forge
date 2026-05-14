@@ -28,6 +28,7 @@ O bot so responde ao `CHAT_ID` configurado no codigo.
 
 ```text
 /gerar          cria uma sessao de treino
+/prever         mostra uma previa sem salvar
 /exercicios     lista exercicios atuais
 /aquecimento    mostra o aquecimento
 /volume         mostra volume por musculo
@@ -88,14 +89,15 @@ handle_generate()
   -> ods_ops.generate_training()
   -> ods_ops.write_session(exercises, session_id)
   -> _format_training_msg(exercises)
-  -> send(tabela do treino)
+  -> send(texto do treino)
   -> send("Sessao de treino gerada...")
 ```
 
 O primeiro exercicio gerado atualmente e `Agachamento Zercher` (`3x5`).
 
-A tabela enviada usa a coluna `Alvo`. Quando existe carga anterior para o
-exercicio, o alvo e calculado pela ultima carga registrada e pelo RPE:
+O texto enviado lista cada exercicio com series, repeticoes, carga alvo e
+descanso sugerido. Quando existe carga anterior para o exercicio, o alvo e
+calculado pela ultima carga registrada e pelo RPE:
 
 ```text
 RPE 7 ou menor  -> +4 kg
@@ -105,8 +107,40 @@ RPE 10 ou maior -> -2 kg
 Sem RPE         -> manter
 ```
 
-Exemplo: se o treino anterior registrou `40 8`, o proximo `/gerar` mostra `42`
-como alvo. Se registrou `40 10`, o proximo `/gerar` mostra `38`.
+Exemplo: se o treino anterior registrou `40 8`, o proximo `/gerar` mostra
+`alvo: 42kg`. Se registrou `40 10`, o proximo `/gerar` mostra `alvo: 38kg`.
+
+O descanso sugerido tambem vai em `session.json` como `rest_interval` e aparece
+no `/status` e na indicacao do proximo exercicio.
+
+## `/prever`
+
+Mostra o treino no mesmo formato de `/gerar`, com alvo e descanso, mas nao
+cria sessao real:
+
+```text
+handle_preview()
+  -> ods_ops.preview_training()
+  -> _format_training_msg(exercises)
+  -> send(texto do treino)
+  -> send("Previa do treino. Nada foi salvo...")
+```
+
+Esse comando nao cria linhas em `training_sessions`, nao cria `training_logs` e
+nao escreve `session.json`. Ele pode inicializar o SQLite se o catalogo ainda
+nao existir, porque le os exercicios ativos.
+
+## Descanso Entre Series
+
+Intervalos atuais:
+
+```text
+Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 3-5 min
+Remada curvada, Desenvolvimento: 2-4 min
+Acessorios de tronco/ombro/trapezio: 90-150 s
+Rosca direta, Triceps testa: 60-120 s
+Punhos: 45-90 s
+```
 
 ## `/exercicios`
 
@@ -186,9 +220,10 @@ Formato: 80 8 (carga + RPE) ou 80 (somente carga)
     {
       "log_id": 1,
       "name": "Agachamento Zercher",
-        "sets": 3,
+      "sets": 3,
       "reps": 5,
-      "target_weight": 42.0
+      "target_weight": 42.0,
+      "rest_interval": "3-5 min"
     }
   ]
 }

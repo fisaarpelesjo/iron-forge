@@ -70,15 +70,19 @@ def _format_target_suffix(ex):
     return f" - alvo {_format_weight(target_weight)}kg"
 
 
+def _format_exercise_line(idx, ex):
+    target = _format_weight(ex.get("target_weight"))
+    rest = ex.get("rest_interval", "2-3 min")
+    return (
+        f"{idx}. <b>{ex['name']}</b>\n"
+        f"   {ex['sets']}x{ex['reps']} | alvo: {target}kg | descanso: {rest}"
+    )
+
+
 def _format_training_msg(exercises):
-    lines = ["<pre>Treino\n"]
-    lines.append(f"{'Exercicio':<22} {'S':>2} {'R':>3}  {'Alvo':>6}\n")
-    lines.append("-" * 36 + "\n")
-    for ex in exercises:
-        kg_str = _format_weight(ex.get("target_weight"))
-        lines.append(f"{ex['name'][:22]:<22} {ex['sets']:>2} {ex['reps']:>3}  {kg_str:>6}\n")
-    lines.append("</pre>")
-    return "".join(lines)
+    lines = ["<b>Treino</b>\n"]
+    lines.extend(_format_exercise_line(idx, ex) for idx, ex in enumerate(exercises, start=1))
+    return "\n\n".join(lines)
 
 
 def _format_exercises_msg(exercises):
@@ -105,6 +109,18 @@ def handle_generate():
     send("Sessao de treino gerada. Envie <code>carga rpe</code> para cada exercicio.")
 
 
+def handle_preview():
+    try:
+        exercises = ods_ops.preview_training()
+    except Exception as e:
+        send(f"Erro ao gerar previa do treino: {e}")
+        return
+
+    msg = _format_training_msg(exercises)
+    send(msg)
+    send("Previa do treino. Nada foi salvo. Use /gerar para iniciar uma sessao real.")
+
+
 def handle(text, session):
     text = text.strip()
     exercises = session.get("exercises", [])
@@ -126,7 +142,10 @@ def handle(text, session):
             msg = f"Treino — {filled}/{total}\n"
             if done:
                 msg += done + "\n"
-            msg += f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']}){_format_target_suffix(ex)}"
+            msg += (
+                f"▶ <b>{ex['name']}</b> ({ex['sets']}x{ex['reps']})"
+                f"{_format_target_suffix(ex)} - descanso {ex.get('rest_interval', '2-3 min')}"
+            )
             send(msg)
         return
 
@@ -165,7 +184,8 @@ def handle(text, session):
         nxt = exercises[new_filled]
         send(
             f"<b>{ex['name']}</b> ✓ {weight}kg{rpe_str} ({new_filled}/{total})\n"
-            f"▶ {nxt['name']} ({nxt['sets']}x{nxt['reps']}){_format_target_suffix(nxt)}"
+            f"▶ {nxt['name']} ({nxt['sets']}x{nxt['reps']})"
+            f"{_format_target_suffix(nxt)} - descanso {nxt.get('rest_interval', '2-3 min')}"
         )
 
 
@@ -195,6 +215,7 @@ def main():
                     send(
                         "<b>IronForge — Comandos</b>\n\n"
                         "/gerar — cria uma sessao de treino\n"
+                        "/prever — mostra uma previa sem salvar\n"
                         "/exercicios — lista os exercicios atuais\n"
                         "/aquecimento — mostra o aquecimento\n"
                         "/volume — volume por grupo muscular\n"
@@ -241,6 +262,10 @@ def main():
 
                 if lower.startswith("/gerar") or lower.startswith("/generate"):
                     handle_generate()
+                    continue
+
+                if lower in ("/prever", "prever", "/previa", "previa", "/preview", "preview"):
+                    handle_preview()
                     continue
 
                 session = load_session()

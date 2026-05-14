@@ -15,7 +15,11 @@ Usuario envia /gerar
   -> bot cria uma sessao no SQLite
   -> bot cria um log por exercicio ativo
   -> bot escreve session.json
-  -> bot envia a tabela do treino
+  -> bot envia o treino em texto com alvo e descanso
+
+Usuario envia /prever
+  -> bot monta o treino em texto com alvo e descanso
+  -> bot nao cria sessao, logs nem session.json
 
 Usuario envia 80 ou 80 8
   -> bot carrega session.json

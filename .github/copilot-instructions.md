@@ -54,6 +54,7 @@ Bot Telegram com long polling.
 Comandos principais:
 
 - `/gerar`
+- `/prever`
 - `/exercicios`
 - `/aquecimento`
 - `/volume`
@@ -74,9 +75,10 @@ Fluxo principal:
 
 1. `/gerar` cria uma sessao de treino no SQLite.
 2. `ods_ops.write_session(...)` grava o estado ativo em `session.json`.
-3. A tabela de treino mostra `Alvo`, calculado pela ultima carga registrada e pelo RPE.
-4. Entrada de carga atualiza diretamente o log correspondente em `data/ironforge.db`.
-5. `/desfazer` limpa o ultimo registro preenchido.
+3. O texto de treino mostra `alvo`, calculado pela ultima carga registrada e pelo RPE, e `descanso`.
+4. `/prever` mostra o mesmo formato sem criar sessao, logs ou `session.json`.
+5. Entrada de carga atualiza diretamente o log correspondente em `data/ironforge.db`.
+6. `/desfazer` limpa o ultimo registro preenchido.
 
 ### `ironforge/ods_ops.py`
 
@@ -86,11 +88,13 @@ SQLite e `session.json`.
 Funcoes importantes:
 
 - `generate_training()` cria uma sessao SQLite e retorna `(exercises, session_id)`.
+- `preview_training()` monta o treino sem persistir sessao, logs ou `session.json`.
 - `gerar_treino()` e alias de compatibilidade.
 - `read_exercises()` le exercicios do SQLite.
 - `read_previous_weights()` retorna a carga mais recente por exercicio.
 - `read_previous_performance()` retorna carga e RPE mais recentes por exercicio.
 - `suggest_next_weight(previous_weight, previous_rpe=None)` calcula a carga alvo pela regra de RPE.
+- `get_rest_interval(exercise_name)` retorna o descanso sugerido entre series.
 - `write_session()` escreve `session.json`.
 
 Regras importantes:
@@ -98,6 +102,7 @@ Regras importantes:
 - Indices ativos: `TRAINING_EXERCISES = range(0, 13)`.
 - Progressao por RPE: RPE 7 ou menor `+4 kg`, RPE 8 `+2 kg`, RPE 9 mantem, RPE 10 ou maior `-2 kg`, sem RPE mantem.
 - `target_weight` fica em `session.json`.
+- `rest_interval` fica em `session.json` e aparece em `/gerar`, `/status` e proximo exercicio.
 - Manter `TREINO_EXERCISES` apenas como alias de compatibilidade.
 - O primeiro exercicio ativo e `Agachamento Zercher` (`3x5`).
 

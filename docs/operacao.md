@@ -7,7 +7,7 @@ Este documento explica como rodar, manter e depurar o IronForge.
 1. Inicie o bot.
 2. Abra o Telegram.
 3. Envie `/gerar`.
-4. Use a coluna `Alvo` como carga sugerida.
+4. Use `alvo` como carga sugerida e `descanso` como intervalo entre series.
 5. Envie cargas conforme terminar os exercicios.
 6. Use `/status` para ver progresso.
 7. Use `/desfazer` se registrou algo errado.
@@ -61,6 +61,7 @@ TELEGRAM_TOKEN=seu_token_real
 
 ```text
 /gerar          Cria uma nova sessao de treino
+/prever         Mostra o treino sem salvar sessao ou logs
 /exercicios     Lista exercicios ativos
 /aquecimento    Mostra aquecimento
 /volume         Mostra estimativa de volume
@@ -77,6 +78,9 @@ Entrada de carga:
 80,5
 80,5 8
 ```
+
+Use `/prever` quando quiser conferir formato, alvo e descanso sem iniciar uma
+sessao real.
 
 ## Progressao De Carga Por RPE
 
@@ -101,6 +105,19 @@ Proximo /gerar: alvo 38 kg
 
 Se nao houver historico para o exercicio, o alvo aparece como `-`. Registre
 sempre a carga real feita; ela sera a base do proximo alvo.
+
+## Descanso Entre Series
+
+O `/gerar` mostra descanso sugerido por exercicio. Use esses intervalos como
+base para preservar a qualidade tecnica:
+
+```text
+Compostos pesados: 3-5 min
+Compostos medios: 2-4 min
+Acessorios: 90-150 s
+Bracos: 60-120 s
+Punhos: 45-90 s
+```
 
 ## Arquivos Para Backup
 

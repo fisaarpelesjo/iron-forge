@@ -106,7 +106,8 @@ ods_ops.generate_training()
 
 `session.json` guarda `session_id` e `log_id` para o bot saber qual linha
 atualizar quando o usuario envia carga. Ele tambem guarda `target_weight`, que
-e a carga alvo calculada para a sessao atual.
+e a carga alvo calculada para a sessao atual, e `rest_interval`, que e o
+descanso sugerido entre series.
 
 ## Progressao De Carga
 
@@ -127,6 +128,12 @@ a tabela do bot mostra `-`.
 
 A carga alvo nao altera `training_logs.weight` ao gerar a sessao. `weight`
 continua `NULL` ate o usuario registrar a carga real pelo Telegram.
+
+## Descanso Entre Series
+
+O descanso sugerido fica em `session.json`, nao em uma tabela SQLite. Ele e
+derivado do nome do exercicio por `ods_ops.get_rest_interval()` durante a geracao
+da sessao.
 
 ## Progresso
 

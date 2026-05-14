@@ -7,7 +7,8 @@ Diario de treino e dieta com bot do Telegram e banco SQLite local.
 O IronForge permite controlar uma sessao de treino pelo Telegram:
 
 - `/gerar` cria uma nova sessao de treino no SQLite.
-- A tabela gerada sugere a proxima carga com base na ultima carga e no RPE.
+- `/prever` mostra o treino no mesmo formato, mas sem salvar sessao ou logs.
+- O treino gerado lista carga alvo e descanso sugerido por exercicio.
 - Enviar `80` registra 80 kg no proximo exercicio pendente.
 - Enviar `80 8` registra 80 kg com RPE 8.
 - `/status` mostra o progresso da sessao ativa.
@@ -42,7 +43,8 @@ ironforge/
 ## Comandos Do Telegram
 
 ```text
-/gerar          Cria uma sessao de treino SQLite e mostra a tabela
+/gerar          Cria uma sessao de treino SQLite e mostra o treino em texto
+/prever         Mostra uma previa do treino sem salvar nada
 /exercicios     Lista exercicios atuais, series e repeticoes
 /aquecimento    Mostra o aquecimento
 /volume         Mostra series por grupo muscular e estimativa semanal
@@ -79,12 +81,27 @@ Exemplo:
 
 ```text
 Treino anterior: 40 kg RPE 8
-Proximo /gerar: 42 kg na coluna Alvo
+Proximo /gerar: alvo 42 kg
 ```
 
 Se o exercicio ainda nao tiver historico de carga, o alvo aparece como `-`.
 A carga alvo fica em `session.json`; o banco continua guardando apenas a carga
 real registrada pelo usuario.
+
+## Descanso Entre Series
+
+O `/gerar` tambem mostra o descanso sugerido por exercicio:
+
+```text
+Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 3-5 min
+Remada curvada, Desenvolvimento: 2-4 min
+Acessorios: 90-150 s
+Rosca direta, Triceps testa: 60-120 s
+Punhos: 45-90 s
+```
+
+Esses intervalos ajudam a manter a qualidade das series e deixam o RPE mais
+confiavel para calcular a proxima carga.
 
 ## Fluxo Do Treino
 
@@ -94,7 +111,14 @@ real registrada pelo usuario.
   -> db_ops.get_last_performance()
   -> db_ops.create_session(date)
   -> db_ops.log_exercise(...) para cada exercicio ativo, com alvo calculado por carga + RPE
+  -> adiciona descanso sugerido por exercicio
   -> ods_ops.write_session(...) escreve session.json
+
+/prever
+  -> monta o mesmo treino com alvo e descanso
+  -> nao cria training_sessions
+  -> nao cria training_logs
+  -> nao escreve session.json
 
 "80 8"
   -> carrega a sessao ativa
@@ -187,7 +211,9 @@ db_ops.get_last_performance()
 db_ops.count_filled(log_ids)
 
 ods_ops.generate_training()
+ods_ops.preview_training()
 ods_ops.suggest_next_weight(previous_weight, previous_rpe=None)
+ods_ops.get_rest_interval(exercise_name)
 ods_ops.write_session(exercises, session_id)
 ods_ops.read_exercises()
 ods_ops.read_previous_weights()

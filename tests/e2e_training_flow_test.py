@@ -53,6 +53,20 @@ def main():
             telegram_poller.SESSION_FILE = test_session
             telegram_poller.send = sent_messages.append
 
+            telegram_poller.handle_preview()
+            assert test_db.exists(), "Preview should initialize the database for exercise lookup."
+            assert not test_session.exists(), "Preview should not create a session file."
+            assert "Previa do treino. Nada foi salvo." in sent_messages[-1]
+
+            conn = sqlite3.connect(test_db)
+            try:
+                session_count = conn.execute("SELECT COUNT(*) FROM training_sessions").fetchone()[0]
+                log_count = conn.execute("SELECT COUNT(*) FROM training_logs").fetchone()[0]
+            finally:
+                conn.close()
+            assert session_count == 0
+            assert log_count == 0
+
             telegram_poller.handle_generate()
             assert test_db.exists(), "E2E database was not created."
             assert test_session.exists(), "E2E session file was not created."
@@ -61,6 +75,9 @@ def main():
             exercises = session["exercises"]
             assert len(exercises) == len(list(ods_ops.TRAINING_EXERCISES))
             assert exercises[0]["target_weight"] is None
+            assert exercises[0]["rest_interval"] == "3-5 min"
+            assert "descanso: 3-5 min" in sent_messages[-2]
+            assert "<pre>" not in sent_messages[-2]
             assert "Sessao de treino gerada." in sent_messages[-1]
 
             first_log_id = exercises[0]["log_id"]
@@ -76,6 +93,7 @@ def main():
             progressed_first = progressed_session["exercises"][0]
             assert progressed_first["target_weight"] == 82.0
             assert "82" in sent_messages[-2]
+            assert "descanso: 3-5 min" in sent_messages[-2]
 
             telegram_poller.handle("/status", session)
             assert "Treino" in sent_messages[-1]

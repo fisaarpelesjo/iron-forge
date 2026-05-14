@@ -60,6 +60,7 @@ Bot Telegram usado para controlar o treino pelo celular.
 Comandos principais:
 
 - `/gerar`
+- `/prever`
 - `/exercicios`
 - `/aquecimento`
 - `/volume`
@@ -79,9 +80,10 @@ Aliases legados em ingles podem ser aceitos:
 Fluxo:
 
 1. `/gerar` cria uma sessao de treino no SQLite e reseta o arquivo de sessao ativa.
-2. A tabela gerada mostra `Alvo`, calculado pela ultima carga registrada e pelo RPE.
-3. Entrada de carga e escrita diretamente no SQLite.
-4. `/desfazer` limpa o ultimo exercicio registrado.
+2. O texto gerado mostra `alvo`, calculado pela ultima carga registrada e pelo RPE, e `descanso`.
+3. `/prever` mostra o mesmo formato sem criar sessao, logs ou `session.json`.
+4. Entrada de carga e escrita diretamente no SQLite.
+5. `/desfazer` limpa o ultimo exercicio registrado.
 
 ### `ironforge/ods_ops.py`
 
@@ -90,11 +92,13 @@ Camada auxiliar de sessao de treino.
 Funcoes importantes:
 
 - `generate_training()` cria uma sessao SQLite e retorna `(exercises, session_id)`.
+- `preview_training()` monta o treino sem persistir sessao, logs ou `session.json`.
 - `gerar_treino()` e alias de compatibilidade para scripts locais antigos.
 - `read_exercises()` le do SQLite.
 - `read_previous_weights()` retorna a carga mais recente por exercicio.
 - `read_previous_performance()` retorna carga e RPE mais recentes por exercicio.
 - `suggest_next_weight(previous_weight, previous_rpe=None)` calcula o alvo pela regra de RPE.
+- `get_rest_interval(exercise_name)` retorna o descanso sugerido entre series.
 - `write_session()` escreve `session.json`.
 
 Regras importantes:
@@ -102,6 +106,7 @@ Regras importantes:
 - Indices ativos: `TRAINING_EXERCISES = range(0, 13)`.
 - Progressao por RPE: RPE 7 ou menor `+4 kg`, RPE 8 `+2 kg`, RPE 9 mantem, RPE 10 ou maior `-2 kg`, sem RPE mantem.
 - `target_weight` fica em `session.json`.
+- `rest_interval` fica em `session.json` e aparece em `/gerar`, `/status` e proximo exercicio.
 - Manter `TREINO_EXERCISES` apenas como alias de compatibilidade.
 - O primeiro exercicio ativo e `Agachamento Zercher` (`3x5`).
 - Logs historicos de `Agachamento (barra)` ou `Zercher squat` podem permanecer como historico.
