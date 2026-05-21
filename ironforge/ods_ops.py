@@ -8,7 +8,7 @@ from . import db_ops
 
 SESSION_FILE = Path(__file__).resolve().parents[1] / "session.json"
 
-TRAINING_EXERCISES = range(0, 13)
+TRAINING_EXERCISES = range(0, 10)
 TREINO_EXERCISES = TRAINING_EXERCISES
 RPE_PROGRESSION_KG = {
     7: 4.0,
@@ -27,12 +27,9 @@ REST_INTERVALS = {
     "Pullover (barra)": "2 min",
     "Remada alta (barra)": "2 min",
     "Remada curvada alta no peito (barra)": "2 min",
-    "Encolhimento com barra": "2 min",
-    "Rosca direta": "90 s",
-    "Tríceps testa": "90 s",
-    "Triceps testa": "90 s",
-    "Rosca de punho (barra)": "60 s",
-    "Rosca de punho reversa (barra)": "60 s",
+    "Rosca direta": "2 min",
+    "Tríceps testa": "2 min",
+    "Triceps testa": "2 min",
 }
 
 MUSCLE_MAP = {
@@ -53,11 +50,6 @@ MUSCLE_MAP = {
     "Rosca direta":                    ["Biceps"],
     "Tríceps testa":                   ["Triceps"],
     "Triceps testa":                   ["Triceps"],
-    "Wrist curl (barra)":              ["Antebracos"],
-    "Reverse wrist curl (barra)":      ["Antebracos"],
-    "Rosca de punho (barra)":          ["Antebracos"],
-    "Rosca de punho reversa (barra)":  ["Antebracos"],
-    "Encolhimento com barra":          ["Trapezio"],
 }
 
 

@@ -99,7 +99,7 @@ Ao mudar o catalogo para frente, atualize:
 ods_ops.generate_training()
   -> ods_ops.read_exercises()
      -> db_ops.get_or_seed_exercises()
-  -> seleciona TRAINING_EXERCISES = range(0, 13)
+  -> seleciona TRAINING_EXERCISES = range(0, 10)
   -> db_ops.create_session(today)
   -> db_ops.log_exercise(...) para cada exercicio
 ```
@@ -142,7 +142,7 @@ da sessao.
 ```text
 filled = 0  -> proximo exercicio exercises[0]
 filled = 1  -> proximo exercicio exercises[1]
-filled = 13 -> treino completo
+filled = 10 -> treino completo
 ```
 
 ## Inspecao Segura

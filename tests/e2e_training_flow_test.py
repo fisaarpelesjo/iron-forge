@@ -73,7 +73,8 @@ def main():
 
             session = json.loads(test_session.read_text(encoding="utf-8"))
             exercises = session["exercises"]
-            assert len(exercises) == len(list(ods_ops.TRAINING_EXERCISES))
+            total_exercises = len(list(ods_ops.TRAINING_EXERCISES))
+            assert len(exercises) == total_exercises
             assert exercises[0]["target_weight"] is None
             assert exercises[0]["rest_interval"] == "4 min"
             assert "descanso: 4 min" in sent_messages[-2]
@@ -97,7 +98,7 @@ def main():
 
             telegram_poller.handle("/status", session)
             assert "Treino" in sent_messages[-1]
-            assert "1/13" in sent_messages[-1]
+            assert f"1/{total_exercises}" in sent_messages[-1]
 
             telegram_poller.handle("/desfazer", session)
             undone_log = _fetch_log(test_db, first_log_id)

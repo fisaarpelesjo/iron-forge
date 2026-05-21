@@ -68,6 +68,7 @@ Helpers de operacao de treino:
 
 Catalogo atual:
 
+- Indices ativos: `TRAINING_EXERCISES = range(0, 10)`.
 - Progressao por RPE: RPE 7 ou menor `+4 kg`, RPE 8 `+2 kg`, RPE 9 mantem, RPE 10 ou maior `-2 kg`, sem RPE mantem.
 - `target_weight` fica em `session.json`.
 - `rest_interval` fica em `session.json` e aparece em `/gerar`, `/status` e proximo exercicio.

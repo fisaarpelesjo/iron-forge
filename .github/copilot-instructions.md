@@ -99,7 +99,7 @@ Funcoes importantes:
 
 Regras importantes:
 
-- Indices ativos: `TRAINING_EXERCISES = range(0, 13)`.
+- Indices ativos: `TRAINING_EXERCISES = range(0, 10)`.
 - Progressao por RPE: RPE 7 ou menor `+4 kg`, RPE 8 `+2 kg`, RPE 9 mantem, RPE 10 ou maior `-2 kg`, sem RPE mantem.
 - `target_weight` fica em `session.json`.
 - `rest_interval` fica em `session.json` e aparece em `/gerar`, `/status` e proximo exercicio.
@@ -142,11 +142,8 @@ Ordem ativa atual:
 6. Pullover (barra) - 3x10
 7. Remada alta (barra) - 3x10
 8. Remada curvada alta no peito (barra) - 3x10
-9. Encolhimento com barra - 2x10
-10. Rosca direta - 3x8
-11. Triceps testa - 3x8
-12. Rosca de punho (barra) - 2x15
-13. Rosca de punho reversa (barra) - 2x15
+9. Rosca direta - 3x8
+10. Triceps testa - 3x8
 
 ## Documentacao
 

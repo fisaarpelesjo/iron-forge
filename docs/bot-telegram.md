@@ -137,9 +137,8 @@ Intervalos atuais:
 ```text
 Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 4 min
 Remada curvada, Desenvolvimento: 3 min
-Acessorios de tronco/ombro/trapezio: 2 min
-Rosca direta, Triceps testa: 90 s
-Punhos: 60 s
+Acessorios de tronco/ombro: 2 min
+Rosca direta, Triceps testa: 2 min
 ```
 
 ## `/exercicios`

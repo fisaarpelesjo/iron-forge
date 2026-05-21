@@ -96,8 +96,7 @@ O `/gerar` tambem mostra o descanso sugerido por exercicio:
 Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 4 min
 Remada curvada, Desenvolvimento: 3 min
 Acessorios: 2 min
-Rosca direta, Triceps testa: 90 s
-Punhos: 60 s
+Rosca direta, Triceps testa: 2 min
 ```
 
 Esses tempos fixos ajudam a manter a qualidade das series e deixam o RPE mais

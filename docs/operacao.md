@@ -115,8 +115,7 @@ base para preservar a qualidade tecnica:
 Compostos pesados: 4 min
 Compostos medios: 3 min
 Acessorios: 2 min
-Bracos: 90 s
-Punhos: 60 s
+Bracos: 2 min
 ```
 
 ## Arquivos Para Backup
