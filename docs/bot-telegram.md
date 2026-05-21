@@ -135,9 +135,9 @@ nao existir, porque le os exercicios ativos.
 Intervalos atuais:
 
 ```text
-Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 4 min
+Agachamento Zercher, Supino reto principal, Levantamento Terra Romeno: 4 min
 Remada curvada, Desenvolvimento: 3 min
-Acessorios de tronco/ombro: 2 min
+Acessorios de tronco/ombro e supino reto back-off: 2 min
 Rosca direta, Triceps testa: 2 min
 ```
 

@@ -10,6 +10,7 @@ DB_PATH = DATA_DIR / "ironforge.db"
 DEFAULT_EXERCISES = [
     {"name": "Agachamento Zercher", "sets": 3, "reps": 5},
     {"name": "Supino reto (barra)", "sets": 3, "reps": 5},
+    {"name": "Supino reto back-off", "sets": 2, "reps": 8},
     {"name": "Remada curvada (barra)", "sets": 3, "reps": 8},
     {"name": "Desenvolvimento (barra em pé)", "sets": 3, "reps": 5},
     {"name": "Levantamento Terra Romeno", "sets": 3, "reps": 8},

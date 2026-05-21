@@ -8,7 +8,7 @@ from . import db_ops
 
 SESSION_FILE = Path(__file__).resolve().parents[1] / "session.json"
 
-TRAINING_EXERCISES = range(0, 10)
+TRAINING_EXERCISES = range(0, 11)
 TREINO_EXERCISES = TRAINING_EXERCISES
 RPE_PROGRESSION_KG = {
     7: 4.0,
@@ -20,6 +20,7 @@ RPE_PROGRESSION_KG = {
 REST_INTERVALS = {
     "Agachamento Zercher": "4 min",
     "Supino reto (barra)": "4 min",
+    "Supino reto back-off": "2 min",
     "Remada curvada (barra)": "3 min",
     "Desenvolvimento (barra em pé)": "3 min",
     "Desenvolvimento (barra em pe)": "3 min",
@@ -38,6 +39,7 @@ MUSCLE_MAP = {
     "Zercher squat":                   ["Quadriceps", "Gluteos", "Core"],
     "Levantamento Terra Romeno":       ["Posteriores", "Gluteos"],
     "Supino reto (barra)":             ["Peitoral"],
+    "Supino reto back-off":            ["Peitoral"],
     "Remada curvada (barra)":          ["Dorsais"],
     "Pullover (barra)":                ["Dorsais"],
     "Desenvolvimento (barra em pé)":   ["Deltoide anterior"],

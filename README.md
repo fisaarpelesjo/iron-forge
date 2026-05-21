@@ -93,9 +93,9 @@ real registrada pelo usuario.
 O `/gerar` tambem mostra o descanso sugerido por exercicio:
 
 ```text
-Agachamento Zercher, Supino reto, Levantamento Terra Romeno: 4 min
+Agachamento Zercher, Supino reto principal, Levantamento Terra Romeno: 4 min
 Remada curvada, Desenvolvimento: 3 min
-Acessorios: 2 min
+Acessorios e supino reto back-off: 2 min
 Rosca direta, Triceps testa: 2 min
 ```
 
@@ -135,6 +135,7 @@ O catalogo ativo comeca com:
 
 ```text
 Agachamento Zercher    3x5
+Supino reto back-off   2x8
 ```
 
 Ele substituiu o agachamento com barra para sessoes futuras porque o setup atual

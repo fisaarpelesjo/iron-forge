@@ -99,7 +99,7 @@ Funcoes importantes:
 
 Regras importantes:
 
-- Indices ativos: `TRAINING_EXERCISES = range(0, 10)`.
+- Indices ativos: `TRAINING_EXERCISES = range(0, 11)`.
 - Progressao por RPE: RPE 7 ou menor `+4 kg`, RPE 8 `+2 kg`, RPE 9 mantem, RPE 10 ou maior `-2 kg`, sem RPE mantem.
 - `target_weight` fica em `session.json`.
 - `rest_interval` fica em `session.json` e aparece em `/gerar`, `/status` e proximo exercicio.
@@ -136,14 +136,15 @@ Ordem ativa atual:
 
 1. Agachamento Zercher - 3x5
 2. Supino reto (barra) - 3x5
-3. Remada curvada (barra) - 3x8
-4. Desenvolvimento (barra em pe) - 3x5
-5. Levantamento Terra Romeno - 3x8
-6. Pullover (barra) - 3x10
-7. Remada alta (barra) - 3x10
-8. Remada curvada alta no peito (barra) - 3x10
-9. Rosca direta - 3x8
-10. Triceps testa - 3x8
+3. Supino reto back-off - 2x8
+4. Remada curvada (barra) - 3x8
+5. Desenvolvimento (barra em pe) - 3x5
+6. Levantamento Terra Romeno - 3x8
+7. Pullover (barra) - 3x10
+8. Remada alta (barra) - 3x10
+9. Remada curvada alta no peito (barra) - 3x10
+10. Rosca direta - 3x8
+11. Triceps testa - 3x8
 
 ## Documentacao
 
